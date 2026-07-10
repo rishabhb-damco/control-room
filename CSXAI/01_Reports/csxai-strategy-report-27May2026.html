@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CSXAI — Market & Media Strategy Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0D1B2A;--navy-mid:#1A3050;--blue:#1A6BB5;--blue-light:#EBF4FF;
+  --teal:#1A8A8A;--teal-light:#E5F5F5;
+  --gold:#C9A840;--gold-light:#FBF5E6;
+  --cream:#F6F8FA;--white:#FFFFFF;
+  --border:#E2E8F0;--border-dark:#CBD5E1;
+  --text:#0D1B2A;--mid:#64748B;--light:#94A3B8;
+  --green:#16A34A;--green-light:#DCFCE7;
+  --amber:#D97706;--amber-light:#FEF3C7;
+  --red:#DC2626;--red-light:#FEE2E2;
+  --purple:#7C3AED;--purple-light:#EDE9FE;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#E8EDF2;font-family:'DM Sans',sans-serif;color:var(--text);font-size:13px;line-height:1.6;}
+
+/* ── PASSWORD GATE ── */
+#pw-gate{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:9999;}
+#pw-gate.hidden{display:none;}
+.pw-box{background:#fff;border-radius:16px;padding:44px 52px;width:380px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.5);}
+.pw-logo{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;color:var(--navy);line-height:1;}
+.pw-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-top:5px;font-weight:500;}
+.pw-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--mid);font-weight:500;margin:26px 0 8px;}
+.pw-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;text-align:center;letter-spacing:2px;}
+.pw-input:focus{border-color:var(--blue);}
+.pw-btn{width:100%;margin-top:14px;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;letter-spacing:.5px;}
+.pw-btn:hover{background:var(--navy-mid);}
+.pw-error{font-size:11.5px;color:var(--red);margin-top:10px;min-height:18px;}
+.pw-footer{font-size:10px;color:var(--mid);margin-top:20px;}
+.pw-footer strong{color:var(--text);}
+
+/* ── LAYOUT ── */
+.page{max-width:1120px;margin:0 auto;padding:28px 32px;background:var(--cream);min-height:100vh;}
+
+/* ── HEADER ── */
+.header{background:var(--navy);border-radius:16px;padding:28px 36px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.header-left{}
+.brand-name{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;color:#fff;line-height:1;}
+.brand-sub{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);margin-top:5px;font-weight:500;}
+.report-title{font-size:13px;color:rgba(255,255,255,0.65);margin-top:12px;font-weight:300;}
+.header-right{text-align:right;}
+.report-type{font-size:9px;text-transform:uppercase;letter-spacing:2.5px;color:var(--gold);font-weight:500;}
+.report-date{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:#fff;margin-top:4px;}
+.report-by{font-size:10.5px;color:rgba(255,255,255,0.55);margin-top:5px;}
+.conf-badge{display:inline-block;background:rgba(201,168,64,0.2);border:1px solid rgba(201,168,64,0.4);color:var(--gold);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-top:8px;}
+
+/* ── SECTION ── */
+.section{margin-bottom:24px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--border);}
+.section-num{width:28px;height:28px;border-radius:8px;background:var(--navy);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--navy);}
+.section-desc{font-size:11px;color:var(--mid);margin-left:auto;}
+
+/* ── KPI CARDS ── */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px;}
+.kpi-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.kc-navy::before{background:var(--navy);}
+.kc-blue::before{background:var(--blue);}
+.kc-teal::before{background:var(--teal);}
+.kc-gold::before{background:var(--gold);}
+.kc-green::before{background:var(--green);}
+.kc-purple::before{background:var(--purple);}
+.kpi-label{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--mid);font-weight:500;margin-bottom:4px;}
+.kpi-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--navy);line-height:1;}
+.kpi-sub{font-size:10.5px;color:var(--mid);margin-top:3px;line-height:1.4;}
+
+/* ── CARDS / PANELS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+.panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+.panel-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--mid);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.panel-title .ptdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* ── COMPETITOR CARDS ── */
+.comp-card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.comp-header{padding:14px 18px 12px;border-bottom:1px solid var(--border);}
+.comp-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--navy);}
+.comp-tag{display:inline-block;font-size:8.5px;padding:2px 8px;border-radius:20px;font-weight:500;margin-top:4px;}
+.tag-direct{background:#FEE2E2;color:#991B1B;}
+.tag-indirect{background:#FEF3C7;color:#92400E;}
+.tag-adjacent{background:#E0E7FF;color:#3730A3;}
+.comp-body{padding:14px 18px;}
+.comp-stat{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #F1F5F9;}
+.comp-stat:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.cs-label{font-size:10.5px;color:var(--mid);font-weight:400;}
+.cs-val{font-size:11px;font-weight:500;color:var(--navy);text-align:right;max-width:55%;line-height:1.4;}
+.cs-val.green{color:var(--green);}
+.cs-val.amber{color:var(--amber);}
+.cs-val.red{color:var(--red);}
+
+/* ── CHANNEL MATRIX ── */
+.matrix-table{width:100%;border-collapse:collapse;}
+.matrix-table th{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mid);font-weight:500;padding:10px 12px;border-bottom:2px solid var(--border);text-align:center;}
+.matrix-table th:first-child{text-align:left;}
+.matrix-table td{padding:11px 12px;border-bottom:1px solid #F1F5F9;font-size:12px;text-align:center;vertical-align:middle;}
+.matrix-table td:first-child{text-align:left;font-weight:500;}
+.matrix-table tr:last-child td{border-bottom:none;background:var(--blue-light);}
+.matrix-table tr:last-child td:first-child{border-radius:0 0 0 8px;font-weight:600;color:var(--blue);}
+.matrix-table tr:last-child td:last-child{border-radius:0 0 8px 0;}
+.ch-yes{color:var(--green);font-size:14px;font-weight:600;}
+.ch-no{color:#CBD5E1;font-size:14px;}
+.ch-strong{color:var(--green);font-size:10px;font-weight:600;background:var(--green-light);padding:2px 7px;border-radius:10px;}
+.ch-phase2{color:var(--amber);font-size:10px;font-weight:500;background:var(--amber-light);padding:2px 7px;border-radius:10px;}
+.ch-new{color:var(--blue);font-size:10px;font-weight:600;background:var(--blue-light);padding:2px 7px;border-radius:10px;}
+
+/* ── INSIGHT CARDS ── */
+.insight{border-left:3px solid var(--blue);padding:10px 14px;margin-bottom:8px;background:var(--blue-light);border-radius:0 8px 8px 0;font-size:12px;line-height:1.6;}
+.insight.gold{border-left-color:var(--gold);background:var(--gold-light);}
+.insight.green{border-left-color:var(--green);background:var(--green-light);}
+.insight.red{border-left-color:var(--red);background:var(--red-light);}
+.insight.teal{border-left-color:var(--teal);background:var(--teal-light);}
+.insight.purple{border-left-color:var(--purple);background:var(--purple-light);}
+.insight strong{font-weight:600;color:var(--navy);}
+
+/* ── GAP CARD ── */
+.gap-card{background:var(--navy);border-radius:12px;padding:20px 24px;color:#fff;margin-bottom:14px;}
+.gap-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:#fff;margin-bottom:10px;}
+.gap-row{display:flex;gap:20px;}
+.gap-col{flex:1;}
+.gap-col-head{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.5);font-weight:500;margin-bottom:8px;}
+.gap-item{font-size:11.5px;color:rgba(255,255,255,0.85);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+.gap-item:last-child{border-bottom:none;}
+.gap-item strong{color:#fff;font-weight:500;}
+.gap-opportunity{background:rgba(201,168,64,0.2);border:1px solid rgba(201,168,64,0.4);border-radius:10px;padding:12px 16px;margin-top:12px;}
+.gap-opp-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--gold);font-weight:600;margin-bottom:4px;}
+.gap-opp-text{font-size:12px;color:#fff;line-height:1.6;}
+
+/* ── TIMELINE ── */
+.timeline{display:flex;gap:0;margin-bottom:14px;}
+.tl-phase{flex:1;position:relative;}
+.tl-phase:not(:last-child)::after{content:'→';position:absolute;right:-10px;top:18px;font-size:14px;color:var(--mid);z-index:1;}
+.tl-card{border-radius:10px;padding:14px 16px;height:100%;}
+.tl-p1{background:var(--teal-light);border:1.5px solid var(--teal);}
+.tl-p2{background:var(--blue-light);border:1.5px solid var(--blue);}
+.tl-p3{background:var(--gold-light);border:1.5px solid var(--gold);}
+.tl-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;font-weight:600;margin-bottom:3px;}
+.tl-p1 .tl-label{color:var(--teal);}
+.tl-p2 .tl-label{color:var(--blue);}
+.tl-p3 .tl-label{color:var(--gold);}
+.tl-period{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--navy);margin-bottom:8px;}
+.tl-item{font-size:11px;color:var(--text);padding:2px 0;display:flex;align-items:flex-start;gap:6px;}
+.tl-dot{width:5px;height:5px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.tl-p1 .tl-dot{background:var(--teal);}
+.tl-p2 .tl-dot{background:var(--blue);}
+.tl-p3 .tl-dot{background:var(--gold);}
+.tl-budget{font-size:10px;font-weight:600;margin-top:10px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.08);}
+.tl-p1 .tl-budget{color:var(--teal);}
+.tl-p2 .tl-budget{color:var(--blue);}
+.tl-p3 .tl-budget{color:var(--gold);}
+
+/* ── AUDIENCE SEGMENTS ── */
+.seg-card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px;}
+.seg-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.seg-badge{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;padding:3px 10px;border-radius:20px;font-weight:600;}
+.sb-primary{background:var(--navy);color:#fff;}
+.sb-high{background:var(--gold-light);color:var(--amber);border:1px solid var(--gold);}
+.seg-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--navy);margin-top:2px;}
+.seg-body{padding:14px 20px;}
+.seg-targeting{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+.seg-t-item{background:var(--cream);border-radius:8px;padding:10px 12px;}
+.seg-t-label{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mid);font-weight:500;margin-bottom:4px;}
+.seg-t-val{font-size:11.5px;color:var(--navy);font-weight:500;line-height:1.4;}
+.seg-stats{display:flex;gap:16px;padding-top:10px;border-top:1px solid var(--border);}
+.seg-stat{text-align:center;}
+.seg-stat-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--navy);}
+.seg-stat-label{font-size:10px;color:var(--mid);}
+.seg-message{background:var(--blue-light);border-radius:8px;padding:10px 14px;font-size:11.5px;color:var(--navy);line-height:1.6;margin-top:10px;border-left:3px solid var(--blue);}
+.seg-message .sm-label{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:600;margin-bottom:4px;}
+
+/* ── CAMPAIGN TABLE ── */
+.camp-table{width:100%;border-collapse:collapse;}
+.camp-table th{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mid);font-weight:500;padding:9px 12px;border-bottom:2px solid var(--border);text-align:right;}
+.camp-table th:first-child,.camp-table th:nth-child(2){text-align:left;}
+.camp-table td{padding:11px 12px;border-bottom:1px solid #F1F5F9;font-size:12px;text-align:right;vertical-align:top;}
+.camp-table td:first-child,.camp-table td:nth-child(2){text-align:left;}
+.camp-table tr.total-row td{background:var(--blue-light);font-weight:600;border-bottom:none;}
+.camp-table tr.total-row td:first-child{border-radius:0 0 0 8px;}
+.camp-table tr.total-row td:last-child{border-radius:0 0 8px 0;}
+.camp-name-cell strong{display:block;font-size:12px;color:var(--navy);font-weight:500;}
+.camp-name-cell span{font-size:10.5px;color:var(--mid);}
+.camp-type-badge{display:inline-block;font-size:8px;padding:2px 7px;border-radius:10px;font-weight:500;margin-top:3px;}
+.ctb-conq{background:#FEE2E2;color:#991B1B;}
+.ctb-banking{background:#DBEAFE;color:#1E40AF;}
+.ctb-general{background:var(--teal-light);color:var(--teal);}
+.ctb-re{background:#EDE9FE;color:#5B21B6;}
+.ctb-inmail{background:var(--gold-light);color:var(--amber);}
+.keyword-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.kp{font-size:9px;background:#F1F5F9;color:var(--mid);padding:1px 6px;border-radius:10px;font-family:monospace;}
+
+/* ── FORECAST TABLE ── */
+.forecast-table{width:100%;border-collapse:collapse;}
+.forecast-table th{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mid);padding:9px 12px;border-bottom:2px solid var(--border);text-align:right;font-weight:500;}
+.forecast-table th:first-child{text-align:left;}
+.forecast-table td{padding:11px 12px;border-bottom:1px solid #F1F5F9;font-size:12px;text-align:right;}
+.forecast-table td:first-child{text-align:left;font-weight:500;}
+.forecast-table .total-row td{background:var(--navy);color:#fff;font-weight:600;}
+.forecast-table .total-row td:first-child{border-radius:0 0 0 8px;}
+.forecast-table .total-row td:last-child{border-radius:0 0 8px 0;}
+.channel-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+
+/* ── PRIORITY CARDS ── */
+.priority-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+.priority-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.pcard-label{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:8px;}
+.pcard-p1{color:var(--red);}
+.pcard-p2{color:var(--blue);}
+.pcard-p3{color:var(--teal);}
+.pcard-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:7px;font-size:12px;color:var(--text);line-height:1.5;}
+.pcard-item:last-child{margin-bottom:0;}
+.pnum{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:600;flex-shrink:0;margin-top:1px;}
+.pnum-red{background:var(--red-light);color:var(--red);}
+.pnum-blue{background:var(--blue-light);color:var(--blue);}
+.pnum-teal{background:var(--teal-light);color:var(--teal);}
+
+/* ── ROADMAP ── */
+.roadmap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+.roadmap-col{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.roadmap-header{padding:12px 16px;font-size:9px;text-transform:uppercase;letter-spacing:2px;font-weight:600;}
+.rm-30{background:var(--navy);color:#fff;}
+.rm-60{background:var(--blue);color:#fff;}
+.rm-90{background:var(--teal);color:#fff;}
+.roadmap-body{padding:14px 16px;}
+.rm-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:11.5px;line-height:1.5;}
+.rm-item:last-child{margin-bottom:0;}
+.rm-check{width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;margin-top:1px;}
+.rm-30-check{background:rgba(255,255,255,0.15);color:#fff;font-size:10px;}
+.rm-check.done{background:var(--green-light);color:var(--green);}
+.rm-check.pending{background:#F1F5F9;color:var(--mid);}
+
+/* ── ASSUMPTION BOX ── */
+.assumption-box{background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:11.5px;line-height:1.7;color:var(--text);}
+.assumption-box strong{color:var(--amber);font-weight:600;}
+
+/* ── FOOTER ── */
+.footer{margin-top:24px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.footer-left{font-size:10.5px;color:var(--mid);line-height:1.8;}
+.footer-right{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:var(--navy);}
+
+canvas{max-height:240px;}
+
+.two-chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.chart-panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+.chart-title{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mid);font-weight:600;margin-bottom:14px;}
+
+@media print{body{background:white;}.page{padding:16px;}#pw-gate{display:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="pw-gate">
+  <div class="pw-box">
+    <div class="pw-logo">CSX Intelligence</div>
+    <div class="pw-sub">Market &amp; Media Strategy</div>
+    <div class="pw-label">Enter report password</div>
+    <input id="pw-input" class="pw-input" type="password" placeholder="••••••••••••" autocomplete="off"/>
+    <button class="pw-btn" onclick="checkPassword()">View Report</button>
+    <div id="pw-error" class="pw-error"></div>
+    <div class="pw-footer">Confidential · Prepared by <strong>Damco Digital</strong></div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="brand-name">CSX Intelligence</div>
+      <div class="brand-sub">AI Voice Agent · Financial Services &amp; Real Estate</div>
+      <div class="report-title">Market Intelligence &amp; Paid Media Strategy — Go-To-Market Briefing</div>
+    </div>
+    <div class="header-right">
+      <div class="report-type">Strategic Report</div>
+      <div class="report-date">27 May 2026</div>
+      <div class="report-by">Prepared by Rishabh B · Damco Digital</div>
+      <div class="report-by">For: Shaivi Tyagi → Nitya &amp; Proneeta</div>
+      <div class="conf-badge">Confidential</div>
+    </div>
+  </div>
+
+  <!-- EXECUTIVE SNAPSHOT -->
+  <div class="kpi-row">
+    <div class="kpi-card kc-navy">
+      <div class="kpi-label">Target Market</div>
+      <div class="kpi-val">9,500+</div>
+      <div class="kpi-sub">US community banks &amp; credit unions in ICP size range</div>
+    </div>
+    <div class="kpi-card kc-blue">
+      <div class="kpi-label">Qualified Keywords</div>
+      <div class="kpi-val">18</div>
+      <div class="kpi-sub">Active B2B keywords · 12 monitored for growth</div>
+    </div>
+    <div class="kpi-card kc-teal">
+      <div class="kpi-label">Phase 1 Budget</div>
+      <div class="kpi-val">$800</div>
+      <div class="kpi-sub">LinkedIn InMail only · June 2026</div>
+    </div>
+    <div class="kpi-card kc-gold">
+      <div class="kpi-label">Phase 2 Budget</div>
+      <div class="kpi-val">$6.8K</div>
+      <div class="kpi-sub">InMail + Google Ads · July 2026</div>
+    </div>
+    <div class="kpi-card kc-green">
+      <div class="kpi-label">Projected CPL</div>
+      <div class="kpi-val">$97–$151</div>
+      <div class="kpi-sub">Blended · Phase 2 · 45–70 leads/mo</div>
+    </div>
+    <div class="kpi-card kc-purple">
+      <div class="kpi-label">Key Opportunity</div>
+      <div class="kpi-val">Eltropy</div>
+      <div class="kpi-sub">1,900 branded searches/mo · runs zero paid ads</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: COMPETITOR OVERVIEW -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Competitor Overview</div>
+      <div class="section-desc">Research basis: eltropy.com · glia.com · kasisto.com · retellai.com · synthflow.ai · LinkedIn analysis · SimilarWeb traffic data · Google Keyword Planner</div>
+    </div>
+
+    <div class="grid-4">
+      <div class="comp-card">
+        <div class="comp-header">
+          <div class="comp-name">Eltropy</div>
+          <div class="comp-tag tag-direct">Direct Competitor</div>
+        </div>
+        <div class="comp-body">
+          <div class="comp-stat"><span class="cs-label">Target Market</span><span class="cs-val">Community banks &amp; credit unions (US)</span></div>
+          <div class="comp-stat"><span class="cs-label">Scale</span><span class="cs-val green">$12M → $33M ARR in 24 months</span></div>
+          <div class="comp-stat"><span class="cs-label">Branded Searches</span><span class="cs-val green">1,900/mo (+26% YoY)</span></div>
+          <div class="comp-stat"><span class="cs-label">Google Paid Ads</span><span class="cs-val red">Zero — not running</span></div>
+          <div class="comp-stat"><span class="cs-label">Primary Channel</span><span class="cs-val">SDR outbound + ABM + 50+ integrations</span></div>
+          <div class="comp-stat"><span class="cs-label">LinkedIn</span><span class="cs-val">Active — product news + leadership posts</span></div>
+          <div class="comp-stat"><span class="cs-label">Messaging</span><span class="cs-val amber">Efficiency + scale · "83% call containment"</span></div>
+        </div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-header">
+          <div class="comp-name">Glia</div>
+          <div class="comp-tag tag-direct">Direct Competitor</div>
+        </div>
+        <div class="comp-body">
+          <div class="comp-stat"><span class="cs-label">Target Market</span><span class="cs-val">Banks + credit unions (700+ clients)</span></div>
+          <div class="comp-stat"><span class="cs-label">Scale</span><span class="cs-val green">Market leader · AIFinTech100 2025</span></div>
+          <div class="comp-stat"><span class="cs-label">Branded Searches</span><span class="cs-val">Low (~10/mo for "glia banking")</span></div>
+          <div class="comp-stat"><span class="cs-label">Top Lead Magnet</span><span class="cs-val">2026 Banking AI Benchmarks Report (gated · 400 institutions' data)</span></div>
+          <div class="comp-stat"><span class="cs-label">Key CTA</span><span class="cs-val">Request an Impact Study (ROI calculator)</span></div>
+          <div class="comp-stat"><span class="cs-label">Annual Event</span><span class="cs-val">Glia Interact — pipeline + press</span></div>
+          <div class="comp-stat"><span class="cs-label">Messaging</span><span class="cs-val amber">Efficiency · "Handle 2x calls, zero hallucinations"</span></div>
+        </div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-header">
+          <div class="comp-name">Kasisto</div>
+          <div class="comp-tag tag-direct">Direct Competitor</div>
+        </div>
+        <div class="comp-body">
+          <div class="comp-stat"><span class="cs-label">Target Market</span><span class="cs-val">Banks — conversational AI (KAI platform)</span></div>
+          <div class="comp-stat"><span class="cs-label">Branded Searches</span><span class="cs-val amber">390/mo (declining -19% 3-mo)</span></div>
+          <div class="comp-stat"><span class="cs-label">Trend</span><span class="cs-val red">Declining — losing mindshare</span></div>
+          <div class="comp-stat"><span class="cs-label">Google Paid</span><span class="cs-val">Minimal evidence</span></div>
+          <div class="comp-stat"><span class="cs-label">Notable</span><span class="cs-val">People actively search "kasisto competitors" — high-intent exit intent</span></div>
+          <div class="comp-stat"><span class="cs-label">Opportunity</span><span class="cs-val green">Intercept as they lose relevance</span></div>
+        </div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-header">
+          <div class="comp-name">Retell AI / Synthflow</div>
+          <div class="comp-tag tag-adjacent">Adjacent · Not Direct</div>
+        </div>
+        <div class="comp-body">
+          <div class="comp-stat"><span class="cs-label">Retell AI Target</span><span class="cs-val">Developers · $0.07/min infrastructure</span></div>
+          <div class="comp-stat"><span class="cs-label">Synthflow Target</span><span class="cs-val">Non-technical SMBs · real estate agents</span></div>
+          <div class="comp-stat"><span class="cs-label">Channels</span><span class="cs-val">SEO blog · no-code templates · developer community</span></div>
+          <div class="comp-stat"><span class="cs-label">vs. CSXAI</span><span class="cs-val green">Infrastructure layer — CSXAI is the finished enterprise product</span></div>
+          <div class="comp-stat"><span class="cs-label">Paid Ads</span><span class="cs-val">Parloa most aggressive (~49% paid traffic) — best benchmark</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Channel Presence Matrix -->
+    <div class="panel" style="margin-bottom:14px;">
+      <div class="panel-title"><div class="ptdot" style="background:var(--navy)"></div>Competitive Channel Presence Matrix</div>
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Company</th>
+            <th>LinkedIn Organic</th>
+            <th>LinkedIn Ads</th>
+            <th>Google Ads</th>
+            <th>SEO / Blog</th>
+            <th>Industry Events</th>
+            <th>Partner Channel</th>
+            <th>SDR / Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Eltropy</strong></td>
+            <td><span class="ch-strong">Strong</span></td>
+            <td><span class="ch-yes">✓</span></td>
+            <td><span class="ch-no">✗ None</span></td>
+            <td><span class="ch-yes">✓</span></td>
+            <td><span class="ch-strong">Primary</span></td>
+            <td><span class="ch-strong">50+ integrations</span></td>
+            <td><span class="ch-strong">ABM · drove $33M ARR</span></td>
+          </tr>
+          <tr>
+            <td><strong>Glia</strong></td>
+            <td><span class="ch-strong">Strong</span></td>
+            <td><span class="ch-yes">✓</span></td>
+            <td><span class="ch-yes">Minimal</span></td>
+            <td><span class="ch-yes">✓</span></td>
+            <td><span class="ch-strong">Annual event</span></td>
+            <td><span class="ch-yes">FIS integration</span></td>
+            <td><span class="ch-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td><strong>Kasisto</strong></td>
+            <td><span class="ch-yes">✓</span></td>
+            <td><span class="ch-no">Unknown</span></td>
+            <td><span class="ch-no">Unknown</span></td>
+            <td><span class="ch-yes">✓</span></td>
+            <td><span class="ch-yes">✓</span></td>
+            <td><span class="ch-yes">✓</span></td>
+            <td><span class="ch-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td><strong>Retell AI</strong></td>
+            <td><span class="ch-yes">✓</span></td>
+            <td><span class="ch-no">Dev-focused</span></td>
+            <td><span class="ch-yes">✓</span></td>
+            <td><span class="ch-strong">Primary</span></td>
+            <td><span class="ch-no">✗</span></td>
+            <td><span class="ch-no">✗</span></td>
+            <td><span class="ch-no">✗</span></td>
+          </tr>
+          <tr>
+            <td><strong>CSXAI (Planned)</strong></td>
+            <td><span class="ch-strong">June Launch</span></td>
+            <td><span class="ch-phase2">Phase 2 · Jul</span></td>
+            <td><span class="ch-phase2">Phase 2 · Jul</span></td>
+            <td><span class="ch-phase2">TBD</span></td>
+            <td><span class="ch-phase2">TBD</span></td>
+            <td><span class="ch-phase2">TBD</span></td>
+            <td><span class="ch-new">Starting June</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Gap / Positioning Opportunity -->
+    <div class="gap-card">
+      <div class="gap-title">The Unoccupied Position — CSXAI's Competitive Advantage</div>
+      <div class="gap-row">
+        <div class="gap-col">
+          <div class="gap-col-head">What Every Competitor Leads With</div>
+          <div class="gap-item"><strong>Eltropy:</strong> "83% call containment" · operational efficiency</div>
+          <div class="gap-item"><strong>Glia:</strong> "Handle 2x calls without hiring" · no-hallucination guarantee</div>
+          <div class="gap-item"><strong>Kasisto:</strong> "1,000+ banking tasks out of the box"</div>
+          <div class="gap-item"><strong>All competitors:</strong> Automation volume · cost reduction · deflection rates</div>
+        </div>
+        <div class="gap-col">
+          <div class="gap-col-head">What Nobody Leads With</div>
+          <div class="gap-item"><strong>Empathy detection</strong> — zero competitor mentions this</div>
+          <div class="gap-item"><strong>Compliance-native architecture</strong> — mentioned but never led with</div>
+          <div class="gap-item"><strong>Brand voice digital twin</strong> — unique CSXAI capability</div>
+          <div class="gap-item"><strong>Member / customer experience quality</strong> — not just deflection</div>
+        </div>
+      </div>
+      <div class="gap-opportunity">
+        <div class="gap-opp-label">CSXAI's Opening</div>
+        <div class="gap-opp-text">"Every other platform tells you how many calls they can deflect. We tell you how well those calls went." — Empathy + compliance is unoccupied territory. Lead every channel with this message.</div>
+      </div>
+    </div>
+
+    <!-- Competitor Keyword Chart -->
+    <div class="two-chart-row">
+      <div class="chart-panel">
+        <div class="chart-title">Competitor Branded Search Volume (Monthly · Google)</div>
+        <canvas id="compKeywordChart"></canvas>
+      </div>
+      <div class="chart-panel">
+        <div class="chart-title">Competitor Keyword Trend — Eltropy vs Kasisto (12-Month)</div>
+        <canvas id="trendChart"></canvas>
+      </div>
+    </div>
+
+    <div class="insight gold"><strong>Key Insight:</strong> Eltropy receives 1,900 branded searches per month and runs <em>zero</em> Google paid search campaigns. This is the highest-ROI keyword opportunity in the entire CSXAI keyword universe — competitor conquesting at $5–$35 CPC with no incumbent bidding against us.</div>
+    <div class="insight red"><strong>Kasisto Is Declining:</strong> Branded searches down 19% in 3 months, -46% YoY. People actively search "kasisto competitors." CSXAI should be the answer that appears.</div>
+  </div>
+
+  <!-- SECTION 2: MARKET & OPPORTUNITY INSIGHTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">Market &amp; Opportunity Insights</div>
+      <div class="section-desc">Based on FDIC data, NCUA data, Google Keyword Planner analysis, SimilarWeb research</div>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div class="panel">
+        <div class="panel-title"><div class="ptdot" style="background:var(--blue)"></div>Community Banks — TAM</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:600;color:var(--navy);line-height:1;">4,500+</div>
+        <div style="font-size:11px;color:var(--mid);margin-top:4px;">FDIC-insured US community banks with $100M–$5B in assets — right size for CSXAI's deployment model</div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
+          <div style="font-size:11px;color:var(--text);margin-bottom:4px;"><strong>Why CSXAI wins here:</strong></div>
+          <div style="font-size:11px;color:var(--mid);">Not big enough for Glia's enterprise pricing, not small enough to use DIY tools. CSXAI's deployment speed + empathy positioning is built for this gap.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><div class="ptdot" style="background:var(--teal)"></div>Credit Unions — High-Fit Segment</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:600;color:var(--navy);line-height:1;">5,000+</div>
+        <div style="font-size:11px;color:var(--mid);margin-top:4px;">NCUA-insured US credit unions. Member-first mandate aligns directly with CSXAI's empathy positioning</div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
+          <div style="font-size:11px;color:var(--text);margin-bottom:4px;"><strong>Decision-making advantage:</strong></div>
+          <div style="font-size:11px;color:var(--mid);">Smaller governance structure = faster buying decisions. C-suite is reachable directly on LinkedIn. No 18-month procurement cycle.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><div class="ptdot" style="background:var(--purple)"></div>Real Estate Institutions — Secondary</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:600;color:var(--navy);line-height:1;">~85K</div>
+        <div style="font-size:11px;color:var(--mid);margin-top:4px;">Real estate brokerage firms in the US. Target: medium-large brokerages (50–1,000 employees) with inquiry call volume</div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
+          <div style="font-size:11px;color:var(--amber);font-weight:500;font-size:11px;margin-bottom:4px;">⚠ Keyword trap identified:</div>
+          <div style="font-size:11px;color:var(--mid);">"Real estate virtual assistant" (1,900/mo) = people hiring offshore human VAs. Avoid bidding there entirely.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keyword Landscape -->
+    <div class="two-chart-row">
+      <div class="chart-panel">
+        <div class="chart-title">Qualified Keyword Universe — Monthly Search Volume</div>
+        <canvas id="keywordChart"></canvas>
+      </div>
+      <div class="chart-panel">
+        <div class="chart-title">Category Keywords — 3-Month Growth Trend</div>
+        <canvas id="growthChart"></canvas>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:14px;">
+      <div>
+        <div class="insight green"><strong>Paid Search Landscape is Open:</strong> Eltropy runs zero paid search. Glia runs minimal. The most-searched competitor brand in this category (1,900/mo) has <em>no one defending it</em> on Google. CSXAI can own this space from day one of campaign launch.</div>
+        <div class="insight teal"><strong>Conversational AI Banking is Exploding:</strong> Three keywords growing at +300% to +400% in 3 months. CPCs are near-zero because advertisers haven't noticed yet. First-mover advantage window is 60–90 days.</div>
+      </div>
+      <div>
+        <div class="insight purple"><strong>Total Search Volume is Small (~5,500/mo):</strong> This is a pre-mass-awareness category. Google will never be a high-volume channel for CSXAI — it's a high-intent complement to LinkedIn InMail outbound. Outbound creates the demand; Google captures the intent.</div>
+        <div class="insight gold"><strong>Meta Ads Not Recommended:</strong> Cannot reliably target VP Operations / CTO at a community bank on Facebook. Individual real estate agents (wrong ICP) are the only addressable audience. Budget is better deployed elsewhere.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: RECOMMENDED PAID MEDIA STRATEGY -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">Recommended Paid Media Strategy</div>
+      <div class="section-desc">Phased approach — InMail first, Google Ads second, scale third</div>
+    </div>
+
+    <!-- Phase Timeline -->
+    <div class="timeline" style="gap:16px;margin-bottom:16px;">
+      <div class="tl-phase">
+        <div class="tl-card tl-p1">
+          <div class="tl-label">Phase 1</div>
+          <div class="tl-period">June 2026</div>
+          <div class="tl-item"><div class="tl-dot"></div><span>LinkedIn InMail — 2 audience segments</span></div>
+          <div class="tl-item"><div class="tl-dot"></div><span>LinkedIn Organic — 8–12 posts/mo (Simran + Tarun)</span></div>
+          <div class="tl-item"><div class="tl-dot"></div><span>Email outreach via MailChimp</span></div>
+          <div class="tl-item"><div class="tl-dot"></div><span>Lead magnets in production</span></div>
+          <div class="tl-budget">Budget: $800/month</div>
+        </div>
+      </div>
+      <div class="tl-phase">
+        <div class="tl-card tl-p2">
+          <div class="tl-label">Phase 2</div>
+          <div class="tl-period">July – August 2026</div>
+          <div class="tl-item"><div class="tl-dot"></div><span>Google Ads — 4 campaigns live</span></div>
+          <div class="tl-item"><div class="tl-dot"></div><span>LinkedIn InMail continues + scaling</span></div>
+          <div class="tl-item"><div class="tl-dot"></div><span>LinkedIn Thought Leader Ads (boost organic)</span></div>
+          <div class="tl-item"><div class="tl-dot"></div><span>Lead magnets promoted via Document Ads</span></div>
+          <div class="tl-budget">Budget: $6,000–$8,000/month</div>
+        </div>
+      </div>
+      <div class="tl-phase">
+        <div class="tl-card tl-p3">
+          <div class="tl-label">Phase 3</div>
+          <div class="tl-period">September 2026+</div>
+          <div class="tl-item"><div class="tl-dot"></div><span>Scale top-performing campaigns</span></div>
+          <div class="tl-item"><div class="tl-dot"></div><span>LinkedIn Lead Gen Forms</span></div>
+          <div class="tl-item"><div class="tl-dot"></div><span>Website retargeting (Insight Tag)</span></div>
+          <div class="tl-item"><div class="tl-dot"></div><span>Lookalike audiences from demo requests</span></div>
+          <div class="tl-budget">Budget: $9,000–$12,000/month</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LinkedIn InMail Segments -->
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--mid);font-weight:600;margin-bottom:10px;">Phase 1 · LinkedIn InMail — 2 Target Segments</div>
+
+    <div class="seg-card">
+      <div class="seg-header">
+        <div>
+          <div><span class="seg-badge sb-primary">Segment 1 · Primary</span></div>
+          <div class="seg-name">Community Banking Operations Leaders</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;color:var(--mid);">Estimated Audience</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--navy);">15,000–25,000</div>
+        </div>
+      </div>
+      <div class="seg-body">
+        <div class="seg-targeting">
+          <div class="seg-t-item">
+            <div class="seg-t-label">Job Titles</div>
+            <div class="seg-t-val">VP Operations · Director Operations · Head of Customer Service · COO · VP Customer Experience</div>
+          </div>
+          <div class="seg-t-item">
+            <div class="seg-t-label">Industry + Size</div>
+            <div class="seg-t-val">Banking · Financial Services · 200–2,000 employees · United States</div>
+          </div>
+          <div class="seg-t-item">
+            <div class="seg-t-label">Seniority + Budget</div>
+            <div class="seg-t-val">Director · VP · CXO<br>$500/mo → ~1,500 sends</div>
+          </div>
+        </div>
+        <div class="seg-message">
+          <div class="sm-label">InMail Message Angle</div>
+          Lead with the operations pain: "Your team is handling the same calls on repeat. Here's what that's costing you." → Short Loom demo link or 15-min calendar booking. Keep to 3 sentences + CTA.
+        </div>
+        <div class="seg-stats">
+          <div class="seg-stat"><div class="seg-stat-val">1,500</div><div class="seg-stat-label">Sends/month</div></div>
+          <div class="seg-stat"><div class="seg-stat-val">~780</div><div class="seg-stat-label">Estimated opens (52%)</div></div>
+          <div class="seg-stat"><div class="seg-stat-val">~39–60</div><div class="seg-stat-label">Engaged (5–8%)</div></div>
+          <div class="seg-stat"><div class="seg-stat-val">$500</div><div class="seg-stat-label">Monthly budget</div></div>
+          <div class="seg-stat"><div class="seg-stat-val">~$13–18</div><div class="seg-stat-label">Cost per engaged</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="seg-card">
+      <div class="seg-header">
+        <div>
+          <div><span class="seg-badge sb-high">Segment 2 · High Value</span></div>
+          <div class="seg-name">Credit Union C-Suite &amp; Technology Leaders</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;color:var(--mid);">Estimated Audience</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--navy);">8,000–15,000</div>
+        </div>
+      </div>
+      <div class="seg-body">
+        <div class="seg-targeting">
+          <div class="seg-t-item">
+            <div class="seg-t-label">Job Titles</div>
+            <div class="seg-t-val">CEO · COO · CTO · Chief Digital Officer · VP Technology · Director Digital Transformation · VP Member Experience</div>
+          </div>
+          <div class="seg-t-item">
+            <div class="seg-t-label">Industry + Size</div>
+            <div class="seg-t-val">Financial Services · "Credit Union" company filter · 50–500 employees · United States</div>
+          </div>
+          <div class="seg-t-item">
+            <div class="seg-t-label">Seniority + Budget</div>
+            <div class="seg-t-val">Director · VP · CXO · Owner<br>$300/mo → ~900 sends</div>
+          </div>
+        </div>
+        <div class="seg-message">
+          <div class="sm-label">InMail Message Angle</div>
+          Lead with the empathy + mission angle: "Community financial institutions built their reputation on personal service. AI shouldn't change that — it should protect it." → Empathy positioning + demo CTA. Credit unions are mission-driven; this resonates directly.
+        </div>
+        <div class="seg-stats">
+          <div class="seg-stat"><div class="seg-stat-val">900</div><div class="seg-stat-label">Sends/month</div></div>
+          <div class="seg-stat"><div class="seg-stat-val">~468</div><div class="seg-stat-label">Estimated opens (52%)</div></div>
+          <div class="seg-stat"><div class="seg-stat-val">~23–37</div><div class="seg-stat-label">Engaged (5–8%)</div></div>
+          <div class="seg-stat"><div class="seg-stat-val">$300</div><div class="seg-stat-label">Monthly budget</div></div>
+          <div class="seg-stat"><div class="seg-stat-val">~$8–13</div><div class="seg-stat-label">Cost per engaged</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Google Ads Campaign Structure -->
+    <div class="panel" style="margin-top:14px;">
+      <div class="panel-title"><div class="ptdot" style="background:var(--blue)"></div>Phase 2 · Google Ads — 4-Campaign Structure (July 2026)</div>
+      <table class="camp-table">
+        <thead>
+          <tr>
+            <th style="text-align:left;width:160px;">Campaign</th>
+            <th style="text-align:left;">Keywords (Phrase + Exact)</th>
+            <th>Budget/mo</th>
+            <th>Est. Volume/mo</th>
+            <th>Avg CPC</th>
+            <th>Est. Clicks</th>
+            <th>Est. CPL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="camp-name-cell">
+                <strong>Competitor Conquesting</strong>
+                <span>Intercept Eltropy, Kasisto buyers</span>
+                <div><span class="camp-type-badge ctb-conq">Highest Intent</span></div>
+              </div>
+            </td>
+            <td>
+              <div class="keyword-pills">
+                <span class="kp">eltropy</span>
+                <span class="kp">kasisto</span>
+                <span class="kp">kasisto ai</span>
+                <span class="kp">kasisto competitors</span>
+                <span class="kp">glia banking</span>
+              </div>
+            </td>
+            <td>$2,000</td>
+            <td>~2,360/mo</td>
+            <td>$15–25</td>
+            <td>80–130</td>
+            <td>$100–150</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="camp-name-cell">
+                <strong>Banking AI — Category</strong>
+                <span>In-market banking buyers</span>
+                <div><span class="camp-type-badge ctb-banking">Banking</span></div>
+              </div>
+            </td>
+            <td>
+              <div class="keyword-pills">
+                <span class="kp">conversational ai for banking</span>
+                <span class="kp">conversational ai in banking</span>
+                <span class="kp">conversational banking</span>
+                <span class="kp">banking virtual assistant</span>
+                <span class="kp">conversational ai banking</span>
+              </div>
+            </td>
+            <td>$1,500</td>
+            <td>~290/mo</td>
+            <td>$12–30</td>
+            <td>50–90</td>
+            <td>$130–200</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="camp-name-cell">
+                <strong>AI Voice Agent — General</strong>
+                <span>Broad B2B intent buyers</span>
+                <div><span class="camp-type-badge ctb-general">General B2B</span></div>
+              </div>
+            </td>
+            <td>
+              <div class="keyword-pills">
+                <span class="kp">ai voice agent</span>
+                <span class="kp">voice ai company</span>
+                <span class="kp">conversational ai voice assistant</span>
+              </div>
+            </td>
+            <td>$2,000</td>
+            <td>~2,800/mo</td>
+            <td>$10–20</td>
+            <td>100–150</td>
+            <td>$100–180</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="camp-name-cell">
+                <strong>Real Estate</strong>
+                <span>RE institutions — AI only terms</span>
+                <div><span class="camp-type-badge ctb-re">Real Estate</span></div>
+              </div>
+            </td>
+            <td>
+              <div class="keyword-pills">
+                <span class="kp">real estate ai assistant</span>
+                <span class="kp">voice ai for real estate</span>
+                <span class="kp">realtor virtual receptionist</span>
+                <span class="kp">ai voice agent real estate</span>
+              </div>
+            </td>
+            <td>$500</td>
+            <td>~160/mo</td>
+            <td>$12–20</td>
+            <td>25–40</td>
+            <td>$150–250</td>
+          </tr>
+          <tr class="total-row">
+            <td><strong>Google Ads Total</strong></td>
+            <td></td>
+            <td><strong>$6,000</strong></td>
+            <td>~5,610/mo</td>
+            <td>—</td>
+            <td><strong>255–410</strong></td>
+            <td><strong>$110–185</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:11px;color:var(--mid);">⚠ Negative keywords for Real Estate campaign: hire, hiring, salary, offshore, freelance, upwork, philippines, part time, cheap — prevents matching VA staffing searches.</div>
+    </div>
+
+    <!-- Budget Allocation Chart -->
+    <div class="two-chart-row" style="margin-top:14px;">
+      <div class="chart-panel">
+        <div class="chart-title">Phase 2 Budget Allocation — $6,800/Month</div>
+        <canvas id="budgetChart"></canvas>
+      </div>
+      <div class="chart-panel">
+        <div class="chart-title">Estimated Monthly Leads by Channel (Phase 2)</div>
+        <canvas id="leadsChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: PERFORMANCE ESTIMATES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">Performance Estimates &amp; Forecasting</div>
+      <div class="section-desc">Phase 2 projections · July–August 2026</div>
+    </div>
+
+    <div class="assumption-box">
+      <strong>Assumptions:</strong> Google Ads CTR 3–5% (B2B SaaS benchmark). LinkedIn InMail open rate 52% (platform average). Demo request conversion rate from clicks: 5–8% (new brand, no social proof yet). CPL improves by 15–20% in Month 2 as Quality Score builds and negative keyword list matures. Estimates reflect Month 1 performance; not steady-state.
+    </div>
+
+    <table class="forecast-table" style="background:#fff;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:14px;">
+      <thead style="background:var(--cream);">
+        <tr>
+          <th style="text-align:left;">Channel / Campaign</th>
+          <th>Monthly Budget</th>
+          <th>Reach/Sends</th>
+          <th>Impressions</th>
+          <th>Clicks / Opens</th>
+          <th>CTR / Open Rate</th>
+          <th>CPC / CPS</th>
+          <th>Est. CPL</th>
+          <th>Est. Leads/mo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="channel-dot" style="background:#1A6BB5;"></span><strong>Google — Competitor Conquesting</strong></td>
+          <td>$2,000</td>
+          <td>~5,000–8,000 imp.</td>
+          <td>5,000–8,000</td>
+          <td>80–130</td>
+          <td>3–5%</td>
+          <td>$15–25</td>
+          <td>$100–150</td>
+          <td><strong>13–20</strong></td>
+        </tr>
+        <tr>
+          <td><span class="channel-dot" style="background:#1A8A8A;"></span><strong>Google — Banking AI Category</strong></td>
+          <td>$1,500</td>
+          <td>~2,000–4,000 imp.</td>
+          <td>2,000–4,000</td>
+          <td>50–90</td>
+          <td>3–5%</td>
+          <td>$12–30</td>
+          <td>$130–200</td>
+          <td><strong>7–11</strong></td>
+        </tr>
+        <tr>
+          <td><span class="channel-dot" style="background:#0D1B2A;"></span><strong>Google — AI Voice Agent General</strong></td>
+          <td>$2,000</td>
+          <td>~8,000–14,000 imp.</td>
+          <td>8,000–14,000</td>
+          <td>100–150</td>
+          <td>3–5%</td>
+          <td>$10–20</td>
+          <td>$100–180</td>
+          <td><strong>11–20</strong></td>
+        </tr>
+        <tr>
+          <td><span class="channel-dot" style="background:#7C3AED;"></span><strong>Google — Real Estate</strong></td>
+          <td>$500</td>
+          <td>~1,000–2,000 imp.</td>
+          <td>1,000–2,000</td>
+          <td>25–40</td>
+          <td>3–5%</td>
+          <td>$12–20</td>
+          <td>$150–250</td>
+          <td><strong>2–4</strong></td>
+        </tr>
+        <tr>
+          <td><span class="channel-dot" style="background:#C9A840;"></span><strong>LinkedIn InMail — Banking Ops (Seg 1)</strong></td>
+          <td>$500</td>
+          <td>1,500 sends</td>
+          <td>1,500 inboxes</td>
+          <td>~780 opens</td>
+          <td>52% open rate</td>
+          <td>$0.33/send</td>
+          <td>$35–55</td>
+          <td><strong>9–14</strong></td>
+        </tr>
+        <tr>
+          <td><span class="channel-dot" style="background:#D97706;"></span><strong>LinkedIn InMail — Credit Union (Seg 2)</strong></td>
+          <td>$300</td>
+          <td>900 sends</td>
+          <td>900 inboxes</td>
+          <td>~468 opens</td>
+          <td>52% open rate</td>
+          <td>$0.33/send</td>
+          <td>$25–40</td>
+          <td><strong>7–12</strong></td>
+        </tr>
+        <tr class="total-row">
+          <td><strong>Total — Phase 2 Combined</strong></td>
+          <td><strong>$6,800</strong></td>
+          <td>—</td>
+          <td><strong>~18,000–30,000</strong></td>
+          <td><strong>~1,500–1,600</strong></td>
+          <td>—</td>
+          <td>—</td>
+          <td><strong>$97–$151</strong></td>
+          <td><strong>45–81/mo</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="two-chart-row">
+      <div class="chart-panel">
+        <div class="chart-title">6-Month Lead Volume Projection (Ramp from Phase 1 → Phase 2 → Phase 3)</div>
+        <canvas id="projectionChart"></canvas>
+      </div>
+      <div class="chart-panel">
+        <div class="chart-title">CPL Trajectory — Blended Estimate by Month</div>
+        <canvas id="cplChart"></canvas>
+      </div>
+    </div>
+
+    <div class="insight green"><strong>LinkedIn InMail CPL ($25–$55) significantly outperforms Google ($100–$200) in Phase 1</strong> because of direct inbox placement and the specificity of the credit union + banking ops audience. Start here, use learnings to write better Google Ad copy.</div>
+    <div class="insight blue" style="border-left-color:var(--blue);background:var(--blue-light);"><strong>CPL will improve materially in Month 2+</strong> as Quality Score builds on Google campaigns, negative keyword list matures, and bid strategies optimise. Month 1 estimates are conservative. Expect 15–20% CPL reduction by Month 3.</div>
+  </div>
+
+  <!-- SECTION 5: FINAL RECOMMENDATIONS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div class="section-title">Final Recommendations</div>
+      <div class="section-desc">Priority order · Quick wins · 30–90 day roadmap</div>
+    </div>
+
+    <div class="priority-grid">
+      <div class="priority-card">
+        <div class="pcard-label pcard-p1">Immediate Priorities</div>
+        <div class="pcard-item"><div class="pnum pnum-red">1</div><span>Build InMail copy for both segments — go live in June, not July</span></div>
+        <div class="pcard-item"><div class="pnum pnum-red">2</div><span>Draft email nurture sequences (finance + real estate) — 3 emails per sequence in MailChimp</span></div>
+        <div class="pcard-item"><div class="pnum pnum-red">3</div><span>Write two lead magnets — finance and real estate (2–3 pages each). These are needed before Google Ads launch.</span></div>
+      </div>
+      <div class="priority-card">
+        <div class="pcard-label pcard-p2">Quick Wins — High ROI, Low Effort</div>
+        <div class="pcard-item"><div class="pnum pnum-blue">1</div><span><strong>Eltropy conquesting on Google</strong> — 1,900 searches/mo, zero competition, $5–$35 CPC. Highest ROI keyword in the universe.</span></div>
+        <div class="pcard-item"><div class="pnum pnum-blue">2</div><span><strong>Credit Union InMail (Segment 2)</strong> — fastest decision-making, strongest empathy alignment, most reachable C-suite.</span></div>
+        <div class="pcard-item"><div class="pnum pnum-blue">3</div><span><strong>Conversational AI banking keywords</strong> — growing +400% with near-zero CPCs. Own now before incumbents wake up.</span></div>
+      </div>
+      <div class="priority-card">
+        <div class="pcard-label pcard-p3">High-Impact Opportunities (Phase 2+)</div>
+        <div class="pcard-item"><div class="pnum pnum-teal">1</div><span>LinkedIn Thought Leader Ads — boost Shaivi's posts to banking + RE audiences. 4–6x higher CTR than standard ads.</span></div>
+        <div class="pcard-item"><div class="pnum pnum-teal">2</div><span>Glia-style "Impact Study" CTA — ROI calculator on website converts high-intent prospects at the bottom of funnel.</span></div>
+        <div class="pcard-item"><div class="pnum pnum-teal">3</div><span>ABM company list targeting — FDIC/NCUA database → LinkedIn Matched Audience. Most precise B2B targeting available.</span></div>
+      </div>
+    </div>
+
+    <!-- 30/60/90 Roadmap -->
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--mid);font-weight:600;margin-bottom:10px;">30 / 60 / 90 Day Action Roadmap</div>
+    <div class="roadmap">
+      <div class="roadmap-col">
+        <div class="roadmap-header rm-30">30 Days — June 2026</div>
+        <div class="roadmap-body">
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Launch LinkedIn InMail — both segments live</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Email nurture sequences live in MailChimp</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Lead magnet drafts completed (both verticals)</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>LinkedIn organic — 8–12 posts (Simran + Tarun)</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>LinkedIn Insight Tag installed on csxintelligence.com</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Measure InMail open + reply rates at Day 15 and Day 30</span></div>
+        </div>
+      </div>
+      <div class="roadmap-col">
+        <div class="roadmap-header rm-60">60 Days — July 2026</div>
+        <div class="roadmap-body">
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Google Ads — all 4 campaigns live</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Lead magnets promoted via LinkedIn Document Ads</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>First InMail performance review — adjust copy for Segment 1 if reply rate &lt;4%</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Google negative keyword review — Week 2 after launch</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>LinkedIn Thought Leader Ads — test boost on 2 best organic posts</span></div>
+        </div>
+      </div>
+      <div class="roadmap-col">
+        <div class="roadmap-header rm-90">90 Days — August 2026</div>
+        <div class="roadmap-body">
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Full performance review — Google + LinkedIn combined</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Scale budget to top-performing campaign (2x spend)</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Pause underperforming campaign or reallocate budget</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Build ABM target list from FDIC/NCUA (top 300 target accounts)</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Begin ROI Impact Study (Glia-style CTA) development</span></div>
+          <div class="rm-item"><div class="rm-check rm-30-check">→</div><span>Evaluate adding LinkedIn Lead Gen Forms if Thought Leader Ads performing</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final Callout -->
+    <div class="gap-card" style="margin-bottom:0;">
+      <div class="gap-title">The Single Most Important Decision</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.8;margin-bottom:14px;">CSXAI is entering a market where the category leader (Eltropy) drives $33M ARR through direct sales and has never run a single Google paid ad. The paid search space is completely open. The empathy + compliance positioning is completely unoccupied. The conversational AI banking keywords are growing at 300–400% with near-zero CPCs. <strong style="color:#fff;">This is a first-mover window — it closes as the category matures and competitors notice the same opportunity.</strong></div>
+      <div class="gap-opportunity">
+        <div class="gap-opp-label">Recommended Starting Point — June 2026</div>
+        <div class="gap-opp-text">Launch LinkedIn InMail to credit union C-suite first ($300/mo · Segment 2). This is the fastest path to a first qualified demo because: smaller decision-making structure, mission alignment with empathy positioning, fastest deal cycles, and lowest CPL in the entire channel mix. Measure for 30 days. Scale what works. Then open Google Ads in July.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">
+      Report prepared: 27 May 2026 · Damco Digital<br>
+      Research basis: Keyword Planner · SimilarWeb · LinkedIn targeting data · Competitor website + LinkedIn analysis · B2B SaaS platform benchmarks 2026<br>
+      For: Shaivi Tyagi → Nitya &amp; Proneeta review
+    </div>
+    <div class="footer-right">Damco Digital</div>
+  </div>
+
+</div><!-- end .page -->
+
+<!-- CHART.JS SCRIPTS -->
+<script>
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#64748B';
+
+// Chart 1: Competitor Keyword Volume
+new Chart(document.getElementById('compKeywordChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Eltropy', 'Kasisto', 'Kasisto AI', 'Glia Banking'],
+    datasets: [{
+      label: 'Monthly Searches',
+      data: [1900, 390, 50, 10],
+      backgroundColor: ['#DC2626','#D97706','#F59E0B','#1A6BB5'],
+      borderRadius: 6, borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true, plugins: {legend:{display:false}},
+    scales: {
+      y: {grid:{color:'#F1F5F9'}, ticks:{callback:v=>v.toLocaleString()}},
+      x: {grid:{display:false}}
+    }
+  }
+});
+
+// Chart 2: 12-Month Trend
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: ['May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr'],
+    datasets: [
+      {label:'Eltropy', data:[1900,1900,1900,1900,1900,1900,1600,1600,1900,1900,1900,2400], borderColor:'#DC2626', backgroundColor:'rgba(220,38,38,0.08)', tension:.4, fill:true, pointRadius:2},
+      {label:'Kasisto', data:[390,480,480,480,480,390,260,260,260,320,390,260], borderColor:'#D97706', backgroundColor:'rgba(217,119,6,0.05)', tension:.4, fill:true, pointRadius:2}
+    ]
+  },
+  options: {
+    responsive: true, plugins:{legend:{position:'top',labels:{boxWidth:10,padding:12}}},
+    scales: {y:{grid:{color:'#F1F5F9'}}, x:{grid:{display:false}}}
+  }
+});
+
+// Chart 3: Keyword Universe
+new Chart(document.getElementById('keywordChart'), {
+  type: 'bar',
+  data: {
+    labels: ['ai voice agent','eltropy','kasisto','voice ai company','conv. ai banking*','conv. banking','banking virt. asst.','kasisto ai','conv. ai (banking)'],
+    datasets: [{
+      label: 'Monthly Searches',
+      data: [2400,1900,390,260,70,70,50,50,30],
+      backgroundColor: ['#0D1B2A','#DC2626','#DC2626','#1A8A8A','#1A6BB5','#1A6BB5','#1A6BB5','#D97706','#1A6BB5'],
+      borderRadius: 5, borderSkipped: false
+    }]
+  },
+  options: {
+    indexAxis: 'y', responsive: true, plugins:{legend:{display:false}},
+    scales: {
+      x: {grid:{color:'#F1F5F9'}, ticks:{callback:v=>v.toLocaleString()}},
+      y: {grid:{display:false}, ticks:{font:{size:10}}}
+    }
+  }
+});
+
+// Chart 4: Growth Trend
+new Chart(document.getElementById('growthChart'), {
+  type: 'bar',
+  data: {
+    labels: ['conv. ai banking','conv. ai in banking','conv. ai for banking','conv. banking','voice ai co.','eltropy'],
+    datasets: [{
+      label: '3-Month % Growth',
+      data: [300,400,50,50,24,26],
+      backgroundColor: v => v.raw > 200 ? '#16A34A' : v.raw > 50 ? '#1A6BB5' : '#64748B',
+      backgroundColor: ['#16A34A','#16A34A','#1A6BB5','#1A6BB5','#64748B','#64748B'],
+      borderRadius: 6, borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true, plugins:{legend:{display:false}},
+    scales: {
+      y: {grid:{color:'#F1F5F9'}, ticks:{callback:v=>v+'%'}},
+      x: {grid:{display:false}, ticks:{font:{size:10}}}
+    }
+  }
+});
+
+// Chart 5: Budget Allocation
+new Chart(document.getElementById('budgetChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Google — Competitor Conquesting','Google — Banking AI','Google — AI Voice General','Google — Real Estate','LinkedIn InMail Seg 1','LinkedIn InMail Seg 2'],
+    datasets: [{
+      data: [2000,1500,2000,500,500,300],
+      backgroundColor: ['#DC2626','#1A6BB5','#1A8A8A','#7C3AED','#C9A840','#D97706'],
+      borderWidth: 2, borderColor: '#fff'
+    }]
+  },
+  options: {
+    responsive: true, cutout: '65%',
+    plugins: {
+      legend: {position:'right', labels:{boxWidth:10,padding:10,font:{size:10}}},
+      tooltip: {callbacks:{label:ctx=>' $'+ctx.raw.toLocaleString()+'/mo'}}
+    }
+  }
+});
+
+// Chart 6: Leads by Channel
+new Chart(document.getElementById('leadsChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Google Conquesting','Google Banking AI','Google AI Voice','Google Real Estate','LI InMail Seg 1','LI InMail Seg 2'],
+    datasets: [
+      {label:'Low Est.', data:[13,7,11,2,9,7], backgroundColor:'rgba(26,107,181,0.4)', borderRadius:4},
+      {label:'High Est.', data:[20,11,20,4,14,12], backgroundColor:'#1A6BB5', borderRadius:4}
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins:{legend:{position:'top',labels:{boxWidth:10,padding:10}}},
+    scales: {
+      y:{grid:{color:'#F1F5F9'}, title:{display:true,text:'Leads/Month'}},
+      x:{grid:{display:false}, ticks:{font:{size:10}}}
+    }
+  }
+});
+
+// Chart 7: 6-Month Projection
+new Chart(document.getElementById('projectionChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Jun (Phase 1)','Jul (P2 Launch)','Aug (P2 Opt.)','Sep (Scale)','Oct','Nov'],
+    datasets: [{
+      label: 'Projected Leads',
+      data: [16, 45, 58, 72, 85, 95],
+      backgroundColor: ['#1A8A8A','#1A6BB5','#1A6BB5','#0D1B2A','#0D1B2A','#0D1B2A'],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, plugins:{legend:{display:false}},
+    scales: {
+      y:{grid:{color:'#F1F5F9'}, title:{display:true,text:'Leads/Month'}},
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+// Chart 8: CPL Trajectory
+new Chart(document.getElementById('cplChart'), {
+  type: 'line',
+  data: {
+    labels: ['Jun','Jul','Aug','Sep','Oct','Nov'],
+    datasets: [{
+      label: 'Blended CPL ($)',
+      data: [42, 145, 125, 110, 95, 85],
+      borderColor: '#1A6BB5',
+      backgroundColor: 'rgba(26,107,181,0.1)',
+      tension: .4, fill: true, pointRadius: 4,
+      pointBackgroundColor: '#1A6BB5'
+    }]
+  },
+  options: {
+    responsive: true, plugins:{legend:{display:false}},
+    scales: {
+      y:{grid:{color:'#F1F5F9'}, ticks:{callback:v=>'$'+v}},
+      x:{grid:{display:false}}
+    }
+  }
+});
+</script>
+
+<!-- PASSWORD JS -->
+<script>
+if(sessionStorage.getItem('csxai_auth')==='yes'){document.getElementById('pw-gate').classList.add('hidden');}
+function checkPassword(){
+  const v=document.getElementById('pw-input').value;
+  if(v==='CSXAI123'){sessionStorage.setItem('csxai_auth','yes');document.getElementById('pw-gate').classList.add('hidden');}
+  else{document.getElementById('pw-error').textContent='Incorrect password. Please try again.';}
+}
+document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkPassword();});
+</script>
+</body>
+</html>

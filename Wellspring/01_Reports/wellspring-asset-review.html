@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wellspring — Ad Copy Review</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --teal:   #1a3a3a;
+      --gold:   #c9a84c;
+      --cream:  #f5f0e8;
+      --white:  #ffffff;
+      --red-bg: #fff0f0;
+      --red-bd: #e8c0c0;
+      --grn-bg: #f0fff4;
+      --grn-bd: #a8d5b5;
+      --text:   #2a2a2a;
+      --muted:  #666;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); line-height: 1.6; }
+
+    .header { background: var(--teal); padding: 40px 60px; color: white; }
+    .header-tag { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .header h1 { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 600; margin-bottom: 6px; }
+    .header p { font-size: 13.5px; color: rgba(255,255,255,0.65); }
+
+    .brief {
+      background: #fffbf0;
+      border-left: 4px solid var(--gold);
+      margin: 36px 60px 0;
+      padding: 18px 22px;
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: #4a3a00;
+      line-height: 1.7;
+    }
+    .brief strong { color: var(--teal); }
+
+    .container { padding: 36px 60px 60px; }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      color: var(--teal);
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 8px;
+      margin: 40px 0 20px;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--white); border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    thead tr { background: var(--teal); }
+    thead th { padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--gold); }
+    tbody tr { border-bottom: 1px solid #eee; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 13px 16px; vertical-align: top; line-height: 1.55; }
+
+    .current { color: #8b0000; font-weight: 500; }
+    .suggested { color: #1a5c2a; font-weight: 600; }
+    .reason { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .col-no   { width: 4%; }
+    .col-type { width: 12%; }
+    .col-curr { width: 36%; }
+    .col-sugg { width: 48%; }
+
+    .summary-box {
+      background: var(--white);
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 28px 32px;
+      margin-top: 40px;
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--text);
+    }
+    .summary-box h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      color: var(--teal);
+      margin-bottom: 14px;
+      border-bottom: 1px solid #e0d8c8;
+      padding-bottom: 8px;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .summary-stat {
+      background: var(--cream);
+      border-radius: 5px;
+      padding: 14px 18px;
+      text-align: center;
+    }
+    .summary-stat .num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--teal);
+      line-height: 1;
+    }
+    .summary-stat .lbl {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 4px;
+    }
+    .summary-note {
+      font-size: 13px;
+      color: #4a4a4a;
+      line-height: 1.7;
+    }
+    .summary-note strong { color: var(--teal); }
+
+    .type-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 3px;
+    }
+    .hl  { background: #e8f0ff; color: #1a3080; }
+    .dsc { background: #f0e8ff; color: #3a1a80; }
+    .sl  { background: #e8fff0; color: #1a5c2a; }
+
+    .footer { background: var(--teal); color: rgba(255,255,255,0.5); text-align: center; padding: 20px; font-size: 12px; margin-top: 40px; }
+    .footer span { color: var(--gold); }
+
+    @media (max-width: 768px) {
+      .header, .container, .brief { padding-left: 20px; padding-right: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag">Ad Copy Review &nbsp;·&nbsp; Google Ads</div>
+  <h1>Wellspring — Asset Suggestions for Review</h1>
+  <p>Data period: 18 April – 18 May 2026 &nbsp;·&nbsp; Prepared by Rishabh B, Damco Digital</p>
+</div>
+
+
+<div class="container">
+
+  <div class="section-title">Assets to Replace — Suggestions for Your Review</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="col-no">#</th>
+        <th class="col-type">Type</th>
+        <th class="col-curr">Current (Underperforming)</th>
+        <th class="col-sugg">Suggested Replacement</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- HEADLINES -->
+      <tr>
+        <td>1</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Med Management on Troy</td>
+        <td>
+          <span class="suggested">Medication Management Troy MI</span>
+          <div class="reason">Typo in original ("on" instead of "in") likely caused a disapproval. Fix and relaunch.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Personalized Therapy Near You</td>
+        <td>
+          <span class="suggested">ADHD Therapy in Troy MI</span>
+          <div class="reason">Zero clicks. ADHD is under-represented in our current headlines and a high-intent search.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Real Support, Real Progress</td>
+        <td>
+          <span class="suggested">Same-Week Therapy Appointments</span>
+          <div class="reason">54 impressions, zero clicks. Urgency + availability language converts well in this category.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Clarity Through Therapy</td>
+        <td>
+          <span class="suggested">Therapy for Anxiety & Depression</span>
+          <div class="reason">410 impressions, $75 spent, zero conversions. Too vague — condition-specific language filters better intent.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Satisfaction Guaranteed</td>
+        <td>
+          <span class="suggested">Insurance Accepted — Start This Week</span>
+          <div class="reason">Lowest CTR in the account, zero conversions. Insurance is the top barrier for this audience.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Top Therapists Near You</td>
+        <td>
+          <span class="suggested">Licensed Therapists in Michigan</span>
+          <div class="reason">Zero conversions. Adding a credibility signal ("Licensed") and location improves relevance.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Therapy That Fits Your Life</td>
+        <td>
+          <span class="suggested">Couples Therapy in Troy MI</span>
+          <div class="reason">Duplicate of a better-performing variant. Opens a new service lane not currently in the headline mix.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Therapy That Fits Your Needs</td>
+        <td>
+          <span class="suggested">Adult Therapy Near Troy, MI</span>
+          <div class="reason">Second duplicate of the same family, weakest CTR of the three. Age + location qualifier improves match.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Compassionate, Real Results</td>
+        <td>
+          <span class="suggested">See a Therapist Within Days</span>
+          <div class="reason">Abstract, not actionable. Availability urgency drives bookings in mental health.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Rated High by the Clients</td>
+        <td>
+          <span class="suggested">Book Your Free Consultation</span>
+          <div class="reason">Good CTR but zero conversions — attracts browsers, not bookers. Direct CTA fixes the mismatch.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Trusted Psychiatrist Near You</td>
+        <td>
+          <span class="suggested">NP-Led Medication Management</span>
+          <div class="reason">Wellspring is NP-led, not MD psychiatry — more accurate language avoids expectation mismatch.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Female Psychiatrist Near You</td>
+        <td>
+          <span class="suggested">Women's Mental Health in Troy MI</span>
+          <div class="reason">$77 spent, zero conversions. Broader framing mirrors the women-specific headlines that are converting well.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td><span class="type-tag hl">Headline</span></td>
+        <td class="current">Med Management Troy MI</td>
+        <td>
+          <span class="suggested">ADHD & Anxiety Medication Management</span>
+          <div class="reason">$75 spent, zero conversions. Condition-specific language matches what people are actually searching for.</div>
+        </td>
+      </tr>
+
+      <!-- DESCRIPTIONS -->
+      <tr>
+        <td>14</td>
+        <td><span class="type-tag dsc">Description</span></td>
+        <td class="current">You deserve to feel heard. Our team is here to guide you every step of the way.</td>
+        <td>
+          <span class="suggested">Accepting BCBS, Aetna & Priority Health. Therapy and medication management in Troy, MI — book your consultation now.</span>
+          <div class="reason">Cost per lead was $210 — worst in the account. Insurance specificity, location, and a clear CTA should bring this down significantly.</div>
+        </td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td><span class="type-tag dsc">Description</span></td>
+        <td class="current">Trusted local therapists ready to help you manage uneasiness and find calm.</td>
+        <td>
+          <span class="suggested">Specialized therapy for anxiety, depression, ADHD, and grief. Serving Troy & Clinton Township — appointments available now.</span>
+          <div class="reason">"Uneasiness" is too vague and doesn't match search terms. Condition + location + availability is more effective.</div>
+        </td>
+      </tr>
+
+      <!-- SITELINKS -->
+      <tr>
+        <td>16</td>
+        <td><span class="type-tag sl">Sitelink</span></td>
+        <td class="current">Pet Loss Therapy<br><span style="font-size:12px; color:var(--muted);">Therapy For Pet Loss in MI / Get specialized grief therapists</span></td>
+        <td>
+          <span class="suggested">ADHD Testing & Evaluation</span><br>
+          <span style="font-size:12px; color:#1a5c2a;">Comprehensive ADHD assessments for adults and teens. Book in Troy, MI.</span>
+          <div class="reason">13 clicks, $66 spent, zero conversions. ADHD testing is a high-value service with no sitelink currently.</div>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <div class="summary-box">
+    <h3>Summary</h3>
+    <div class="summary-grid">
+      <div class="summary-stat">
+        <div class="num">13</div>
+        <div class="lbl">Headlines to Replace</div>
+      </div>
+      <div class="summary-stat">
+        <div class="num">2</div>
+        <div class="lbl">Descriptions to Replace</div>
+      </div>
+      <div class="summary-stat">
+        <div class="num">1</div>
+        <div class="lbl">Sitelink to Replace</div>
+      </div>
+    </div>
+    <div class="summary-note">
+      <strong>What's working and staying live:</strong> Women-specific headlines ("Therapist for Women Near You", "Female Therapist Near You"), location + service combos ("Child & Teen Therapy Near You", "Mental Health Care in Troy MI", "Best Therapist in Troy MI"), action CTAs ("Schedule a Therapist Today"), and the two top descriptions ("Healing starts with feeling heard", "Accepting new patients now") are all performing well and untouched.<br><br>
+      <strong>Key theme in the suggestions:</strong> Generic or abstract copy is being replaced with condition-specific, location-anchored, or urgency-driven language — which is consistently outperforming the rest of the account. Where possible, suggestions also push ADHD and medication management, which are currently under-represented services in the copy.
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Wellspring Therapeutic Partners &nbsp;·&nbsp; <span>Damco Digital</span> &nbsp;·&nbsp; For internal review only &nbsp;·&nbsp; 19 May 2026
+</div>
+
+</body>
+</html>

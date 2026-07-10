@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wellspring — Ad Asset Performance Report | Apr 18 – May 18, 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --teal-dark:  #1a3a3a;
+      --teal-mid:   #2a5a5a;
+      --teal-light: #3d7a7a;
+      --gold:       #c9a84c;
+      --gold-light: #e8c96a;
+      --cream:      #f5f0e8;
+      --cream-dark: #ede7d9;
+      --white:      #ffffff;
+      --red:        #c0392b;
+      --green:      #1a6b3a;
+      --amber:      #b8670a;
+      --text-dark:  #1a1a1a;
+      --text-mid:   #3a3a3a;
+      --text-light: #666666;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--teal-dark);
+      padding: 48px 64px 40px;
+      color: var(--white);
+    }
+    .header-meta {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 40px;
+      font-weight: 600;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .header-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.65);
+      margin-top: 6px;
+    }
+    .header-period {
+      display: inline-block;
+      margin-top: 18px;
+      background: rgba(201,168,76,0.18);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      font-size: 12px;
+      letter-spacing: 1px;
+      padding: 5px 14px;
+      border-radius: 3px;
+    }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1080px; margin: 0 auto; padding: 48px 40px; }
+
+    /* ── SECTION TITLES ── */
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--teal-dark);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--gold);
+    }
+    .section { margin-bottom: 56px; }
+
+    /* ── PATTERN CARDS ── */
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .pattern-card {
+      background: var(--white);
+      border-left: 4px solid var(--gold);
+      border-radius: 4px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .pattern-card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--teal-dark);
+      margin-bottom: 6px;
+    }
+    .pattern-card p {
+      font-size: 12.5px;
+      color: var(--text-mid);
+      line-height: 1.5;
+    }
+
+    /* ── SUB SECTION HEADERS ── */
+    .sub-section { margin-bottom: 36px; }
+    .sub-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .sub-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--teal-dark);
+    }
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .badge-keep  { background: #d4edda; color: #155724; }
+    .badge-watch { background: #fff3cd; color: #856404; }
+    .badge-replace { background: #f8d7da; color: #721c24; }
+
+    /* ── TABLES ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: var(--white);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    thead tr { background: var(--teal-dark); }
+    thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+    }
+    tbody tr { border-bottom: 1px solid #eee; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafaf7; }
+    tbody td {
+      padding: 11px 14px;
+      color: var(--text-mid);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .asset-name {
+      font-weight: 600;
+      color: var(--teal-dark);
+      font-size: 12.5px;
+    }
+    .metric-good { color: var(--green); font-weight: 600; }
+    .metric-bad  { color: var(--red);   font-weight: 600; }
+    .metric-mid  { color: var(--amber); font-weight: 600; }
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+    }
+    .tag-star    { background: #fff3cd; color: #856404; }
+    .tag-solid   { background: #d4edda; color: #155724; }
+    .tag-monitor { background: #d1ecf1; color: #0c5460; }
+    .tag-replace { background: #f8d7da; color: #721c24; }
+    .suggestion-cell {
+      background: #f0f8f0;
+      border-radius: 4px;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+    .suggestion-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+    .suggestion-text {
+      font-weight: 600;
+      color: #1a3a1a;
+      margin-bottom: 4px;
+    }
+    .suggestion-reason {
+      font-size: 11.5px;
+      color: #3a5a3a;
+    }
+
+    /* ── PRIORITY TABLE ── */
+    .priority-table thead tr { background: #2a1a1a; }
+    .priority-1 td:first-child { border-left: 4px solid var(--red); }
+    .priority-2 td:first-child { border-left: 4px solid var(--amber); }
+    .priority-3 td:first-child { border-left: 4px solid #2196f3; }
+
+    /* ── CALLOUT BOX ── */
+    .callout {
+      border-radius: 6px;
+      padding: 18px 22px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .callout-teal {
+      background: rgba(26,58,58,0.07);
+      border-left: 4px solid var(--teal-mid);
+      color: var(--teal-dark);
+    }
+    .callout-amber {
+      background: #fffbf0;
+      border-left: 4px solid var(--amber);
+      color: #4a3000;
+    }
+    .callout strong { font-weight: 700; }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: var(--teal-dark);
+      color: rgba(255,255,255,0.55);
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      margin-top: 32px;
+    }
+    .footer span { color: var(--gold); }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--cream-dark); margin: 40px 0; }
+
+    @media (max-width: 768px) {
+      .header { padding: 32px 24px; }
+      .container { padding: 32px 20px; }
+      .pattern-grid { grid-template-columns: 1fr; }
+      table { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-meta">Ad Asset Performance Report &nbsp;·&nbsp; Google Ads</div>
+  <h1>Wellspring Therapeutic Partners<br>Asset Analysis & Recommendations</h1>
+  <div class="header-sub">Prepared by Rishabh B &nbsp;·&nbsp; Damco Digital</div>
+  <div class="header-period">18 April 2026 &nbsp;–&nbsp; 18 May 2026</div>
+</div>
+
+<div class="container">
+
+  <!-- ── WHAT'S WORKING ── -->
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="section-title">What's Driving Performance</div>
+    <p style="font-size:13.5px; color:var(--text-mid); margin-bottom:24px; max-width:780px;">
+      Before reviewing individual assets, here are the patterns consistently driving clicks and conversions across the account over this period. New copy should be built around these signals.
+    </p>
+    <div class="pattern-grid">
+      <div class="pattern-card">
+        <h4>Location + Service Specificity</h4>
+        <p>"Child & Teen Therapy Near You", "Mental Health Care in Troy MI" and "Best Therapist in Troy MI" all outperform generic alternatives — specificity filters intent.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>Women-Specific Language</h4>
+        <p>"Therapist for Women Near You" has the best CPL in the account at $19.48 with a 28.57% conversion rate — the strongest single signal in this data set.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>Action-Oriented CTAs</h4>
+        <p>"Schedule a Therapist Today" converts at 17.14%. Emotional copy alone ("Clarity Through Therapy", "Real Support, Real Progress") drives zero conversions.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>"Feeling Heard" Emotional Hook</h4>
+        <p>The top description ("Healing starts with feeling heard") drives the highest conversion volume — 10 conversions at $70.22 CPL. The emotional hook works in descriptions, not headlines.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>Value / Budget Messaging</h4>
+        <p>"Therapy That Fits Your Budget" converts at 12.50% — cost accessibility is a real purchase driver in the Michigan mental health market.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>Grief Sitelinks Are Highly Efficient</h4>
+        <p>The Grief Counseling sitelink has a 57.14% conversion rate and a $11.49 CPL — lowest in the account. Grief-adjacent intent is very high quality.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HEADLINES ── -->
+  <div class="section">
+    <div class="section-label">Asset Type 1</div>
+    <div class="section-title">Headlines</div>
+
+    <!-- KEEP -->
+    <div class="sub-section">
+      <div class="sub-header">
+        <h3>Headlines to Keep</h3>
+        <span class="badge badge-keep">Keep</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Headline</th>
+            <th>Impressions</th>
+            <th>CTR</th>
+            <th>Conv. Rate</th>
+            <th>Conv.</th>
+            <th>CPL</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="asset-name">Therapist for Women Near You</td>
+            <td>160</td>
+            <td class="metric-good">13.13%</td>
+            <td class="metric-good">28.57%</td>
+            <td class="metric-good">6</td>
+            <td class="metric-good">$19.48</td>
+            <td><span class="tag tag-star">★ Star Asset</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Schedule a Therapist Today</td>
+            <td>556</td>
+            <td>6.29%</td>
+            <td class="metric-good">17.14%</td>
+            <td>6</td>
+            <td class="metric-good">$31.38</td>
+            <td><span class="tag tag-solid">Solid</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Mental Health Support For You</td>
+            <td>96</td>
+            <td>7.29%</td>
+            <td class="metric-good">28.57%</td>
+            <td>2</td>
+            <td class="metric-good">$30.29</td>
+            <td><span class="tag tag-solid">Solid (low vol — watch)</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Therapy That Fits Your Budget</td>
+            <td>279</td>
+            <td>8.60%</td>
+            <td class="metric-good">12.50%</td>
+            <td>3</td>
+            <td>$53.17</td>
+            <td><span class="tag tag-solid">Solid</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Child & Teen Therapy Near You</td>
+            <td>734</td>
+            <td class="metric-good">10.22%</td>
+            <td>9.33%</td>
+            <td>7</td>
+            <td>$57.51</td>
+            <td><span class="tag tag-solid">Solid</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Mental Health Care in Troy MI</td>
+            <td>538</td>
+            <td>8.74%</td>
+            <td>8.51%</td>
+            <td>4</td>
+            <td>$51.60</td>
+            <td><span class="tag tag-solid">Solid</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Best Therapist in Troy MI</td>
+            <td>859</td>
+            <td>5.59%</td>
+            <td>10.42%</td>
+            <td>5</td>
+            <td>$52.52</td>
+            <td><span class="tag tag-solid">Solid</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Trusted Therapy Services</td>
+            <td>172</td>
+            <td>8.14%</td>
+            <td>14.29%</td>
+            <td>2</td>
+            <td>$50.00</td>
+            <td><span class="tag tag-solid">Solid</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MONITOR -->
+    <div class="sub-section">
+      <div class="sub-header">
+        <h3>Headlines to Monitor</h3>
+        <span class="badge badge-watch">Watch</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Headline</th>
+            <th>Spend</th>
+            <th>Conv.</th>
+            <th>CPL</th>
+            <th>Issue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="asset-name">Wellspring Therapy – Troy MI</td>
+            <td class="metric-bad">$496.30</td>
+            <td>5</td>
+            <td class="metric-bad">$99.26</td>
+            <td>Highest spend in headlines; brand name generates clicks but CPL is nearly double the account's best. Keep for brand presence — but set a spend cap intent.</td>
+          </tr>
+          <tr>
+            <td class="asset-name">Psychiatrist in Troy MI</td>
+            <td class="metric-bad">$443.86</td>
+            <td>3</td>
+            <td class="metric-bad">$147.95</td>
+            <td>Second-highest spend, third-worst CPL. The "Psychiatrist" keyword is competitive and expensive. If no improvement by end of May, replace with a more specific variant.</td>
+          </tr>
+          <tr>
+            <td class="asset-name">Female Therapist Near You</td>
+            <td>$210.81</td>
+            <td>3</td>
+            <td class="metric-mid">$70.27</td>
+            <td>Weaker version of the star "Therapist for Women" asset. Keep for now — but if impressions split further, prioritise the stronger variant.</td>
+          </tr>
+          <tr>
+            <td class="asset-name">Rated Best Therapist in MI</td>
+            <td>$181.01</td>
+            <td>3</td>
+            <td>$60.34</td>
+            <td>Decent CPL but social proof claim ("Rated Best") may not be compliant long term. Worth having a substitute ready.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- REPLACE -->
+    <div class="sub-section">
+      <div class="sub-header">
+        <h3>Headlines to Replace</h3>
+        <span class="badge badge-replace">Replace</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:22%">Current Headline</th>
+            <th style="width:10%">Impr.</th>
+            <th style="width:10%">Conv.</th>
+            <th style="width:12%">Spend</th>
+            <th style="width:46%">Suggested Replacement & Rationale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="asset-name">Med Management on Troy</td>
+            <td>0</td>
+            <td class="metric-bad">0</td>
+            <td>$0.00</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Medication Management Troy MI</div>
+                <div class="suggestion-reason">Dead asset — likely a typo ("on" instead of "in") caused a disapproval. Restore the keyword with a corrected headline.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Personalized Therapy Near You</td>
+            <td>23</td>
+            <td class="metric-bad">0</td>
+            <td>$0.00</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">ADHD Therapy in Troy MI</div>
+                <div class="suggestion-reason">0% CTR on 23 impressions — nobody clicks. ADHD is an underserved service in the current asset mix and a high-intent search category.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Real Support, Real Progress</td>
+            <td>54</td>
+            <td class="metric-bad">0</td>
+            <td>$0.00</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Same-Week Therapy Appointments</div>
+                <div class="suggestion-reason">54 impressions, 0 clicks. Generic tagline. Availability + urgency is a proven converter in this category.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Clarity Through Therapy</td>
+            <td>410</td>
+            <td class="metric-bad">0</td>
+            <td>$75.07</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Therapy for Anxiety & Depression</div>
+                <div class="suggestion-reason">410 impressions, $75 spent, 0 conversions. The abstract headline doesn't filter intent. Condition-specific language attracts searchers who are ready to book.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Satisfaction Guaranteed</td>
+            <td>169</td>
+            <td class="metric-bad">0</td>
+            <td>$48.11</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Insurance Accepted — Start This Week</div>
+                <div class="suggestion-reason">Lowest CTR headline at 4.14%. Insurance coverage is the primary conversion barrier for this audience — addressing it upfront in the headline removes friction.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Top Therapists Near You</td>
+            <td>106</td>
+            <td class="metric-bad">0</td>
+            <td>$29.43</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Licensed Therapists in Michigan</div>
+                <div class="suggestion-reason">Generic superlative with no differentiation. "Licensed" adds a credibility signal; location specificity improves relevance scores.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Therapy That Fits Your Life</td>
+            <td>53</td>
+            <td class="metric-bad">0</td>
+            <td>$12.72</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Couples Therapy in Troy MI</div>
+                <div class="suggestion-reason">Duplicate variant of "Therapy That Fits Your Budget" with weaker performance. Opens a new service lane (couples therapy) not currently in the headline mix.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Therapy That Fits Your Needs</td>
+            <td>21</td>
+            <td class="metric-bad">0</td>
+            <td>$9.10</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Adult Therapy Near Troy, MI</div>
+                <div class="suggestion-reason">Second duplicate variant; also the weakest CTR of the "Fits Your" family at 4.76%. Age + location qualifier improves intent match.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Compassionate, Real Results</td>
+            <td>14</td>
+            <td class="metric-bad">0</td>
+            <td>$4.93</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">See a Therapist Within Days</div>
+                <div class="suggestion-reason">Abstract value prop — not actionable. Urgency and availability drives bookings in this category.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Rated High by the Clients</td>
+            <td>69</td>
+            <td class="metric-bad">0</td>
+            <td>$22.34</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Book Your Free Consultation</div>
+                <div class="suggestion-reason">10.14% CTR but 0 conversions — people click and don't convert. The CTA mismatch suggests the headline attracts browsers, not bookers. Replace with a direct CTA.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Trusted Psychiatrist Near You</td>
+            <td>42</td>
+            <td class="metric-bad">0</td>
+            <td>$10.46</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">NP-Led Medication Management</div>
+                <div class="suggestion-reason">Wellspring offers NP-led (not MD psychiatrist) services — "Psychiatrist" may attract the wrong expectation. More specific language aligns the audience to actual offering.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Female Psychiatrist Near You</td>
+            <td>156</td>
+            <td class="metric-bad">0</td>
+            <td>$76.97</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Women's Mental Health in Troy MI</div>
+                <div class="suggestion-reason">$76.97 spent with 0 conversions. "Female Psychiatrist" is a very specific search with likely high intent mismatch. Broader women's health framing mirrors the star headline pattern.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Med Management Troy MI</td>
+            <td>241</td>
+            <td class="metric-bad">0</td>
+            <td>$75.09</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">ADHD & Anxiety Medication Management</div>
+                <div class="suggestion-reason">$75 spent, 0 conversions. Broad service label isn't converting — condition-specific language (ADHD/Anxiety) matches what searchers are actually looking for.</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ── DESCRIPTIONS ── -->
+  <div class="section">
+    <div class="section-label">Asset Type 2</div>
+    <div class="section-title">Descriptions</div>
+
+    <!-- KEEP -->
+    <div class="sub-section">
+      <div class="sub-header">
+        <h3>Descriptions to Keep</h3>
+        <span class="badge badge-keep">Keep</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>CTR</th>
+            <th>Conv.</th>
+            <th>CPL</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="asset-name">Healing starts with feeling heard! Our expert team is here to support your next step.</td>
+            <td>6.35%</td>
+            <td class="metric-good">10</td>
+            <td>$70.22</td>
+            <td><span class="tag tag-star">★ Top Volume</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Accepting new patients now. Get personalized mental health support that fits your life.</td>
+            <td>4.72%</td>
+            <td class="metric-good">8</td>
+            <td>$70.53</td>
+            <td><span class="tag tag-solid">Solid</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Find Reliable, Amazing Healing Therapies That Suit Your Lifestyle. Learn More.</td>
+            <td class="metric-good">13.79%</td>
+            <td>1</td>
+            <td>$57.60</td>
+            <td><span class="tag tag-monitor">Keep — accumulate data</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Wellspring Therapy offers guided support to help you regain balance and focus.</td>
+            <td class="metric-good">10.40%</td>
+            <td>2</td>
+            <td>$63.93</td>
+            <td><span class="tag tag-solid">Solid</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- REPLACE DESCRIPTIONS -->
+    <div class="sub-section">
+      <div class="sub-header">
+        <h3>Descriptions to Replace</h3>
+        <span class="badge badge-replace">Replace</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30%">Current Description</th>
+            <th style="width:10%">Conv.</th>
+            <th style="width:10%">CPL</th>
+            <th style="width:50%">Suggested Replacement & Rationale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="asset-name">You deserve to feel heard. Our team is here to guide you every step of the way.</td>
+            <td class="metric-bad">1</td>
+            <td class="metric-bad">$210.38</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Accepting BCBS, Aetna & Priority Health. Therapy and medication management in Troy, MI — book your consultation now.</div>
+                <div class="suggestion-reason">Worst CPL in the account at $210.38. The emotional copy sounds similar to the top performer but lacks the specificity that drives action. Insurance name-dropping removes the #1 conversion barrier, location anchors intent, and the CTA closes the loop.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="asset-name">Trusted local therapists ready to help you manage uneasiness and find calm.</td>
+            <td>2</td>
+            <td class="metric-bad">$94.97</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">Specialized therapy for anxiety, depression, ADHD, and grief. Serving Troy & Clinton Township — appointments available now.</div>
+                <div class="suggestion-reason">CPL nearly double the top performers. "Uneasiness" is too vague and doesn't match search terms. Condition-specific language (anxiety, depression, ADHD, grief) directly mirrors what people are searching. Location + availability signal closes the gap.</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ── SITELINKS ── -->
+  <div class="section">
+    <div class="section-label">Asset Type 3</div>
+    <div class="section-title">Sitelinks</div>
+
+    <!-- KEEP SITELINKS -->
+    <div class="sub-section">
+      <div class="sub-header">
+        <h3>Sitelinks to Keep</h3>
+        <span class="badge badge-keep">Keep</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Sitelink</th>
+            <th>Clicks</th>
+            <th>CTR</th>
+            <th>Conv. Rate</th>
+            <th>CPL</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="asset-name">Grief Counseling</td>
+            <td>7</td>
+            <td>12.50%</td>
+            <td class="metric-good">57.14%</td>
+            <td class="metric-good">$11.49</td>
+            <td><span class="tag tag-star">★ Lowest CPL</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Request An Appointment</td>
+            <td>4</td>
+            <td>5.63%</td>
+            <td class="metric-good">50.00%</td>
+            <td class="metric-good">$12.19</td>
+            <td><span class="tag tag-star">★ High Efficiency</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Meet Our Therapists</td>
+            <td>69</td>
+            <td class="metric-good">10.97%</td>
+            <td>10.14%</td>
+            <td>$55.94</td>
+            <td><span class="tag tag-solid">Top Volume</span></td>
+          </tr>
+          <tr>
+            <td class="asset-name">Schedule a Session</td>
+            <td>22</td>
+            <td>9.17%</td>
+            <td>9.09%</td>
+            <td>$72.78</td>
+            <td><span class="tag tag-solid">Solid</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- WATCH SITELINKS -->
+    <div class="sub-section">
+      <div class="sub-header">
+        <h3>Sitelinks to Watch</h3>
+        <span class="badge badge-watch">Watch</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Sitelink</th>
+            <th>CTR</th>
+            <th>Conv.</th>
+            <th>CPL</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="asset-name">Grief & Loss Therapy</td>
+            <td class="metric-good">13.64%</td>
+            <td>1</td>
+            <td class="metric-mid">$89.18</td>
+            <td>Strong CTR but only 1 conversion — high CPL. Grief counselor capacity is currently limited; do not increase budget push here until capacity is confirmed by the client.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- REPLACE SITELINKS -->
+    <div class="sub-section">
+      <div class="sub-header">
+        <h3>Sitelinks to Replace</h3>
+        <span class="badge badge-replace">Replace</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:22%">Current Sitelink</th>
+            <th style="width:10%">Clicks</th>
+            <th style="width:10%">Conv.</th>
+            <th style="width:10%">Spend</th>
+            <th style="width:48%">Suggested Replacement & Rationale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="asset-name">Pet Loss Therapy</td>
+            <td>13</td>
+            <td class="metric-bad">0</td>
+            <td>$66.50</td>
+            <td>
+              <div class="suggestion-cell">
+                <div class="suggestion-label">Replace With</div>
+                <div class="suggestion-text">ADHD Testing & Evaluation</div>
+                <div class="suggestion-reason">13 clicks, 13.40% CTR — good engagement but 0 conversions and $66.50 wasted. Pet loss intent is likely curiosity, not booking. ADHD testing is a high-value, under-promoted service that aligns with the recommendation to push non-psychotherapy copy.</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ── PRIORITY ACTIONS ── -->
+  <div class="section">
+    <div class="section-label">Next Steps</div>
+    <div class="section-title">Priority Action List</div>
+
+    <div class="callout callout-amber" style="margin-bottom:24px;">
+      <strong>Note:</strong> All replacements should be added as new assets alongside existing ones initially — Google's RSA system will demote underperformers automatically. Only pause confirmed poor performers (0 conv + meaningful spend) immediately.
+    </div>
+
+    <table class="priority-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Priority</th>
+          <th>Action</th>
+          <th>Asset</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="priority-1">
+          <td><strong>1</strong></td>
+          <td><span class="tag tag-replace">Immediate</span></td>
+          <td>Pause description</td>
+          <td class="asset-name">You deserve to feel heard...</td>
+          <td>CPL $210.38 — worst in the account. Replace with insurance-specific copy.</td>
+        </tr>
+        <tr class="priority-1">
+          <td><strong>2</strong></td>
+          <td><span class="tag tag-replace">Immediate</span></td>
+          <td>Pause / fix headline</td>
+          <td class="asset-name">Med Management on Troy</td>
+          <td>0 impressions, 0 clicks — dead asset. Fix typo and relaunch.</td>
+        </tr>
+        <tr class="priority-1">
+          <td><strong>3</strong></td>
+          <td><span class="tag tag-replace">Immediate</span></td>
+          <td>Replace 3 zero-conversion headlines</td>
+          <td class="asset-name">Real Support, Real Progress / Personalized Therapy Near You / Clarity Through Therapy</td>
+          <td>Combined 487 impressions, $75+ spend, 0 conversions across all three.</td>
+        </tr>
+        <tr class="priority-2">
+          <td><strong>4</strong></td>
+          <td><span class="tag tag-monitor">This Week</span></td>
+          <td>Add ADHD-focused assets</td>
+          <td class="asset-name">New: ADHD Therapy in Troy MI / ADHD & Anxiety Medication Management / ADHD Testing sitelink</td>
+          <td>ADHD is the most under-represented high-value service in the current asset mix.</td>
+        </tr>
+        <tr class="priority-2">
+          <td><strong>5</strong></td>
+          <td><span class="tag tag-monitor">This Week</span></td>
+          <td>Replace description</td>
+          <td class="asset-name">Trusted local therapists ready to help...</td>
+          <td>CPL $94.97 — replace with condition + location specific copy.</td>
+        </tr>
+        <tr class="priority-2">
+          <td><strong>6</strong></td>
+          <td><span class="tag tag-monitor">This Week</span></td>
+          <td>Replace sitelink</td>
+          <td class="asset-name">Pet Loss Therapy → ADHD Testing & Evaluation</td>
+          <td>$66.50 spent with 0 conversions on pet loss intent.</td>
+        </tr>
+        <tr class="priority-3">
+          <td><strong>7</strong></td>
+          <td><span class="tag tag-solid">End of May</span></td>
+          <td>Review Psychiatrist in Troy MI</td>
+          <td class="asset-name">Psychiatrist in Troy MI</td>
+          <td>$443.86 spend, CPL $147.95 — if no improvement in 2 weeks, replace with NP-specific variant.</td>
+        </tr>
+        <tr class="priority-3">
+          <td><strong>8</strong></td>
+          <td><span class="tag tag-solid">End of May</span></td>
+          <td>Replace remaining zero-conv headlines</td>
+          <td class="asset-name">Satisfaction Guaranteed / Top Therapists Near You / Rated High by the Clients / Female Psychiatrist Near You / Med Management Troy MI</td>
+          <td>All have meaningful spend or impressions, 0 conversions. Use suggested replacements from headline table above.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Report generated 19 May 2026 &nbsp;·&nbsp; <span>Damco Digital</span> &nbsp;·&nbsp; Prepared for Wellspring Therapeutic Partners &nbsp;·&nbsp; Data period: 18 Apr – 18 May 2026
+</div>
+
+</body>
+</html>

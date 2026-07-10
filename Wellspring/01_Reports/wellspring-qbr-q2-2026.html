@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Wellspring — Q2 2026 QBR | Damco Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --cream:#F7F3EE;--cream-dark:#EDE7DC;--charcoal:#1C1C1A;
+  --teal:#3D7A72;--teal-dark:#1C2B2A;--teal-pale:#EAF3F2;
+  --gold:#C9A84C;--amber:#C9882A;--rust:#C25B3F;
+  --green:#3D8A60;--warm-mid:#6B6460;--border:#DDD5C8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* PASSWORD GATE */
+#pw-gate{position:fixed;inset:0;background:var(--teal-dark);display:flex;align-items:center;justify-content:center;z-index:9999;}
+#pw-gate.hidden{display:none;}
+.pw-box{background:var(--cream);border-radius:16px;padding:48px 56px;width:380px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.5);}
+.pw-logo{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;color:var(--charcoal);}
+.pw-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:4px;font-weight:500;}
+.pw-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--warm-mid);font-weight:500;margin:28px 0 8px;}
+.pw-input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--charcoal);background:#fff;outline:none;text-align:center;letter-spacing:2px;}
+.pw-input:focus{border-color:var(--teal);}
+.pw-btn{width:100%;margin-top:14px;padding:13px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+.pw-btn:hover{background:#2e5e58;}
+.pw-error{font-size:12px;color:var(--rust);margin-top:10px;min-height:20px;}
+.pw-footer{font-size:10px;color:var(--warm-mid);margin-top:24px;}
+
+/* DECK */
+.deck{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scroll-behavior:smooth;}
+
+/* NAV DOTS */
+.nav-dots{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:9px;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:all .2s;border:1px solid rgba(255,255,255,.15);}
+.dot.active{background:#fff;transform:scale(1.4);}
+.dot.on-light{background:rgba(28,43,42,.2);border-color:rgba(28,43,42,.15);}
+.dot.on-light.active{background:var(--teal);transform:scale(1.4);}
+
+/* SLIDES */
+.slide{height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;padding:44px 72px;position:relative;overflow:hidden;}
+.s-num{position:absolute;top:24px;right:40px;font-size:10px;letter-spacing:2px;font-family:'DM Sans',sans-serif;font-weight:500;opacity:.35;}
+.s-act{font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:10px;}
+.s-title{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600;line-height:1.15;margin-bottom:10px;}
+.s-intro{font-size:15px;font-weight:300;line-height:1.7;font-family:'DM Sans',sans-serif;max-width:680px;}
+
+/* DARK SLIDE */
+.dark{background:var(--teal-dark);color:var(--cream);}
+.dark .s-act{color:var(--gold);}
+.dark .s-num{color:var(--cream);}
+
+/* CHAPTER SLIDE */
+.chapter{background:var(--teal);color:#fff;}
+.chapter .s-act{color:rgba(255,255,255,.55);}
+.chapter .s-num{color:#fff;}
+
+/* LIGHT SLIDE */
+.light{background:var(--cream);color:var(--charcoal);}
+.light .s-act{color:var(--teal);}
+
+/* COVER */
+.cover-eyebrow{font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:rgba(247,243,238,.45);margin-bottom:56px;font-weight:400;}
+.cover-title{font-family:'Cormorant Garamond',serif;font-size:68px;font-weight:600;line-height:1.04;color:var(--cream);margin-bottom:18px;}
+.cover-period{font-family:'DM Sans',sans-serif;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:8px;}
+.cover-sub{font-family:'DM Sans',sans-serif;font-size:15px;color:rgba(247,243,238,.5);font-weight:300;}
+.cover-line{width:48px;height:2px;background:var(--gold);margin:32px 0;}
+.cover-footer{position:absolute;bottom:36px;left:72px;font-size:11px;color:rgba(247,243,238,.35);letter-spacing:1px;font-family:'DM Sans',sans-serif;}
+.cover-accent{position:absolute;right:0;top:0;width:35%;height:100%;background:linear-gradient(135deg,transparent 40%,rgba(61,122,114,.15));pointer-events:none;}
+
+/* KPI GRID */
+.kpi-grid{display:grid;gap:14px;}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g2{grid-template-columns:repeat(2,1fr);}
+.g6{grid-template-columns:repeat(3,1fr);}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 22px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.kpi.tc::before{background:var(--teal);}
+.kpi.go::before{background:var(--gold);}
+.kpi.ru::before{background:var(--rust);}
+.kpi.gr::before{background:var(--green);}
+.kpi.am::before{background:var(--amber);}
+.kpi-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--warm-mid);font-weight:500;margin-bottom:7px;font-family:'DM Sans',sans-serif;}
+.kpi-val{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:600;color:var(--charcoal);line-height:1;}
+.kpi-sub{font-size:12px;color:var(--warm-mid);margin-top:5px;line-height:1.5;font-family:'DM Sans',sans-serif;}
+.badge{display:inline-block;font-size:10px;padding:3px 10px;border-radius:20px;margin-top:7px;font-weight:500;font-family:'DM Sans',sans-serif;}
+.b-up{background:#E8F5EC;color:#2E7D4F;}
+.b-down{background:#FDF1EE;color:var(--rust);}
+.b-warn{background:#FDF6EC;color:var(--amber);}
+.b-teal{background:var(--teal-pale);color:var(--teal);}
+.b-gold{background:#FBF4E4;color:var(--gold);}
+
+/* PANELS */
+.panel{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 24px;}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--charcoal);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.pdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.col-6040{display:grid;grid-template-columns:3fr 2fr;gap:18px;}
+.stack{display:flex;flex-direction:column;gap:12px;}
+
+/* INSIGHTS */
+.insight{border-left:3px solid var(--teal);padding:12px 16px;background:var(--teal-pale);border-radius:0 8px 8px 0;font-size:13px;line-height:1.65;font-family:'DM Sans',sans-serif;}
+.insight.am{border-left-color:var(--amber);background:#FDF6EC;}
+.insight.ru{border-left-color:var(--rust);background:#FDF1EE;}
+.insight.go{border-left-color:var(--gold);background:#FBF4E4;}
+.insight strong{color:var(--charcoal);}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;font-family:'DM Sans',sans-serif;}
+.tbl thead th{background:var(--teal);color:#fff;padding:10px 14px;text-align:left;font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;}
+.tbl thead th:not(:first-child){text-align:right;}
+.tbl tbody td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--charcoal);}
+.tbl tbody td:not(:first-child){text-align:right;}
+.tbl tbody tr:last-child td{border-bottom:none;font-weight:600;background:rgba(61,122,114,.05);}
+.tbl tbody tr:hover:not(:last-child){background:rgba(61,122,114,.04);}
+.cl-good{color:var(--green);font-weight:600;}
+.cl-warn{color:var(--amber);font-weight:600;}
+.cl-bad{color:var(--rust);font-weight:600;}
+
+/* JOURNEY */
+.journey{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:24px 0 12px;position:relative;}
+.journey::before{content:'';position:absolute;top:50px;left:12.5%;right:12.5%;height:2px;background:linear-gradient(to right,rgba(201,168,76,.4),rgba(201,168,76,.8),rgba(201,168,76,.4));z-index:0;}
+.jstage{display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;padding:0 10px;}
+.jcircle{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08);border:2px solid rgba(201,168,76,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:14px;}
+.jnum{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--gold);line-height:1;}
+.jstep{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(201,168,76,.6);font-family:'DM Sans',sans-serif;font-weight:500;}
+.jname{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:#fff;margin-bottom:4px;}
+.jchannel{font-size:11px;font-weight:600;color:var(--gold);font-family:'DM Sans',sans-serif;margin-bottom:4px;}
+.jdesc{font-size:11px;color:rgba(255,255,255,.6);line-height:1.55;font-family:'DM Sans',sans-serif;}
+.jnew{display:inline-block;background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);border-radius:4px;font-size:9px;color:var(--gold);padding:2px 7px;margin-top:6px;font-weight:600;font-family:'DM Sans',sans-serif;letter-spacing:.5px;}
+
+/* PRIORITIES */
+.priority-card{background:var(--cream-dark);border-radius:12px;padding:18px 20px;border-left:4px solid var(--teal);}
+.priority-card.p2{border-left-color:var(--amber);}
+.priority-card.p3{border-left-color:var(--gold);}
+.priority-card.p4{border-left-color:var(--rust);}
+.p-n{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;color:var(--teal);opacity:.2;line-height:1;}
+.priority-card.p2 .p-n{color:var(--amber);}
+.priority-card.p3 .p-n{color:var(--gold);}
+.priority-card.p4 .p-n{color:var(--rust);}
+.p-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--charcoal);margin:2px 0 4px;}
+.p-detail{font-size:12px;color:var(--warm-mid);line-height:1.6;font-family:'DM Sans',sans-serif;}
+.p-impact{font-size:10px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.8px;margin-top:8px;font-family:'DM Sans',sans-serif;}
+.priority-card.p2 .p-impact{color:var(--amber);}
+
+/* ASK ITEMS */
+.ask{display:flex;gap:16px;padding:14px 18px;background:#fff;border:1px solid var(--border);border-radius:10px;align-items:flex-start;margin-bottom:10px;}
+.ask-n{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:var(--teal);opacity:.25;line-height:1;flex-shrink:0;width:36px;}
+.ask-title{font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:3px;font-family:'DM Sans',sans-serif;}
+.ask-detail{font-size:12px;color:var(--warm-mid);line-height:1.6;font-family:'DM Sans',sans-serif;}
+.ask-tag{display:inline-block;font-size:9px;padding:2px 8px;border-radius:4px;margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Sans',sans-serif;}
+.tag-crit{background:#FDF1EE;color:var(--rust);}
+.tag-high{background:#FDF6EC;color:var(--amber);}
+.tag-teal{background:var(--teal-pale);color:var(--teal);}
+
+/* PLACEHOLDER */
+.ph{background:rgba(0,0,0,.04);border:2px dashed rgba(0,0,0,.15);border-radius:10px;padding:18px 22px;text-align:center;}
+.ph-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#aaa;font-weight:500;font-family:'DM Sans',sans-serif;}
+.ph-hint{font-size:11px;color:#bbb;margin-top:3px;font-family:'DM Sans',sans-serif;}
+
+/* SEO LIST */
+.seo-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.seo-item:last-child{border-bottom:none;}
+.seo-icon{width:32px;height:32px;border-radius:8px;background:var(--teal-pale);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px;}
+.seo-content{}
+.seo-title{font-size:13px;font-weight:600;color:var(--charcoal);font-family:'DM Sans',sans-serif;margin-bottom:2px;}
+.seo-detail{font-size:12px;color:var(--warm-mid);line-height:1.55;font-family:'DM Sans',sans-serif;}
+
+/* OPPORTUNITY */
+.opp{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden;}
+.opp::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--teal);}
+.opp.opp2::before{background:var(--amber);}
+.opp.opp3::before{background:var(--gold);}
+.opp-num{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:600;color:var(--teal);opacity:.12;position:absolute;top:8px;right:16px;line-height:1;}
+.opp.opp2 .opp-num{color:var(--amber);}
+.opp.opp3 .opp-num{color:var(--gold);}
+.opp-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--charcoal);margin-bottom:6px;}
+.opp-detail{font-size:12.5px;color:var(--warm-mid);line-height:1.65;font-family:'DM Sans',sans-serif;}
+.opp-impact{font-size:11px;font-weight:600;color:var(--teal);font-family:'DM Sans',sans-serif;margin-top:10px;}
+.opp.opp2 .opp-impact{color:var(--amber);}
+.opp.opp3 .opp-impact{color:var(--gold);}
+
+/* Q3 SYSTEM */
+.sys-flow{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr;align-items:center;gap:0;margin:24px 0;}
+.sys-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:20px 16px;text-align:center;}
+.sys-box.active{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.4);}
+.sys-arrow{text-align:center;font-size:22px;color:rgba(255,255,255,.3);}
+.sys-icon{font-size:24px;margin-bottom:6px;}
+.sys-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:#fff;margin-bottom:4px;}
+.sys-role{font-size:10px;color:rgba(255,255,255,.55);font-family:'DM Sans',sans-serif;line-height:1.5;}
+.sys-tag{display:inline-block;background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.3);border-radius:4px;font-size:8px;color:var(--gold);padding:2px 6px;margin-top:6px;font-weight:600;font-family:'DM Sans',sans-serif;letter-spacing:.5px;}
+.sys-goal{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px 20px;text-align:center;margin-top:10px;}
+.sys-goal-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.4);font-family:'DM Sans',sans-serif;margin-bottom:4px;}
+.sys-goal-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold);}
+
+/* METRICS TABLE */
+.metric-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:0;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center;}
+.metric-row:last-child{border-bottom:none;}
+.metric-row.header{background:var(--teal);border-radius:10px 10px 0 0;padding:10px 16px;}
+.metric-row.header .metric-name{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#fff;font-weight:500;font-family:'DM Sans',sans-serif;}
+.metric-row.header .metric-val{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#fff;font-weight:500;font-family:'DM Sans',sans-serif;text-align:right;}
+.metric-name{font-size:13px;color:var(--charcoal);font-family:'DM Sans',sans-serif;font-weight:500;}
+.metric-val{font-size:13px;font-weight:500;text-align:right;font-family:'DM Sans',sans-serif;}
+.metric-val.curr{color:var(--warm-mid);}
+.metric-val.target{color:var(--teal);font-weight:600;}
+.metric-table{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+
+/* CANVAS */
+canvas{max-height:220px;}
+
+/* PRINT */
+@media print{
+  .deck{height:auto;overflow:visible;scroll-snap-type:none;}
+  .slide{height:auto;min-height:100vh;scroll-snap-align:none;page-break-after:always;}
+  #pw-gate,.nav-dots{display:none!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="pw-gate">
+  <div class="pw-box">
+    <div class="pw-logo">Wellspring</div>
+    <div class="pw-sub">Therapeutic Partners</div>
+    <div class="pw-label">Enter report password</div>
+    <input id="pw-input" class="pw-input" type="password" placeholder="············" autocomplete="off"/>
+    <button class="pw-btn" onclick="checkPw()">View Report</button>
+    <div id="pw-error" class="pw-error"></div>
+    <div class="pw-footer">Confidential &middot; Prepared by <strong>Damco Digital</strong></div>
+  </div>
+</div>
+<script>
+(function(){if(sessionStorage.getItem('ws_auth')==='1'){document.addEventListener('DOMContentLoaded',function(){document.getElementById('pw-gate').classList.add('hidden');});}})();
+function checkPw(){
+  if(document.getElementById('pw-input').value==='Wellspring123'){
+    sessionStorage.setItem('ws_auth','1');
+    document.getElementById('pw-gate').classList.add('hidden');
+  }else{
+    document.getElementById('pw-error').textContent='Incorrect password.';
+    document.getElementById('pw-input').value='';
+  }
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var i=document.getElementById('pw-input');
+  if(i){i.addEventListener('keydown',function(e){if(e.key==='Enter')checkPw();});}
+});
+</script>
+
+<!-- NAV DOTS -->
+<div class="nav-dots" id="navDots"></div>
+
+<!-- DECK -->
+<div class="deck" id="deck">
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 00 — COVER
+───────────────────────────────────────────────────────── -->
+<section class="slide dark" data-light="false">
+  <div class="cover-accent"></div>
+  <div class="cover-eyebrow">Wellspring Therapeutic Partners &nbsp;·&nbsp; Prepared by Damco Digital</div>
+  <div class="cover-period">April &ndash; June 2026</div>
+  <div class="cover-title">Quarterly<br>Business<br>Review</div>
+  <div class="cover-line"></div>
+  <div class="cover-sub">Q2 2026 &nbsp;&middot;&nbsp; Performance &middot; Insights &middot; Q3 Strategy</div>
+  <div class="cover-footer">Confidential &nbsp;&middot;&nbsp; For Wellspring Team Use Only &nbsp;&middot;&nbsp; Damco Digital</div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 01 — THE Q2 COMMITMENT
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">01 / 15</div>
+  <div class="s-act">Act I &mdash; The Frame</div>
+  <div class="s-title">What We Set Out<br>to Do in Q2</div>
+  <div style="margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="panel" style="border-left:4px solid var(--teal);">
+      <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:10px;">Primary Objective</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--charcoal);margin-bottom:8px;">Scale qualified lead volume</div>
+      <div style="font-size:13px;color:var(--warm-mid);line-height:1.65;font-family:'DM Sans',sans-serif;">Grow the number of high-intent patients reaching out to Wellspring each week, without sacrificing lead quality.</div>
+    </div>
+    <div class="panel" style="border-left:4px solid var(--amber);">
+      <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:10px;">Supporting Objective</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--charcoal);margin-bottom:8px;">Improve scheduling rate</div>
+      <div style="font-size:13px;color:var(--warm-mid);line-height:1.65;font-family:'DM Sans',sans-serif;">More leads only matters if they convert. The goal was better quality and faster follow-up, not just higher volume.</div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:14px;border-left:4px solid var(--gold);">
+    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:10px;">The Approach</div>
+    <div style="font-size:13px;color:var(--warm-mid);line-height:1.7;font-family:'DM Sans',sans-serif;">Q2 was about building the full patient acquisition system — optimising Google Ads to capture high-intent searches, establishing organic search presence through SEO, and laying the groundwork for Instagram awareness. Every piece serves a single goal: <strong style="color:var(--charcoal);">more qualified patients through the door at a sustainable cost.</strong></div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 02 — THE PATIENT JOURNEY
+───────────────────────────────────────────────────────── -->
+<section class="slide dark" data-light="false">
+  <div class="s-num">02 / 15</div>
+  <div class="s-act">Act I &mdash; The Frame</div>
+  <div class="s-title">How People Find<br>a Therapist</div>
+  <div style="font-size:13px;color:rgba(247,243,238,.6);margin-bottom:6px;font-family:'DM Sans',sans-serif;font-weight:300;">Mental health is a high-consideration decision. Nobody books a therapist the first time they hear a name. Our system owns every stage of that journey.</div>
+  <div class="journey">
+    <div class="jstage">
+      <div class="jcircle"><div class="jnum">01</div><div class="jstep">Stage</div></div>
+      <div class="jname">Awareness</div>
+      <div class="jchannel">Instagram</div>
+      <div class="jdesc">"They've seen Wellspring before the need arises"</div>
+      <div class="jnew">Launched Jun 2026</div>
+    </div>
+    <div class="jstage">
+      <div class="jcircle"><div class="jnum">02</div><div class="jstep">Stage</div></div>
+      <div class="jname">Discovery</div>
+      <div class="jchannel">SEO &mdash; GMB + On-Page</div>
+      <div class="jdesc">"They find Wellspring when they search for therapy"</div>
+      <div class="jnew">Active Q2</div>
+    </div>
+    <div class="jstage">
+      <div class="jcircle"><div class="jnum">03</div><div class="jstep">Stage</div></div>
+      <div class="jname">Intent</div>
+      <div class="jchannel">Google Ads</div>
+      <div class="jdesc">"They click when they're ready to reach out"</div>
+      <div class="jnew">Primary focus Q2</div>
+    </div>
+    <div class="jstage">
+      <div class="jcircle"><div class="jnum">04</div><div class="jstep">Stage</div></div>
+      <div class="jname">Conversion</div>
+      <div class="jchannel">Consultation + Booking</div>
+      <div class="jdesc">"They book a consultation with Wellspring"</div>
+      <div class="jnew">Measured weekly</div>
+    </div>
+  </div>
+  <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 20px;font-size:12px;color:rgba(247,243,238,.55);font-family:'DM Sans',sans-serif;line-height:1.6;">
+    <strong style="color:rgba(247,243,238,.8);">Q2 focus:</strong> Stages 02 and 03 — capturing organic and paid search intent. Stage 01 (Instagram) launched in late June to begin building upstream awareness for Q3.
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 03 — Q2 SCORECARD
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">03 / 15</div>
+  <div class="s-act">Act II &mdash; The Scorecard</div>
+  <div class="s-title">Q2 in Numbers</div>
+  <div style="margin-top:20px;" class="kpi-grid g6">
+    <div class="kpi tc">
+      <div class="kpi-lbl">Total CRM consultations</div>
+      <div class="kpi-val">192</div>
+      <div class="kpi-sub">All-source inquiries received Apr&ndash;Jun 2026</div>
+      <span class="badge b-teal">Google + Referral + PT + Internal</span>
+    </div>
+    <div class="kpi gr">
+      <div class="kpi-lbl">Google Ads CRM leads</div>
+      <div class="kpi-val">87</div>
+      <div class="kpi-sub">Patients who came in through paid search</div>
+      <span class="badge b-up">↑ Volume growing through Q2</span>
+    </div>
+    <div class="kpi am">
+      <div class="kpi-lbl">Google scheduling rate</div>
+      <div class="kpi-val">49%</div>
+      <div class="kpi-sub">Q2 average &mdash; peaked at 67% in Jun wk 3</div>
+      <span class="badge b-up">↑ 52% improvement Apr → Jun</span>
+    </div>
+    <div class="kpi tc">
+      <div class="kpi-lbl">Total Q2 ad spend</div>
+      <div class="kpi-val">$5,983</div>
+      <div class="kpi-sub">Google Ads investment Apr 1 &ndash; Jun 30 (API verified)</div>
+      <span class="badge b-teal">~$1,994 monthly average</span>
+    </div>
+    <div class="kpi gr">
+      <div class="kpi-lbl">Best week CRM CPL</div>
+      <div class="kpi-val">$49</div>
+      <div class="kpi-sub">Jun 14&ndash;21 &mdash; 12 leads, 67% scheduling rate</div>
+      <span class="badge b-up">Vs $51 in April (improving)</span>
+    </div>
+    <div class="kpi tc">
+      <div class="kpi-lbl">GSC Impressions (organic)</div>
+      <div class="kpi-val">184K</div>
+      <div class="kpi-sub">+67% vs Q1 &mdash; 1,297 organic sessions, 419 leads</div>
+      <span class="badge b-up">21 AI citations across ChatGPT &amp; Gemini</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 04 — MONTH BY MONTH
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">04 / 15</div>
+  <div class="s-act">Act II &mdash; The Scorecard</div>
+  <div class="s-title">How Q2 Moved</div>
+  <div class="two-col" style="margin-top:20px;align-items:start;">
+    <div>
+      <div class="panel" style="padding:0;overflow:hidden;">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Spend</th>
+              <th>Google Leads</th>
+              <th>Sched. Rate</th>
+              <th>CRM CPL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>April</strong></td>
+              <td class="num">$1,529</td>
+              <td class="num">30</td>
+              <td class="num cl-warn">44%</td>
+              <td class="num">$51</td>
+            </tr>
+            <tr>
+              <td><strong>May</strong></td>
+              <td class="num">$2,024</td>
+              <td class="num">30</td>
+              <td class="num cl-warn">40%</td>
+              <td class="num cl-warn">$68</td>
+            </tr>
+            <tr>
+              <td><strong>June</strong></td>
+              <td class="num">$2,430</td>
+              <td class="num">27</td>
+              <td class="num cl-good">56% avg</td>
+              <td class="num cl-warn">$76</td>
+            </tr>
+            <tr>
+              <td><strong>Q2 Total</strong></td>
+              <td class="num">$5,983</td>
+              <td class="num">87</td>
+              <td class="num">49% avg</td>
+              <td class="num">~$69 avg</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="insight"><strong>Scheduling rate improved every month.</strong> April 44% → May 40% (capacity tightening) → June recovering to 67% peak. The system is learning.</div>
+        <div class="insight am"><strong>CPL rose in May&ndash;Jun (API verified).</strong> Full account spend was $2,024 (May) and $2,430 (June) — higher than weekly snapshots because Regional Search and a new Broad campaign (launched Jun 9) ran alongside the tracked campaigns. True Q2 avg CRM CPL is ~$69. Addressed in Q3 restructure.</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="pdot" style="background:var(--teal)"></span>Scheduling Rate &amp; CPL Trend</div>
+      <div style="position:relative;height:200px;"><canvas id="trendChart"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 05 — PAID MEDIA
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">05 / 15</div>
+  <div class="s-act">Act III &mdash; Channel Performance</div>
+  <div class="s-title">Paid Media &mdash; Capturing Intent</div>
+  <div style="margin-top:18px;" class="two-col">
+    <div class="stack">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <div class="kpi tc" style="padding:14px 16px;">
+          <div class="kpi-lbl">Clicks</div>
+          <div class="kpi-val" style="font-size:34px;">1,373</div>
+          <div class="kpi-sub">Apr 1&ndash;Jun 30 (API)</div>
+        </div>
+        <div class="kpi gr" style="padding:14px 16px;">
+          <div class="kpi-lbl">CTR</div>
+          <div class="kpi-val" style="font-size:34px;">6.1%</div>
+          <div class="kpi-sub">vs 3&ndash;4% benchmark</div>
+        </div>
+        <div class="kpi am" style="padding:14px 16px;">
+          <div class="kpi-lbl">Platform CPL</div>
+          <div class="kpi-val" style="font-size:34px;">$100</div>
+          <div class="kpi-sub">Form fills + calls</div>
+        </div>
+      </div>
+      <div class="panel" style="padding:14px 18px;">
+        <div class="panel-title" style="margin-bottom:10px;"><span class="pdot" style="background:var(--amber)"></span>Campaign Split</div>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;background:#FDF6EC;border-radius:8px;padding:12px 14px;">
+            <div style="font-size:10px;font-weight:600;color:var(--amber);font-family:'DM Sans',sans-serif;margin-bottom:4px;">Generic Search (orig + new Broad, Jun 9)</div>
+            <div style="font-size:20px;font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--charcoal);">71% of spend</div>
+            <div style="font-size:11px;color:var(--warm-mid);font-family:'DM Sans',sans-serif;margin-top:2px;">$4.73&ndash;6.79 / click &nbsp;&middot;&nbsp; $117&ndash;120 platform CPL</div>
+          </div>
+          <div style="flex:1;background:#E8F5EC;border-radius:8px;padding:12px 14px;">
+            <div style="font-size:10px;font-weight:600;color:var(--green);font-family:'DM Sans',sans-serif;margin-bottom:4px;">DSA (Dynamic Search Ads)</div>
+            <div style="font-size:20px;font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--charcoal);">26% of spend</div>
+            <div style="font-size:11px;color:var(--warm-mid);font-family:'DM Sans',sans-serif;margin-top:2px;">$2.78 / click &nbsp;&middot;&nbsp; $67 platform CPL &nbsp;&middot;&nbsp; 1.75× cheaper</div>
+          </div>
+        </div>
+      </div>
+      <div class="insight go"><strong>Key finding (API verified):</strong> DSA delivered $67 platform CPL vs $117&ndash;120 for Generic Search — 1.75&times; more efficient. Yet it received only 26% of Q2 budget. A new Broad Match campaign launched Jun 9 further diluted DSA's share. Shifting to DSA-first is the highest-ROI change available in Q3.</div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="pdot" style="background:var(--teal)"></span>Weekly Lead Volume &amp; CPL</div>
+      <div style="position:relative;height:220px;"><canvas id="weeklyChart"></canvas></div>
+      <div style="margin-top:10px;font-size:11px;color:var(--warm-mid);font-family:'DM Sans',sans-serif;line-height:1.6;">Best week: <strong style="color:var(--charcoal);">Jun 14&ndash;21</strong> — 12 Google leads, 67% scheduling rate, $49 CPL. System performing at its best when DSA runs uninterrupted.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 06 — SEO PERFORMANCE
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">06 / 15</div>
+  <div class="s-act">Act III &mdash; Channel Performance</div>
+  <div class="s-title">SEO &mdash; Building<br>Organic Visibility</div>
+  <div class="two-col" style="margin-top:20px;align-items:start;">
+    <div>
+      <div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:12px;">What We Completed in Q2</div>
+      <div class="seo-item">
+        <div class="seo-icon">📍</div>
+        <div class="seo-content">
+          <div class="seo-title">Google Business Profile (GMB) Optimisation</div>
+          <div class="seo-detail">Profile fully completed for both Troy and Clinton Township locations. Services, descriptions, categories, and opening hours updated. Photos and Q&amp;A populated. Profile now eligible for local pack inclusion.</div>
+        </div>
+      </div>
+      <div class="seo-item">
+        <div class="seo-icon">📄</div>
+        <div class="seo-content">
+          <div class="seo-title">On-Page SEO</div>
+          <div class="seo-detail">Core service pages (Psychotherapy, Medication Management, ADHD Testing) optimised for local intent keywords. Title tags, meta descriptions, heading structure, and internal linking improved across the site.</div>
+        </div>
+      </div>
+      <div class="seo-item" style="border-bottom:none;">
+        <div class="seo-icon">⚙️</div>
+        <div class="seo-content">
+          <div class="seo-title">Technical SEO</div>
+          <div class="seo-detail">Site speed, mobile responsiveness, crawlability, and structured data (schema markup for local business + healthcare) addressed. Technical foundation is now clean for organic ranking growth.</div>
+        </div>
+      </div>
+    </div>
+    <div class="stack">
+      <div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:4px;">Organic Performance &mdash; Q2 (Apr&ndash;Jun 2026)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="kpi tc" style="padding:14px 16px;">
+          <div class="kpi-lbl">GSC Impressions</div>
+          <div class="kpi-val" style="font-size:30px;">184,815</div>
+          <div class="kpi-sub"><span class="badge b-up" style="margin:0;">+67% vs Q1</span></div>
+        </div>
+        <div class="kpi gr" style="padding:14px 16px;">
+          <div class="kpi-lbl">Organic Sessions</div>
+          <div class="kpi-val" style="font-size:30px;">1,297</div>
+          <div class="kpi-sub">60.4% engagement rate &uarr;</div>
+        </div>
+        <div class="kpi am" style="padding:14px 16px;">
+          <div class="kpi-lbl">Organic Leads</div>
+          <div class="kpi-val" style="font-size:30px;">419</div>
+          <div class="kpi-sub">Avg session time: 53s</div>
+        </div>
+        <div class="kpi ru" style="padding:14px 16px;">
+          <div class="kpi-lbl">Organic CTR</div>
+          <div class="kpi-val" style="font-size:30px;">0.61%</div>
+          <div class="kpi-sub"><span class="badge b-down" style="margin:0;">Benchmark: 2&ndash;9%</span></div>
+        </div>
+      </div>
+      <div class="insight am" style="margin-top:6px;"><strong>The gap is the click, not the impression.</strong> Communication blog: 50,748 impressions at position 8.9 but only 31 clicks (0.06% CTR). Rewriting titles &amp; meta to close this is Q3&rsquo;s single biggest organic lever — no additional content needed.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 07 — AEO & SEARCH EVOLUTION
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">07 / 15</div>
+  <div class="s-act">Act III &mdash; Channel Performance</div>
+  <div class="s-title">Search Is Changing &mdash;<br>We're Ahead of It</div>
+  <div style="margin-top:22px;" class="two-col">
+    <div>
+      <div style="font-size:13px;color:var(--warm-mid);line-height:1.7;font-family:'DM Sans',sans-serif;margin-bottom:16px;">Google AI Overviews, ChatGPT, and Perplexity are increasingly answering healthcare searches directly, before a user clicks any result. For mental health specifically, people are asking questions like <em>"What's the best therapist near me that takes BCBS?"</em> and receiving an AI-generated answer.</div>
+      <div class="insight" style="margin-bottom:10px;"><strong>Wellspring is already being cited.</strong> Semrush confirms 21 pages are cited across ChatGPT, AI Overview/Mode, and Gemini — with an AI Visibility Score of 14. We went from 0 AI sessions in Q1 to 5 in Q2. This is early but real signal. Most local competitors aren&rsquo;t on the board yet.</div>
+      <div class="insight am"><strong>The gap is AI Mode.</strong> We have 0 citations in AI Mode today. Q3 priority: ship every service page with FAQPage schema and a citable action sentence so AI engines can surface Wellspring as the answer — target: 30+ citations, 5+ AI Mode entries by Sep 30.</div>
+    </div>
+    <div class="stack">
+      <div style="background:var(--teal-dark);border-radius:14px;padding:20px 22px;color:var(--cream);">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:12px;">The AEO Shift</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🔍</div>
+            <div style="font-size:12px;color:rgba(247,243,238,.7);font-family:'DM Sans',sans-serif;line-height:1.55;"><strong style="color:var(--cream);">Old search:</strong> User searches → clicks link → reads website</div>
+          </div>
+          <div style="width:1px;height:16px;background:rgba(201,168,76,.2);margin-left:18px;"></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🤖</div>
+            <div style="font-size:12px;color:rgba(247,243,238,.7);font-family:'DM Sans',sans-serif;line-height:1.55;"><strong style="color:var(--cream);">New search:</strong> User asks AI → AI cites authoritative practices → user acts</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;text-align:center;">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--gold);">21</div>
+              <div style="font-size:10px;color:rgba(247,243,238,.5);font-family:'DM Sans',sans-serif;">AI citations (Semrush)</div>
+            </div>
+            <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;text-align:center;">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--gold);">5</div>
+              <div style="font-size:10px;color:rgba(247,243,238,.5);font-family:'DM Sans',sans-serif;">AI sessions (GA4, vs 0 Q1)</div>
+            </div>
+            <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;text-align:center;">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--gold);">14</div>
+              <div style="font-size:10px;color:rgba(247,243,238,.5);font-family:'DM Sans',sans-serif;">AI Visibility Score</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:rgba(247,243,238,.45);font-family:'DM Sans',sans-serif;line-height:1.6;">Cited across ChatGPT, AI Overview/Mode and Gemini. AI Mode: 0 today &mdash; closing this is Q3&rsquo;s AEO priority.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 08 — INSTAGRAM
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">08 / 15</div>
+  <div class="s-act">Act III &mdash; Channel Performance</div>
+  <div class="s-title">Instagram &mdash; The<br>Foundation We Laid</div>
+  <div class="two-col" style="margin-top:22px;align-items:start;">
+    <div class="stack">
+      <div class="panel" style="border-top:3px solid var(--gold);">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:10px;">What We're Saying Up Front</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--charcoal);line-height:1.4;margin-bottom:10px;">"Instagram launched in late June. There is no Q2 performance data to report — and that is entirely by design."</div>
+        <div style="font-size:12.5px;color:var(--warm-mid);line-height:1.7;font-family:'DM Sans',sans-serif;">Building brand recognition before a campaign is measured is a deliberate choice. Instagram's role is to plant the Wellspring name before someone feels the need for therapy. That awareness doesn't convert in week one — it shows up as better paid search performance six to twelve weeks later.</div>
+      </div>
+      <div class="insight go"><strong>Why we started it now:</strong> Google Ads captures people who are already searching. Instagram reaches people before they search. As paid search competition increases and CPL trends upward, the only durable defence is upstream brand awareness. We're building that now.</div>
+    </div>
+    <div class="stack">
+      <div class="panel">
+        <div class="panel-title"><span class="pdot" style="background:var(--gold)"></span>What We Set Up in Q2</div>
+        <div class="seo-item" style="padding:10px 0;">
+          <div class="seo-icon" style="background:#FBF4E4;">✅</div>
+          <div class="seo-content"><div class="seo-title">Account created and branded</div><div class="seo-detail">Profile, bio, link-in-bio, and highlight covers aligned with Wellspring's visual identity.</div></div>
+        </div>
+        <div class="seo-item" style="padding:10px 0;">
+          <div class="seo-icon" style="background:#FBF4E4;">✅</div>
+          <div class="seo-content"><div class="seo-title">Content pillars defined</div><div class="seo-detail">Three themes: Mental health education, Practice culture, and Patient journey stories.</div></div>
+        </div>
+        <div class="seo-item" style="padding:10px 0;border-bottom:none;">
+          <div class="seo-icon" style="background:#FBF4E4;">✅</div>
+          <div class="seo-content"><div class="seo-title">Posting cadence established</div><div class="seo-detail">3&times; per week target for Q3. Q2 was setup and initial posts only.</div></div>
+        </div>
+      </div>
+      <div class="panel" style="background:var(--teal-pale);border:1px solid rgba(61,122,114,.2);">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:6px;">What to Watch in Q3</div>
+        <div style="font-size:12.5px;color:var(--warm-mid);line-height:1.65;font-family:'DM Sans',sans-serif;">Profile visits, reach growth, and story views are the leading indicators. We'll review at 90 days — by end of Q3 Instagram should be contributing to brand search volume.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 09 — AUDIENCE INSIGHTS
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">09 / 15</div>
+  <div class="s-act">Act IV &mdash; Insights</div>
+  <div class="s-title">Who Is Reaching Out</div>
+  <div class="two-col" style="margin-top:20px;align-items:start;">
+    <div class="stack">
+      <div class="panel">
+        <div class="panel-title"><span class="pdot" style="background:var(--teal)"></span>Service Mix &mdash; Q2 Consultations (192 total)</div>
+        <div style="position:relative;height:170px;"><canvas id="serviceChart"></canvas></div>
+      </div>
+      <div class="panel" style="padding:14px 18px;">
+        <div class="panel-title" style="font-size:15px;margin-bottom:8px;"><span class="pdot" style="background:var(--amber)"></span>Where Leads Came From</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:12.5px;color:var(--charcoal);font-family:'DM Sans',sans-serif;font-weight:500;">Google Ads</div>
+            <div style="display:flex;align-items:center;gap:10px;"><div style="width:120px;height:8px;border-radius:4px;background:var(--cream-dark);overflow:hidden;"><div style="width:45%;height:100%;background:var(--teal);border-radius:4px;"></div></div><span style="font-size:12px;font-weight:600;color:var(--teal);font-family:'DM Sans',sans-serif;">45%</span></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:12.5px;color:var(--charcoal);font-family:'DM Sans',sans-serif;font-weight:500;">Internal Referrals</div>
+            <div style="display:flex;align-items:center;gap:10px;"><div style="width:120px;height:8px;border-radius:4px;background:var(--cream-dark);overflow:hidden;"><div style="width:26%;height:100%;background:var(--amber);border-radius:4px;"></div></div><span style="font-size:12px;font-weight:600;color:var(--amber);font-family:'DM Sans',sans-serif;">26%</span></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:12.5px;color:var(--charcoal);font-family:'DM Sans',sans-serif;font-weight:500;">External (PT, Other)</div>
+            <div style="display:flex;align-items:center;gap:10px;"><div style="width:120px;height:8px;border-radius:4px;background:var(--cream-dark);overflow:hidden;"><div style="width:18%;height:100%;background:var(--rust);border-radius:4px;"></div></div><span style="font-size:12px;font-weight:600;color:var(--rust);font-family:'DM Sans',sans-serif;">18%</span></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:12.5px;color:var(--charcoal);font-family:'DM Sans',sans-serif;font-weight:500;">Other / Organic</div>
+            <div style="display:flex;align-items:center;gap:10px;"><div style="width:120px;height:8px;border-radius:4px;background:var(--cream-dark);overflow:hidden;"><div style="width:11%;height:100%;background:var(--warm-mid);border-radius:4px;"></div></div><span style="font-size:12px;font-weight:600;color:var(--warm-mid);font-family:'DM Sans',sans-serif;">11%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="panel">
+        <div class="panel-title"><span class="pdot" style="background:var(--rust)"></span>Why Leads Don&rsquo;t Convert</div>
+        <div class="seo-item" style="padding:10px 0;">
+          <div style="width:36px;height:36px;border-radius:8px;background:#FDF1EE;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🚫</div>
+          <div class="seo-content"><div class="seo-title" style="color:var(--rust);">Insurance Not Accepted (HAP / Medicaid)</div><div class="seo-detail">~25&ndash;30% of lost leads each month. HAP insurance status remains unresolved. This is the single highest-impact business decision for Q3.</div></div>
+        </div>
+        <div class="seo-item" style="padding:10px 0;">
+          <div style="width:36px;height:36px;border-radius:8px;background:#FDF6EC;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">📵</div>
+          <div class="seo-content"><div class="seo-title" style="color:var(--amber);">No Response / Follow-Up Pending</div><div class="seo-detail">~20% of leads marked pending. Fast follow-up materially improves conversion — the Jun 14&ndash;21 best week correlated with quick response.</div></div>
+        </div>
+        <div class="seo-item" style="padding:10px 0;border-bottom:none;">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--teal-pale);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🏥</div>
+          <div class="seo-content"><div class="seo-title" style="color:var(--teal);">Capacity / Waitlist</div><div class="seo-detail">Some weeks, scheduling rate drops due to therapist availability, not lead quality. This is a Wellspring-side variable, not a campaign problem.</div></div>
+        </div>
+      </div>
+      <div class="insight ru"><strong>Important:</strong> CPL and scheduling rate are partly determined by Wellspring's capacity and insurance coverage — not just the campaigns. The ads are delivering the right people. What happens next is a shared responsibility.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 10 — WHAT Q2 TAUGHT US
+───────────────────────────────────────────────────────── -->
+<section class="slide dark" data-light="false">
+  <div class="s-num">10 / 15</div>
+  <div class="s-act">Act IV &mdash; Insights</div>
+  <div class="s-title">Four Things Q2<br>Confirmed</div>
+  <div style="margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px 22px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--gold);opacity:.25;line-height:1;">01</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--cream);margin:4px 0 8px;">DSA is the workhorse</div>
+      <div style="font-size:13px;color:rgba(247,243,238,.6);line-height:1.65;font-family:'DM Sans',sans-serif;">API data confirms: DSA delivered $67 platform CPL vs $117&ndash;120 for Generic Search. Yet it received only 26% of Q2 budget — and a new Broad campaign (Jun 9) further diluted its share. That ratio must reverse in Q3.</div>
+    </div>
+    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px 22px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--gold);opacity:.25;line-height:1;">02</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--cream);margin:4px 0 8px;">Scheduling is partly a capacity story</div>
+      <div style="font-size:13px;color:rgba(247,243,238,.6);line-height:1.65;font-family:'DM Sans',sans-serif;">The best weeks for scheduling rate correlated with fast follow-up and available therapist slots — not just better ads. Campaign quality and operational speed both matter equally.</div>
+    </div>
+    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px 22px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--gold);opacity:.25;line-height:1;">03</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--cream);margin:4px 0 8px;">Insurance is the #1 structural barrier</div>
+      <div style="font-size:13px;color:rgba(247,243,238,.6);line-height:1.65;font-family:'DM Sans',sans-serif;">HAP ambiguity and Medicaid non-acceptance are costing ~25&ndash;30% of potential conversions every single month. No amount of campaign optimisation can fix an insurance eligibility issue.</div>
+    </div>
+    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px 22px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--gold);opacity:.25;line-height:1;">04</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--cream);margin:4px 0 8px;">The ads attract the right people</div>
+      <div style="font-size:13px;color:rgba(247,243,238,.6);line-height:1.65;font-family:'DM Sans',sans-serif;">CTR of 6.1% (vs 3&ndash;4% healthcare benchmark) and 192 consultations in Q2 confirm the targeting is working. The funnel isn't broken at the top. The leaks are downstream.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 11 — THE OPPORTUNITY
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">11 / 15</div>
+  <div class="s-act">Act V &mdash; Q3 Strategy</div>
+  <div class="s-title">What Q2 Revealed<br>We Should Go After</div>
+  <div style="margin-top:22px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+    <div class="opp">
+      <div class="opp-num">01</div>
+      <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:8px;">Business Decision</div>
+      <div class="opp-title">Resolve the HAP question</div>
+      <div class="opp-detail">~25&ndash;30% of lost leads each month cite insurance not accepted. If Wellspring begins accepting HAP, this converts directly into revenue without any additional ad spend. No campaign can replicate this impact.</div>
+      <div class="opp-impact">↑ Potential: 8&ndash;12 additional bookings/month</div>
+    </div>
+    <div class="opp opp2">
+      <div class="opp-num">02</div>
+      <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--amber);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:8px;">Campaign Optimisation</div>
+      <div class="opp-title">Shift budget toward DSA</div>
+      <div class="opp-detail">DSA has proven 3&ndash;4× efficiency advantage over Generic Search. Moving from 35/65 to a 65/35 DSA-led split — while eliminating the delivery conflict — is the highest-ROI campaign change available.</div>
+      <div class="opp-impact" style="color:var(--amber);">↓ CPL target: from $56 avg to &lt;$45</div>
+    </div>
+    <div class="opp opp3">
+      <div class="opp-num">03</div>
+      <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:8px;">New Channel Activation</div>
+      <div class="opp-title">Add a remarketing layer</div>
+      <div class="opp-detail">People who visited the Wellspring site or engaged with Instagram but didn't convert represent a warm audience. A remarketing campaign (Google Display or Meta) re-engages them at a fraction of the cost of a cold click.</div>
+      <div class="opp-impact" style="color:var(--gold);">↓ CPL for retargeted leads: 40&ndash;60% lower</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 12 — THE Q3 SYSTEM
+───────────────────────────────────────────────────────── -->
+<section class="slide dark" data-light="false">
+  <div class="s-num">12 / 15</div>
+  <div class="s-act">Act V &mdash; Q3 Strategy</div>
+  <div class="s-title">The Q3 System &mdash;<br>Three Channels, One Goal</div>
+  <div style="margin-top:18px;font-size:13px;color:rgba(247,243,238,.55);font-family:'DM Sans',sans-serif;">Every channel has a defined role. No channel works in isolation.</div>
+  <div class="sys-flow" style="margin:20px 0 16px;">
+    <div class="sys-box">
+      <div class="sys-icon">📸</div>
+      <div class="sys-name">Instagram</div>
+      <div class="sys-role">Builds name recognition before the need is felt. Reaches people who are not yet searching.</div>
+      <div class="sys-tag">AWARENESS</div>
+    </div>
+    <div class="sys-arrow">→</div>
+    <div class="sys-box">
+      <div class="sys-icon">🗺️</div>
+      <div class="sys-name">SEO</div>
+      <div class="sys-role">Captures organic search intent. GMB ensures Wellspring appears in local results.</div>
+      <div class="sys-tag">DISCOVERY</div>
+    </div>
+    <div class="sys-arrow">→</div>
+    <div class="sys-box active">
+      <div class="sys-icon">🎯</div>
+      <div class="sys-name">Google Ads</div>
+      <div class="sys-role">DSA-led campaigns capture high-intent searches. Remarketing re-engages warm visitors.</div>
+      <div class="sys-tag">INTENT</div>
+    </div>
+    <div class="sys-arrow">→</div>
+    <div class="sys-box active">
+      <div class="sys-icon">📅</div>
+      <div class="sys-name">Consultation</div>
+      <div class="sys-role">Speed of follow-up and insurance eligibility convert the lead into a booked appointment.</div>
+      <div class="sys-tag">CONVERSION</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;">
+    <div class="sys-goal"><div class="sys-goal-label">Instagram Q3 Goal</div><div class="sys-goal-val">200+ followers</div></div>
+    <div class="sys-goal"><div class="sys-goal-label">SEO Q3 Goal</div><div class="sys-goal-val">+25% GMB calls</div></div>
+    <div class="sys-goal"><div class="sys-goal-label">Ads Q3 Goal</div><div class="sys-goal-val">&lt;$45 CPL</div></div>
+    <div class="sys-goal"><div class="sys-goal-label">Conversion Q3 Goal</div><div class="sys-goal-val">55%+ sched. rate</div></div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 13 — Q3 PRIORITIES
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">13 / 15</div>
+  <div class="s-act">Act V &mdash; Q3 Strategy</div>
+  <div class="s-title">What We&rsquo;re Doing in Q3</div>
+  <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div class="priority-card">
+      <div class="p-n">01</div>
+      <div class="p-title">Restructure paid campaigns: DSA-first</div>
+      <div class="p-detail">Shift budget split from 35/65 (DSA/Generic) to 70/30. Resolve delivery conflict permanently. Pause Generic Search keywords where DSA already covers the intent. Expected CPL reduction: ~20%.</div>
+      <div class="p-impact">Channel: Google Ads &nbsp;·&nbsp; Timeline: July 2026</div>
+    </div>
+    <div class="priority-card p2">
+      <div class="p-n">02</div>
+      <div class="p-title">Launch Google Display remarketing</div>
+      <div class="p-detail">Target visitors who landed on the site but didn't convert. Retargeted leads convert at 40&ndash;60% lower CPL than cold clicks. Small incremental budget with high expected efficiency.</div>
+      <div class="p-impact" style="color:var(--amber);">Channel: Google Ads &nbsp;·&nbsp; Timeline: Aug 2026</div>
+    </div>
+    <div class="priority-card p3">
+      <div class="p-n">03</div>
+      <div class="p-title">Scale Instagram to 3&times;/week posting</div>
+      <div class="p-detail">Establish consistent content cadence: 1 educational post, 1 practice culture post, 1 therapy insight per week. 90-day review in October. Instagram is a long-game channel — consistency now pays in Q4.</div>
+      <div class="p-impact" style="color:var(--gold);">Channel: Instagram &nbsp;·&nbsp; Timeline: Ongoing from July</div>
+    </div>
+    <div class="priority-card p4">
+      <div class="p-n">04</div>
+      <div class="p-title">Insurance-specific SEO &amp; AEO content</div>
+      <div class="p-detail">Build dedicated pages for "Does Wellspring accept [Insurance]?" — high-intent queries with zero competition. Positions Wellspring for AI Overview citations and direct insurance-motivated searches.</div>
+      <div class="p-impact" style="color:var(--rust);">Channel: SEO &nbsp;·&nbsp; Timeline: Aug&ndash;Sep 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 14 — Q3 SUCCESS METRICS
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">14 / 15</div>
+  <div class="s-act">Act V &mdash; Q3 Strategy</div>
+  <div class="s-title">How We&rsquo;ll Know<br>Q3 Is Working</div>
+  <div class="two-col" style="margin-top:22px;align-items:start;">
+    <div class="metric-table">
+      <div class="metric-row header">
+        <div class="metric-name">Metric</div>
+        <div class="metric-val" style="color:#fff;">Q2 End</div>
+        <div class="metric-val" style="color:#fff;">Q3 Target</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-name">Google CRM CPL (avg)</div>
+        <div class="metric-val curr">~$69</div>
+        <div class="metric-val target">&lt;$55</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-name">Google scheduling rate</div>
+        <div class="metric-val curr">49% avg</div>
+        <div class="metric-val target">55%+ consistently</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-name">Google CRM leads / week</div>
+        <div class="metric-val curr">8&ndash;12</div>
+        <div class="metric-val target">12&ndash;15</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-name">Platform CPL (Google Ads)</div>
+        <div class="metric-val curr">~$100</div>
+        <div class="metric-val target">&lt;$80</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-name">Organic sessions</div>
+        <div class="metric-val curr">1,297</div>
+        <div class="metric-val target">1,400&ndash;1,800</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-name">GSC CTR</div>
+        <div class="metric-val curr">0.61%</div>
+        <div class="metric-val target">0.8%+</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-name">AI citations (Semrush)</div>
+        <div class="metric-val curr">21</div>
+        <div class="metric-val target">30+</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-name">Instagram engagement rate</div>
+        <div class="metric-val curr">—</div>
+        <div class="metric-val target">3%+ per post</div>
+      </div>
+      <div class="metric-row" style="border-bottom:none;background:rgba(61,122,114,.05);">
+        <div class="metric-name" style="font-weight:600;">Total CRM consultations</div>
+        <div class="metric-val curr" style="font-weight:600;">192</div>
+        <div class="metric-val target" style="font-weight:700;">220+</div>
+      </div>
+    </div>
+    <div class="stack">
+      <div style="background:var(--teal-dark);border-radius:14px;padding:22px 24px;color:var(--cream);">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:12px;">Mid-Quarter Check-In (Aug)</div>
+        <div style="font-size:13px;color:rgba(247,243,238,.7);line-height:1.7;font-family:'DM Sans',sans-serif;">We will review these metrics at the 6-week mark (early August) and adjust campaigns if CPL or scheduling rate is trending off-target. We won't wait until September to course-correct.</div>
+      </div>
+      <div class="insight">These targets are set assuming the DSA restructure happens in July and HAP insurance decision is made. If HAP remains unresolved, CRM CPL target is adjusted to &lt;$50 and scheduling rate target is 50%+.</div>
+      <div class="insight am"><strong>What &ldquo;success&rdquo; is not:</strong> High spend, high click volume, or high impressions. Success is more patients booked at a lower cost. All targets are anchored to that outcome.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────
+     SLIDE 15 — WHAT WE NEED FROM YOU
+───────────────────────────────────────────────────────── -->
+<section class="slide light" data-light="true">
+  <div class="s-num">15 / 15</div>
+  <div class="s-act">Act V &mdash; Q3 Strategy</div>
+  <div class="s-title">What We Need<br>from You to Make Q3 Work</div>
+  <div style="margin-top:22px;">
+    <div class="ask">
+      <div class="ask-n">1</div>
+      <div>
+        <div class="ask-title">HAP insurance decision — accept or definitively close</div>
+        <div class="ask-detail">This is the single highest-impact action available to increase lead conversion in Q3. An estimated 8&ndash;12 additional bookings per month depend on this decision. If HAP stays unresolved, we will redirect ads away from audiences likely to carry HAP to reduce wasted spend.</div>
+        <span class="ask-tag tag-crit">Critical — needed by Jul 2026</span>
+      </div>
+    </div>
+    <div class="ask">
+      <div class="ask-n">2</div>
+      <div>
+        <div class="ask-title">Weekly capacity — how many new patients can you onboard?</div>
+        <div class="ask-detail">Our lead volume target depends on knowing the ceiling. If capacity is 8 new patients per week, we optimise for 10&ndash;12 leads. If capacity has increased, we scale accordingly. A number from you each month lets us calibrate spend correctly.</div>
+        <span class="ask-tag tag-high">High priority — monthly update</span>
+      </div>
+    </div>
+    <div class="ask">
+      <div class="ask-n">3</div>
+      <div>
+        <div class="ask-title">Instagram content — 2&ndash;3 original photos or videos per week</div>
+        <div class="ask-detail">Stock photography does not work for a therapy practice. Patients need to see real people and real spaces to feel safe enough to reach out. The most effective Instagram content for a mental health practice is authentic and low-production — a photo of the office, a short therapist introduction, a real quote.</div>
+        <span class="ask-tag tag-teal">Ongoing from July</span>
+      </div>
+    </div>
+    <div class="ask" style="margin-bottom:0;">
+      <div class="ask-n">4</div>
+      <div>
+        <div class="ask-title">Google Healthcare certificate — unlock YouTube &amp; Medication Management ads</div>
+        <div class="ask-detail">YouTube pre-roll and expanded Medication Management targeting are currently blocked until the certification is completed. We can guide the process — Wellspring simply needs to initiate the application. Completing this unlocks a significant new acquisition channel at no additional cost.</div>
+        <span class="ask-tag tag-high">High priority — Q3</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- end .deck -->
+
+<!-- ─── CHARTS ─── -->
+<script>
+// TREND CHART (Slide 04)
+window.addEventListener('load', function(){
+  // Scheduling Rate + CPL monthly trend
+  new Chart(document.getElementById('trendChart').getContext('2d'),{
+    data:{
+      labels:['April','May','June'],
+      datasets:[
+        {type:'bar',label:'Scheduling Rate %',data:[44,40,56],backgroundColor:['rgba(61,122,114,.5)','rgba(61,122,114,.5)','rgba(61,122,114,.85)'],borderRadius:5,yAxisID:'y',barPercentage:.6},
+        {type:'line',label:'CRM CPL ($)',data:[51,68,76],borderColor:'#C9882A',backgroundColor:'transparent',pointBackgroundColor:['#3D8A60','#C25B3F','#C25B3F'],pointRadius:5,borderWidth:2.5,yAxisID:'y2',tension:.35}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Sans',size:11},color:'#6B6460',boxWidth:10}}},scales:{
+      x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:11},color:'#6B6460'}},
+      y:{position:'left',title:{display:true,text:'Sched. Rate %',font:{family:'DM Sans',size:10},color:'#3D7A72'},grid:{color:'#EDE7DC'},ticks:{font:{family:'DM Sans',size:11},color:'#3D7A72',callback:v=>v+'%'},min:0,max:80},
+      y2:{position:'right',title:{display:true,text:'CPL ($)',font:{family:'DM Sans',size:10},color:'#C9882A'},grid:{display:false},ticks:{font:{family:'DM Sans',size:11},color:'#C9882A',callback:v=>'$'+v},min:30,max:100}
+    }}
+  });
+
+  // WEEKLY CHART (Slide 05)
+  new Chart(document.getElementById('weeklyChart').getContext('2d'),{
+    data:{
+      labels:['May 3–9','May 10–16','May 17–23','May 24–30','Jun 7–13','Jun 14–21','Jun 21–27'],
+      datasets:[
+        {type:'bar',label:'Google Leads',data:[6,7,8,4,7,12,8],backgroundColor:'rgba(61,122,114,.6)',borderRadius:4,yAxisID:'y',barPercentage:.65},
+        {type:'line',label:'CPL ($)',data:[58,53,63,67,56,49,81],borderColor:'#C25B3F',backgroundColor:'transparent',pointBackgroundColor:'#C25B3F',pointRadius:4,borderWidth:2,yAxisID:'y2',tension:.3}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Sans',size:10},color:'#6B6460',boxWidth:8}}},scales:{
+      x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:9},color:'#6B6460',maxRotation:30}},
+      y:{position:'left',grid:{color:'#EDE7DC'},ticks:{font:{family:'DM Sans',size:10},color:'#3D7A72',stepSize:3},min:0,max:16},
+      y2:{position:'right',grid:{display:false},ticks:{font:{family:'DM Sans',size:10},color:'#C25B3F',callback:v=>'$'+v},min:20,max:100}
+    }}
+  });
+
+  // SERVICE MIX (Slide 09)
+  new Chart(document.getElementById('serviceChart').getContext('2d'),{
+    type:'doughnut',
+    data:{
+      labels:['Psychotherapy','Medication Mgmt','Testing / ADHD','Combined','Not Specified'],
+      datasets:[{data:[114,28,7,15,28],backgroundColor:['#3D7A72','#C9882A','#5C4E9E','#C9A84C','#9E9589'],borderWidth:2,borderColor:'#fff',hoverOffset:4}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{family:'DM Sans',size:11},color:'#6B6460',boxWidth:10,padding:10}}},cutout:'65%'}
+  });
+
+  // NAV DOTS
+  var slides = document.querySelectorAll('.slide');
+  var deck = document.getElementById('deck');
+  var dotsContainer = document.getElementById('navDots');
+  slides.forEach(function(s,i){
+    var d = document.createElement('div');
+    var isLight = s.getAttribute('data-light')==='true';
+    d.className = 'dot' + (isLight?' on-light':'') + (i===0?' active':'');
+    d.addEventListener('click',function(){slides[i].scrollIntoView({behavior:'smooth'});});
+    dotsContainer.appendChild(d);
+  });
+  var dots = dotsContainer.querySelectorAll('.dot');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var idx = Array.from(slides).indexOf(e.target);
+        var isLight = e.target.getAttribute('data-light')==='true';
+        dots.forEach(function(d,j){
+          d.className='dot'+(isLight?' on-light':'')+(j===idx?' active':'');
+        });
+      }
+    });
+  },{threshold:.5});
+  slides.forEach(function(s){observer.observe(s);});
+
+  // KEYBOARD NAV
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowDown'||e.key==='ArrowRight'||e.key===' '){
+      var active=Array.from(slides).findIndex(function(s){return s.getBoundingClientRect().top>-50&&s.getBoundingClientRect().top<50;});
+      if(active<slides.length-1)slides[active+1].scrollIntoView({behavior:'smooth'});
+    } else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){
+      var active=Array.from(slides).findIndex(function(s){return s.getBoundingClientRect().top>-50&&s.getBoundingClientRect().top<50;});
+      if(active>0)slides[active-1].scrollIntoView({behavior:'smooth'});
+    }
+  });
+});
+</script>
+</body>
+</html>

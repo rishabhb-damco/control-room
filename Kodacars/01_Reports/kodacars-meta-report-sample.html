@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KodaCars — Meta Ads Monthly Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --navy:        #1e1b4b;
+      --navy-mid:    #2d2b6e;
+      --purple:      #6423bd;
+      --purple-dark: #501c97;
+      --indigo:      #5b5ef4;
+      --indigo-pale: #eef2ff;
+      --green:       #1FA44D;
+      --green-pale:  #e8f5ed;
+      --amber:       #d97706;
+      --amber-pale:  #fffbeb;
+      --gray:        #f4f4f4;
+      --gray-mid:    #e0e0e0;
+      --text:        #525252;
+      --black:       #161616;
+      --white:       #ffffff;
+      --border:      #e0e0e0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #ebebeb;
+      font-family: 'IBM Plex Sans', system-ui, sans-serif;
+      color: var(--black);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ── Password Gate ── */
+    #pw-gate {
+      position: fixed; inset: 0;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    #pw-gate.hidden { display: none; }
+    .pw-box {
+      background: #fff; border-radius: 14px;
+      padding: 42px 50px; width: 370px; text-align: center;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    }
+    .pw-logo { font-size: 27px; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
+    .pw-logo span { color: var(--indigo); }
+    .pw-sub { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--indigo); margin-top: 5px; font-weight: 500; }
+    .pw-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text); font-weight: 500; margin: 26px 0 8px; }
+    .pw-input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
+      color: var(--black); background: #fff; outline: none;
+      text-align: center; letter-spacing: 2px;
+    }
+    .pw-input:focus { border-color: var(--indigo); }
+    .pw-btn {
+      width: 100%; margin-top: 14px; padding: 12px;
+      background: var(--navy); color: #fff; border: none;
+      border-radius: 8px; font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; letter-spacing: 0.3px;
+    }
+    .pw-btn:hover { background: var(--navy-mid); }
+    .pw-error { font-size: 11.5px; color: #dc2626; margin-top: 10px; min-height: 18px; }
+    .pw-footer { font-size: 10px; color: var(--text); margin-top: 20px; }
+    .pw-footer strong { color: var(--black); }
+
+    /* ── Layout ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 28px 32px; min-height: 100vh; }
+
+    /* ── Header ── */
+    .header {
+      background: var(--navy);
+      border-radius: 14px; padding: 24px 30px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .logo-name { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+    .logo-name span { color: var(--indigo); }
+    .logo-sub { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-top: 5px; font-weight: 500; }
+    .header-right { text-align: right; }
+    .report-type { font-size: 9px; text-transform: uppercase; letter-spacing: 2.5px; color: var(--indigo); font-weight: 600; margin-bottom: 4px; }
+    .report-period { font-size: 21px; font-weight: 600; color: #fff; }
+    .report-meta { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+
+    /* ── Sample Banner ── */
+    .sample-banner {
+      border: 1.5px dashed var(--indigo); border-radius: 8px;
+      padding: 10px 16px; margin-bottom: 16px;
+      font-size: 11.5px; color: var(--indigo); font-weight: 500;
+      background: var(--indigo-pale);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── Section labels ── */
+    .section-tag {
+      font-size: 9px; text-transform: uppercase; letter-spacing: 3px;
+      color: var(--indigo); font-weight: 600; margin-bottom: 4px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-tag::before {
+      content: ''; width: 20px; height: 2px; background: var(--indigo);
+    }
+    .section-heading {
+      font-size: 20px; font-weight: 700; color: var(--black);
+      margin-bottom: 14px; letter-spacing: -0.3px;
+    }
+    .section-heading span { color: var(--indigo); }
+
+    /* ── KPI Cards ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 12px; }
+    .kpi-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px;
+      position: relative; overflow: hidden;
+    }
+    .kpi-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; background: var(--navy); border-radius: 12px 12px 0 0;
+    }
+    .kpi-card.indigo::after { background: var(--indigo); }
+    .kpi-card.green::after  { background: var(--green); }
+    .kpi-card.amber::after  { background: var(--amber); }
+    .kpi-card.purple::after { background: var(--purple); }
+    .kpi-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--text); font-weight: 600; margin-bottom: 8px; }
+    .kpi-value { font-size: 40px; font-weight: 700; color: var(--navy); line-height: 1; letter-spacing: -1.5px; }
+    .kpi-unit  { font-size: 18px; font-weight: 400; color: var(--text); letter-spacing: 0; }
+    .kpi-explain { font-size: 11.5px; color: var(--text); margin-top: 6px; line-height: 1.5; }
+    .kpi-bench {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 9.5px; padding: 3px 8px; border-radius: 20px;
+      margin-top: 6px; font-weight: 500;
+    }
+    .bench-target  { background: var(--indigo-pale); color: var(--indigo); }
+    .bench-good    { background: var(--green-pale);  color: #166534; }
+    .bench-watch   { background: var(--amber-pale);  color: #92400e; }
+
+    /* ── Campaign Info Bar ── */
+    .campaign-bar {
+      background: var(--navy); border-radius: 12px;
+      padding: 18px 24px; margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .campaign-bar-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .campaign-bar-sub   { font-size: 11px; color: rgba(255,255,255,0.5); }
+    .campaign-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8);
+      font-size: 10.5px; font-weight: 500; padding: 4px 12px;
+      border-radius: 20px; border: 1px solid rgba(255,255,255,0.15);
+    }
+    .chip.highlight { background: var(--indigo); color: #fff; border-color: var(--indigo); }
+
+    /* ── Boost Posts Table ── */
+    .panel { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+    .panel-title {
+      font-size: 14px; font-weight: 600; color: var(--black);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .panel-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--indigo); flex-shrink: 0; }
+
+    .boost-table { width: 100%; border-collapse: collapse; }
+    .boost-table th {
+      font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--text); font-weight: 600; padding: 0 10px 10px;
+      text-align: left; border-bottom: 1.5px solid var(--gray);
+    }
+    .boost-table th:not(:first-child) { text-align: center; }
+    .boost-table td {
+      padding: 10px 10px; font-size: 12px; color: var(--black);
+      border-bottom: 1px solid var(--gray);
+    }
+    .boost-table td:not(:first-child) { text-align: center; font-weight: 600; color: var(--text); }
+    .boost-table tr:last-child td { border-bottom: none; }
+    .boost-table tr:hover td { background: #fafafa; }
+    .post-pill {
+      display: inline-block; font-size: 9px; font-weight: 600; padding: 2px 8px;
+      border-radius: 10px; margin-right: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .pill-p1 { background: #ede9fe; color: #5b21b6; }
+    .pill-p2 { background: #dbeafe; color: #1d4ed8; }
+    .pill-p4 { background: #dcfce7; color: #166534; }
+    .top-badge {
+      display: inline-block; font-size: 9px; font-weight: 600; padding: 2px 7px;
+      border-radius: 10px; background: var(--navy); color: #fff;
+      margin-left: 6px; vertical-align: middle;
+    }
+    .xxx { color: #aaa; font-style: italic; }
+
+    /* ── Trend Chart ── */
+    .trend-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+    .trend-card { background: var(--gray); border-radius: 10px; padding: 12px 14px; text-align: center; }
+    .trend-card.current { background: var(--indigo-pale); border: 1.5px solid #c7d2fe; }
+    .trend-week   { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text); font-weight: 600; margin-bottom: 6px; }
+    .trend-metric { font-size: 22px; font-weight: 700; color: var(--navy); line-height: 1; }
+    .trend-sub    { font-size: 10px; color: var(--text); margin-top: 3px; }
+    .trend-badge  { font-size: 9px; padding: 2px 7px; border-radius: 10px; display: inline-block; margin-top: 5px; font-weight: 500; }
+    .tb-up   { background: var(--green-pale); color: #166534; }
+    .tb-flat { background: var(--gray-mid); color: var(--text); }
+
+    /* ── Two-col ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+    /* ── Content type bars ── */
+    .ctype-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .ctype-label { font-size: 12px; color: var(--black); min-width: 80px; font-weight: 500; }
+    .ctype-track { flex: 1; background: var(--gray); border-radius: 4px; height: 28px; }
+    .ctype-fill  { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 10px; min-width: 40px; }
+    .ctype-pct   { font-size: 11px; font-weight: 600; color: #fff; }
+    .ctype-note  { font-size: 11px; color: var(--text); min-width: 80px; text-align: right; }
+
+    /* ── Top post highlight ── */
+    .top-post-card {
+      background: var(--navy); border-radius: 10px;
+      padding: 16px 18px; margin-top: 12px;
+    }
+    .top-post-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--indigo); font-weight: 600; margin-bottom: 6px; }
+    .top-post-content { font-size: 13.5px; font-weight: 500; color: #fff; line-height: 1.5; margin-bottom: 10px; }
+    .top-post-stats  { display: flex; gap: 16px; flex-wrap: wrap; }
+    .tps { font-size: 11px; color: rgba(255,255,255,0.55); }
+    .tps strong { color: #fff; font-size: 14px; display: block; }
+
+    /* ── Insight / Observation cards ── */
+    .insight-card {
+      border-left: 3px solid var(--indigo); padding: 11px 14px;
+      margin-bottom: 8px; background: var(--indigo-pale);
+      border-radius: 0 10px 10px 0; font-size: 12.5px; line-height: 1.6;
+    }
+    .insight-card.amber { border-left-color: var(--amber); background: var(--amber-pale); }
+    .insight-card.green { border-left-color: var(--green); background: var(--green-pale); }
+    .insight-card:last-child { margin-bottom: 0; }
+
+    /* ── Recommendations ── */
+    .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .rec-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 15px;
+    }
+    .rec-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--navy); color: #fff;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .rec-text { font-size: 12.5px; line-height: 1.6; color: var(--black); }
+
+    /* ── Phase 2 callout ── */
+    .phase-callout {
+      border: 1.5px solid var(--indigo); border-radius: 10px;
+      padding: 14px 18px; background: var(--indigo-pale);
+      display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px;
+    }
+    .phase-tag {
+      background: var(--indigo); color: #fff; font-size: 9px;
+      font-weight: 700; letter-spacing: 0.5px; padding: 4px 10px;
+      border-radius: 20px; white-space: nowrap; margin-top: 1px; flex-shrink: 0;
+    }
+    .phase-text { font-size: 12.5px; color: var(--black); line-height: 1.6; }
+
+    /* ── Audience snapshot ── */
+    .audience-tag {
+      display: inline-flex; align-items: center;
+      background: var(--indigo-pale); border: 1px solid #c7d2fe;
+      color: var(--navy); font-size: 11px; font-weight: 500;
+      padding: 5px 12px; border-radius: 20px; margin: 0 5px 6px 0;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-left { font-size: 10.5px; color: var(--text); line-height: 1.7; }
+    .footer-right { font-size: 15px; font-weight: 700; color: var(--navy); }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+    canvas { max-height: 180px; }
+    @media print { body { background: white; } #pw-gate { display: none !important; } }
+  </style>
+</head>
+<body>
+
+<!-- ── Password Gate ── -->
+<div id="pw-gate">
+  <div class="pw-box">
+    <div class="pw-logo">Koda<span>Cars</span></div>
+    <div class="pw-sub">Airport Mobility Platform</div>
+    <div class="pw-label">Enter report password</div>
+    <input id="pw-input" class="pw-input" type="password" placeholder="............" autocomplete="off"/>
+    <button class="pw-btn" onclick="checkPassword()">View Report</button>
+    <div id="pw-error" class="pw-error"></div>
+    <div class="pw-footer">Confidential &middot; Prepared by <strong>Damco Digital</strong></div>
+  </div>
+</div>
+<script>
+(function(){
+  if(sessionStorage.getItem('kc_auth')==='1'){
+    document.addEventListener('DOMContentLoaded',function(){
+      document.getElementById('pw-gate').classList.add('hidden');
+    });
+  }
+})();
+function checkPassword(){
+  var val = document.getElementById('pw-input').value;
+  if(val === 'KodaCars123'){
+    sessionStorage.setItem('kc_auth','1');
+    document.getElementById('pw-gate').classList.add('hidden');
+  } else {
+    document.getElementById('pw-error').textContent = 'Incorrect password.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var inp = document.getElementById('pw-input');
+  if(inp){
+    inp.addEventListener('keydown',function(e){ if(e.key==='Enter') checkPassword(); });
+    if(sessionStorage.getItem('kc_auth')!=='1') inp.focus();
+  }
+});
+</script>
+
+<!-- ── Report ── -->
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="logo-name">Koda<span>Cars</span></div>
+      <div class="logo-sub">Airport Mobility Platform &nbsp;&middot;&nbsp; Meta Ads</div>
+    </div>
+    <div class="header-right">
+      <div class="report-type">Monthly Performance Report &nbsp;&middot;&nbsp; Full Report</div>
+      <div class="report-period">Month, 2026</div>
+      <div class="report-meta">Prepared by Damco Digital &nbsp;&middot;&nbsp; Meta Ads Manager</div>
+    </div>
+  </div>
+
+  <!-- Sample Banner -->
+  <div class="sample-banner">
+    &#9432;&nbsp; <strong>Sample Report</strong> &mdash; This is a preview of how your monthly Meta Ads reports will look. All figures shown as XXX are live data in the real report.
+  </div>
+
+  <!-- Campaign Config Bar -->
+  <div class="campaign-bar">
+    <div>
+      <div class="campaign-bar-title">Active Campaign &mdash; B2B Operator Awareness</div>
+      <div class="campaign-bar-sub">Boosting top 5 organic posts &middot; reaching 1.8M&ndash;2.2M verified US operators</div>
+    </div>
+    <div class="campaign-chips">
+      <span class="chip highlight">$500 / month</span>
+      <span class="chip">Awareness &amp; Reach</span>
+      <span class="chip">Facebook Feed + Stories</span>
+      <span class="chip">Freq. cap: 2&ndash;3&times; / week</span>
+      <span class="chip">CTA: Learn More</span>
+    </div>
+  </div>
+
+  <!-- ── Section 1: Monthly KPIs ── -->
+  <div class="section-tag">03 &nbsp;&middot;&nbsp; Expected Outcomes</div>
+  <div class="section-heading">What this month&rsquo;s <span>$500 delivered</span></div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card indigo">
+      <div class="kpi-label">Unique Operators Reached</div>
+      <div class="kpi-value"><span class="xxx">XX,XXX</span></div>
+      <div class="kpi-explain">Unique B2B operators who saw at least one boosted post this month</div>
+      <span class="kpi-bench bench-target">&#8594; Target: 28K&ndash;45K / month</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Total Impressions</div>
+      <div class="kpi-value"><span class="xxx">XX,XXX</span></div>
+      <div class="kpi-explain">Total times your boosted posts were shown across Facebook feeds &amp; stories</div>
+      <span class="kpi-bench bench-target">&#8594; Target: 45K&ndash;65K / month</span>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Profile Visits from Ads</div>
+      <div class="kpi-value"><span class="xxx">X,XXX</span></div>
+      <div class="kpi-explain">Operators who clicked through to the KodaCars Facebook page after seeing a boosted post</div>
+      <span class="kpi-bench bench-good">&#8593; Organic + paid page traffic</span>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card purple">
+      <div class="kpi-label">New Page Followers</div>
+      <div class="kpi-value">+<span class="xxx">XXX</span></div>
+      <div class="kpi-explain">New followers gained this month — operators choosing to stay connected with KodaCars</div>
+      <span class="kpi-bench bench-good">&#8593; Growing operator audience</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Total Engagements</div>
+      <div class="kpi-value"><span class="xxx">X,XXX</span></div>
+      <div class="kpi-explain">Likes, shares, comments and saves on boosted posts this month</div>
+      <span class="kpi-bench bench-target">&#8594; Benchmark: 1&ndash;3% of impressions</span>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-label">Cost per 1,000 Impressions (CPM)</div>
+      <div class="kpi-value">$<span class="xxx">XX</span></div>
+      <div class="kpi-explain">What we paid to show your ad 1,000 times to verified B2B operators</div>
+      <span class="kpi-bench bench-target">&#8594; US B2B benchmark: $10&ndash;$14</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── Section 2: Boosted Posts ── -->
+  <div class="section-tag">02 &nbsp;&middot;&nbsp; The Campaign</div>
+  <div class="section-heading">Posts we <span>boosted this month</span></div>
+
+  <div class="panel" style="margin-bottom:12px;">
+    <div class="panel-title"><span class="dot"></span> Top 5 performing posts &mdash; each boosted at $100 for 7&ndash;10 days</div>
+    <table class="boost-table">
+      <thead>
+        <tr>
+          <th style="width:40%;">Post</th>
+          <th>Reach</th>
+          <th>Impressions</th>
+          <th>Engagements</th>
+          <th>Eng. Rate</th>
+          <th>Spend</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <span class="post-pill pill-p1">P1 &mdash; Revenue</span>
+            &ldquo;Your parking lot is full. Your revenue isn&rsquo;t.&rdquo;
+            <span class="top-badge">&#9733; Top post</span>
+          </td>
+          <td class="xxx">XX,XXX</td>
+          <td class="xxx">XX,XXX</td>
+          <td class="xxx">XXX</td>
+          <td class="xxx">X.X%</td>
+          <td>$100</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="post-pill pill-p1">P1 &mdash; Revenue</span>
+            &ldquo;From 40% occupancy to fully monetised — here&rsquo;s how.&rdquo;
+          </td>
+          <td class="xxx">XX,XXX</td>
+          <td class="xxx">XX,XXX</td>
+          <td class="xxx">XXX</td>
+          <td class="xxx">X.X%</td>
+          <td>$100</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="post-pill pill-p2">P2 &mdash; Platform</span>
+            &ldquo;QR check-in. No staff. No friction. How it works in 60 seconds.&rdquo;
+          </td>
+          <td class="xxx">XX,XXX</td>
+          <td class="xxx">XX,XXX</td>
+          <td class="xxx">XXX</td>
+          <td class="xxx">X.X%</td>
+          <td>$100</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="post-pill pill-p4">P4 &mdash; Trust</span>
+            &ldquo;Gated lots. Verified renters. Dual GPS. Zero liability gaps.&rdquo;
+          </td>
+          <td class="xxx">XX,XXX</td>
+          <td class="xxx">XX,XXX</td>
+          <td class="xxx">XXX</td>
+          <td class="xxx">X.X%</td>
+          <td>$100</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="post-pill pill-p4">P4 &mdash; Trust</span>
+            &ldquo;How we protect your property, your guests, and your revenue.&rdquo;
+          </td>
+          <td class="xxx">XX,XXX</td>
+          <td class="xxx">XX,XXX</td>
+          <td class="xxx">XXX</td>
+          <td class="xxx">X.X%</td>
+          <td>$100</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;background:var(--indigo-pale);border-radius:8px;padding:10px 14px;font-size:11.5px;line-height:1.6;">
+      <strong>How we pick the 5:</strong> Of the 12 organic posts published this month, we rank by organic engagement rate at 48 hours. The top 5 get $100 each behind them on Facebook feed &amp; stories, targeting the verified 1.8M&ndash;2.2M B2B operator pool.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── Section 3: 3-Month Trend ── -->
+  <div class="section-tag">04 &nbsp;&middot;&nbsp; Measurement</div>
+  <div class="section-heading">Reach building <span>month over month</span></div>
+
+  <div class="panel" style="margin-bottom:12px;">
+    <div class="panel-title"><span class="dot" style="background:var(--navy);"></span> Cumulative operators reached &mdash; 3-month view</div>
+    <div class="trend-row">
+      <div class="trend-card">
+        <div class="trend-week">Month 1</div>
+        <div class="trend-metric"><span class="xxx">XX,XXX</span></div>
+        <div class="trend-sub">operators reached</div>
+        <span class="trend-badge tb-flat">Baseline</span>
+      </div>
+      <div class="trend-card">
+        <div class="trend-week">Month 2</div>
+        <div class="trend-metric"><span class="xxx">XX,XXX</span></div>
+        <div class="trend-sub">operators reached</div>
+        <span class="trend-badge tb-up">&#8593; +XX%</span>
+      </div>
+      <div class="trend-card current">
+        <div class="trend-week">Month 3 (this month)</div>
+        <div class="trend-metric"><span class="xxx">XX,XXX</span></div>
+        <div class="trend-sub">operators reached</div>
+        <span class="trend-badge tb-up">&#8593; +XX%</span>
+      </div>
+    </div>
+    <div style="position:relative;height:160px;"><canvas id="trendChart"></canvas></div>
+    <div style="margin-top:10px;background:var(--navy);border-radius:8px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div style="font-size:12px;font-weight:500;color:#fff;">3-Month Cumulative Reach</div>
+      <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.5px;"><span class="xxx" style="color:rgba(255,255,255,0.5);">XXX,XXX</span> <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);">total operators (target: 84K&ndash;135K)</span></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── Section 4: Content Performance ── -->
+  <div class="section-tag">04 &nbsp;&middot;&nbsp; Measurement</div>
+  <div class="section-heading">Best &amp; worst <span>performing content</span></div>
+
+  <div class="two-col">
+    <!-- Content Type Breakdown -->
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--purple);"></span> Which content format performed best?</div>
+      <div style="margin-bottom:8px;">
+        <div class="ctype-row">
+          <div class="ctype-label">Video</div>
+          <div class="ctype-track"><div class="ctype-fill" style="width:60%;background:var(--navy);"><span class="ctype-pct">60%</span></div></div>
+          <div class="ctype-note xxx">X.X% eng.</div>
+        </div>
+        <div class="ctype-row">
+          <div class="ctype-label">Carousel</div>
+          <div class="ctype-track"><div class="ctype-fill" style="width:30%;background:var(--indigo);"><span class="ctype-pct">30%</span></div></div>
+          <div class="ctype-note xxx">X.X% eng.</div>
+        </div>
+        <div class="ctype-row" style="margin-bottom:0;">
+          <div class="ctype-label">Image</div>
+          <div class="ctype-track"><div class="ctype-fill" style="width:10%;background:#a5b4fc;"><span class="ctype-pct">10%</span></div></div>
+          <div class="ctype-note xxx">X.X% eng.</div>
+        </div>
+      </div>
+      <div style="background:var(--gray);border-radius:8px;padding:10px 14px;font-size:11.5px;line-height:1.6;margin-top:12px;">
+        &#128161; Bar heights are illustrative. In the live report, these reflect actual Meta engagement data for the month.
+      </div>
+    </div>
+
+    <!-- Audience Snapshot -->
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--green);"></span> Who we&rsquo;re reaching &mdash; B2B operator pool</div>
+      <div style="font-size:12px;color:var(--text);margin-bottom:10px;line-height:1.6;">
+        Every boost targets the same verified audience — one focused pool of near-airport hospitality operators across the US.
+      </div>
+      <div style="margin-bottom:12px;">
+        <span class="audience-tag">&#127970; Hotel GMs</span>
+        <span class="audience-tag">&#128722; Motel Managers</span>
+        <span class="audience-tag">&#128101; Small Business Owners</span>
+        <span class="audience-tag">&#127980; Hospitality Operators</span>
+      </div>
+      <div style="background:var(--navy);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--indigo);font-weight:600;margin-bottom:4px;">Verified Audience Size &mdash; US</div>
+        <div style="font-size:26px;font-weight:700;color:#fff;letter-spacing:-0.5px;margin-bottom:2px;">1.8M &ndash; 2.2M</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);">Must be small business owner or Owner/Manager/CEO title &middot; AND match hotel or real estate interest</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Post Highlight -->
+  <div class="panel" style="margin-bottom:12px;">
+    <div class="panel-title"><span class="dot" style="background:var(--amber);"></span> Top post this month</div>
+    <div style="font-size:11.5px;color:var(--text);margin-bottom:10px;">The single best-performing boosted post, by engagement rate:</div>
+    <div class="top-post-card">
+      <div class="top-post-label">&#9733; Best Performing Post &nbsp;&middot;&nbsp; <span class="xxx">Post title goes here</span></div>
+      <div class="top-post-content">&ldquo;Your parking lot is full. Your revenue isn&rsquo;t. KodaCars lets you monetise every idle bay — no capital, no staff, no risk. Just income from the cars already in your lot.&rdquo;</div>
+      <div class="top-post-stats">
+        <div class="tps"><strong class="xxx">XX,XXX</strong> Reach</div>
+        <div class="tps"><strong class="xxx">XX,XXX</strong> Impressions</div>
+        <div class="tps"><strong class="xxx">X.X%</strong> Engagement Rate</div>
+        <div class="tps"><strong class="xxx">XXX</strong> Profile Visits</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── Section 5: What We Can Boost Next ── -->
+  <div class="section-tag">04 &nbsp;&middot;&nbsp; Measurement</div>
+  <div class="section-heading">Content <span>recommendations for next month</span></div>
+
+  <div class="rec-grid" style="margin-bottom:16px;">
+    <div class="rec-item">
+      <div class="rec-num">1</div>
+      <div class="rec-text"><strong>Double down on P1 Revenue posts.</strong> The revenue ROI angle consistently drives the highest engagement from hotel GMs and facilities managers. Recommend 2 new P1 posts next month with specific $ figures (e.g. average monthly earnings per bay).</div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num">2</div>
+      <div class="rec-text"><strong>Test video format for the platform walkthrough.</strong> The P2 post on QR check-in had solid reach but lower engagement — a 30-second screen-recording video of the app in action is likely to significantly outperform the static image version.</div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num">3</div>
+      <div class="rec-text"><strong>Add a P1 carousel: &ldquo;Lots like yours, earnings like this.&rdquo;</strong> Carousel format with 4&ndash;5 slides showing: empty lot &rarr; listed on KodaCars &rarr; monthly earnings dashboard. Carousel drives 2&ndash;3&times; more swipes than static posts in B2B.</div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num">4</div>
+      <div class="rec-text"><strong>Keep boosting the P4 Trust posts consistently.</strong> Trust content (gated lots, insurance, telematics) has lower CTR but high saves &mdash; operators are bookmarking it for later. This is the content that converts warm audiences in Phase 2.</div>
+    </div>
+  </div>
+
+  <!-- ── Phase 2 Callout ── -->
+  <div class="phase-callout">
+    <div class="phase-tag">PHASE 2 &nbsp;&middot;&nbsp; MONTH 3+</div>
+    <div class="phase-text">
+      <strong>Your warm audience is building.</strong> Every operator who engages with a boosted post is automatically saved to a Custom Audience in Meta Ads Manager. Once this pool reaches sufficient size, Phase 2 activates a lead generation campaign retargeting only people who already know KodaCars — dramatically lowering cost per demo request.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── Section 6: Key Observations ── -->
+  <div class="section-tag">04 &nbsp;&middot;&nbsp; Measurement</div>
+  <div class="section-heading">Key <span>observations this month</span></div>
+
+  <div class="panel" style="margin-bottom:12px;">
+    <div class="insight-card green">
+      <strong>Organic posts are doing the groundwork — boosting amplifies what already works.</strong> The strategy is working as designed: organic posts build the page and signal quality to Meta&rsquo;s algorithm. The top 5 performers are then pushed to 28K&ndash;45K verified operators at a CPM of $10&ndash;$14, a fraction of what traditional B2B lead gen costs.
+    </div>
+    <div class="insight-card">
+      <strong>Frequency is capped at 2&ndash;3 times per week per operator — by design.</strong> This ensures KodaCars builds familiarity without fatigue. The goal is not immediate action, but name recognition. When sales outreach begins, operators will already know who KodaCars is.
+    </div>
+    <div class="insight-card amber">
+      <strong>Watch: Meta B2B targeting is broad by nature — LinkedIn is not.</strong> The audience is based on interest and job-title signals, not verified employment data. This means some impressions will fall outside the ideal profile. The 1.8M&ndash;2.2M audience pool is built and verified in Meta Ads Manager to minimise this, but it is an inherent characteristic of Meta B2B targeting at this budget level.
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="footer">
+    <div class="footer-left">
+      Prepared by <strong>Damco Digital</strong> &nbsp;&middot;&nbsp; Confidential: For KodaCars Team Use Only<br>
+      Data source: Meta Ads Manager &nbsp;&middot;&nbsp; Sample report &mdash; live data replaces all XXX values &nbsp;&middot;&nbsp; 23 June 2026
+    </div>
+    <div class="footer-right">KodaCars</div>
+  </div>
+
+</div>
+
+<script>
+window.addEventListener('load', function(){
+  new Chart(document.getElementById('trendChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['Month 1','Month 2','Month 3 (this month)'],
+      datasets: [{
+        label: 'Operators Reached',
+        data: [30, 65, 100],
+        backgroundColor: ['#c7d2fe','#a5b4fc','#1e1b4b'],
+        borderRadius: 6,
+        barPercentage: 0.55,
+        categoryPercentage: 0.7
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: () => ' Live data in actual report'
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'IBM Plex Sans', size: 11 }, color: '#525252' }
+        },
+        y: {
+          display: false,
+          grid: { display: false }
+        }
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>

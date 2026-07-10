@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wellspring — Zipcode Analysis 28 Mar 2026 – 25 Jun 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --teal:      #1a3a3a;
+      --teal-mid:  #254f4f;
+      --teal-lite: #2d6060;
+      --gold:      #c9a84c;
+      --gold-lite: #e8c97a;
+      --cream:     #f5f0e8;
+      --cream2:    #ede6d8;
+      --white:     #ffffff;
+      --red:       #d64c4c;
+      --green:     #2e8b57;
+      --text:      #1a1a1a;
+      --muted:     #5a6370;
+      --border:    #d5cfc4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    /* ── Header ── */
+    .report-header {
+      background: var(--teal);
+      color: var(--cream);
+      padding: 40px 48px 32px;
+    }
+    .header-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .header-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1.2;
+    }
+    .header-subtitle {
+      margin-top: 8px;
+      font-size: 13px;
+      color: rgba(245,240,232,0.65);
+    }
+    .header-meta {
+      display: flex;
+      gap: 24px;
+      margin-top: 20px;
+    }
+    .header-meta-item {
+      font-size: 12px;
+      color: rgba(245,240,232,0.7);
+    }
+    .header-meta-item strong {
+      color: var(--gold-lite);
+      font-weight: 500;
+    }
+
+    /* ── Layout ── */
+    .report-body { padding: 36px 48px; max-width: 1400px; margin: 0 auto; }
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 40px 0 24px;
+    }
+    .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+    .section-divider-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+
+    /* ── KPI cards ── */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--gold);
+      border-radius: 8px;
+      padding: 20px 18px 16px;
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .kpi-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--teal);
+      line-height: 1;
+    }
+    .kpi-note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── Two-col layout ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .panel-full { grid-column: 1 / -1; }
+    .panel-header {
+      background: var(--teal);
+      color: var(--cream);
+      padding: 14px 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-header small { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 400; opacity: 0.7; }
+    .panel-body { padding: 20px; }
+
+    /* ── Chart ── */
+    .chart-container { position: relative; height: 320px; }
+
+    /* ── Table ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table thead tr {
+      background: var(--teal);
+      color: var(--cream);
+    }
+    .data-table thead th {
+      padding: 11px 14px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .data-table thead th.right { text-align: right; }
+    .data-table tbody tr { border-bottom: 1px solid var(--border); }
+    .data-table tbody tr:hover { background: rgba(201,168,76,0.06); }
+    .data-table tbody tr:last-child { border-bottom: none; }
+    .data-table td { padding: 10px 14px; }
+    .data-table td.rank { color: var(--muted); font-size: 12px; width: 36px; }
+    .data-table td.zip { font-weight: 600; color: var(--teal); }
+    .data-table td.cpl { font-weight: 600; color: var(--teal-mid); }
+    .data-table td:not(.rank):not(.zip) { text-align: right; color: var(--muted); }
+    .data-table td.cpl { text-align: right; }
+
+    /* ── Near-office badge ── */
+    .office-badge {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--teal);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 1px 6px;
+      border-radius: 3px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* ── Insights ── */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      padding: 20px;
+    }
+    .insight-card {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .insight-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .insight-title { font-weight: 600; color: var(--teal); margin-bottom: 5px; font-size: 13px; }
+    .insight-body { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+    .insight-body strong { color: var(--text); }
+
+    /* ── Footer ── */
+    .report-footer {
+      background: var(--teal);
+      color: rgba(245,240,232,0.5);
+      text-align: center;
+      padding: 20px;
+      font-size: 11px;
+      margin-top: 48px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .kpi-row { grid-template-columns: repeat(3, 1fr); }
+      .two-col { grid-template-columns: 1fr; }
+      .report-body { padding: 20px 16px; }
+    }
+    @media (max-width: 600px) {
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="report-header">
+  <div class="header-eyebrow">Wellspring Therapeutic Partners · Paid Ads</div>
+  <div class="header-title">Zipcode Performance Analysis</div>
+  <div class="header-subtitle">Google Ads — Geographic Breakdown by Postal Code</div>
+  <div class="header-meta">
+    <div class="header-meta-item">Date Range: <strong>28 Mar 2026 – 25 Jun 2026</strong></div>
+    <div class="header-meta-item">Account: <strong>Wellspring (5093164652)</strong></div>
+    <div class="header-meta-item">Generated: <strong>26 Jun 2026, 10:57</strong></div>
+    <div class="header-meta-item">Primary view: <strong>User Location</strong></div>
+  </div>
+</div>
+
+<!-- ── REPORT BODY ── -->
+<div class="report-body">
+
+  <!-- KPI cards -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Section 1 — Summary (User Location)</div>
+    <div class="section-divider-line"></div>
+  </div>
+  <div class="kpi-row">
+    
+        <div class="kpi-card">
+            <div class="kpi-label">Zipcodes Active</div>
+            <div class="kpi-value">0</div>
+            <div class="kpi-note">user location</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Total Clicks</div>
+            <div class="kpi-value">0</div>
+            
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Total Conversions</div>
+            <div class="kpi-value">0</div>
+            
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Total Spend</div>
+            <div class="kpi-value">$0.00</div>
+            
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Avg CPL</div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-note">conv ≥ 1</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Overall CTR</div>
+            <div class="kpi-value">0.00%</div>
+            
+        </div>
+  </div>
+
+  <!-- Chart + Top 10 table -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Section 2 — Top Zipcodes</div>
+    <div class="section-divider-line"></div>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header">
+        Top 10 Zipcodes — Clicks &amp; Conversions
+        <small>User Location · sorted by clicks</small>
+      </div>
+      <div class="panel-body">
+        <div class="chart-container">
+          <canvas id="zipChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        Top 10 Zipcodes
+        <small>Clicks · Conversions · CPL</small>
+      </div>
+      <div class="panel-body" style="padding:0;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Zipcode</th>
+              <th class="right">Clicks</th>
+              <th class="right">Conv.</th>
+              <th class="right">Spend</th>
+              <th class="right">CPL</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full data table -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Section 3 — Full Zipcode Table</div>
+    <div class="section-divider-line"></div>
+  </div>
+  <div class="panel panel-full">
+    <div class="panel-header">
+      All Zipcodes — User Location
+      <small>sorted by clicks desc · Gold badge = near Troy or Clinton Township office</small>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Zipcode</th>
+            <th class="right">Clicks</th>
+            <th class="right">Impressions</th>
+            <th class="right">CTR</th>
+            <th class="right">Avg CPC</th>
+            <th class="right">Spend</th>
+            <th class="right">Conversions</th>
+            <th class="right">CPL</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Area of interest table -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Section 4 — Area of Interest (Search Intent)</div>
+    <div class="section-divider-line"></div>
+  </div>
+  <div class="panel panel-full">
+    <div class="panel-header">
+      Area of Interest — Top 30 Zipcodes
+      <small>Where users searched FROM regardless of physical location</small>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Zipcode</th>
+            <th class="right">Clicks</th>
+            <th class="right">Impressions</th>
+            <th class="right">CTR</th>
+            <th class="right">Avg CPC</th>
+            <th class="right">Spend</th>
+            <th class="right">Conversions</th>
+            <th class="right">CPL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan='9'>No data</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Key insights -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Section 5 — Key Observations</div>
+    <div class="section-divider-line"></div>
+  </div>
+  <div class="panel panel-full">
+    <div class="panel-header">Key Observations</div>
+    <div class="insights-grid">
+      
+            <div class="insight-card">
+                <div class="insight-icon">ℹ️</div>
+                <div>
+                    <div class="insight-title">Data Looks Clean</div>
+                    <div class="insight-body">No major anomalies detected. All active zipcodes have reasonable spend distribution.</div>
+                </div>
+            </div>
+    </div>
+  </div>
+
+</div><!-- /report-body -->
+
+<!-- ── FOOTER ── -->
+<div class="report-footer">
+  Wellspring Therapeutic Partners · Confidential · Prepared by Damco Digital · 26 Jun 2026, 10:57
+</div>
+
+<script>
+// ── Bar chart ─────────────────────────────────────────────────────────────────
+const ctx = document.getElementById('zipChart').getContext('2d');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: [],
+    datasets: [
+      {
+        label: 'Clicks',
+        data: [],
+        backgroundColor: 'rgba(26,58,58,0.8)',
+        borderColor: '#1a3a3a',
+        borderWidth: 1,
+        borderRadius: 3,
+      },
+      {
+        label: 'Conversions',
+        data: [],
+        backgroundColor: 'rgba(201,168,76,0.85)',
+        borderColor: '#c9a84c',
+        borderWidth: 1,
+        borderRadius: 3,
+        yAxisID: 'y2',
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 12 }, padding: 16 } },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const v = ctx.parsed.y;
+            return ` ${ctx.dataset.label}: ${v % 1 === 0 ? v : v.toFixed(1)}`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: { ticks: { font: { family: 'DM Sans', size: 11 } }, grid: { display: false } },
+      y: {
+        title: { display: true, text: 'Clicks', font: { family: 'DM Sans', size: 11 } },
+        ticks: { font: { family: 'DM Sans', size: 11 } }
+      },
+      y2: {
+        position: 'right',
+        title: { display: true, text: 'Conversions', font: { family: 'DM Sans', size: 11 } },
+        ticks: { font: { family: 'DM Sans', size: 11 } },
+        grid: { drawOnChartArea: false },
+      }
+    }
+  }
+});
+
+// ── Sortable table (click header to sort) ────────────────────────────────────
+document.querySelectorAll('.data-table thead th').forEach((th, colIdx) => {
+  th.style.cursor = 'pointer';
+  th.title = 'Click to sort';
+  let asc = false;
+  th.addEventListener('click', () => {
+    const table = th.closest('table');
+    const tbody = table.querySelector('tbody');
+    const rows  = Array.from(tbody.querySelectorAll('tr'));
+    rows.sort((a, b) => {
+      const av = a.cells[colIdx]?.innerText.replace(/[$,%↑↓]/g, '').trim() || '';
+      const bv = b.cells[colIdx]?.innerText.replace(/[$,%↑↓]/g, '').trim() || '';
+      const an = parseFloat(av), bn = parseFloat(bv);
+      if (!isNaN(an) && !isNaN(bn)) return asc ? an - bn : bn - an;
+      return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+    asc = !asc;
+    rows.forEach(r => tbody.appendChild(r));
+  });
+});
+</script>
+</body>
+</html>

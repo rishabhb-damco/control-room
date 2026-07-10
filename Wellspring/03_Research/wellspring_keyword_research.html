@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellspring – Keyword Research & Page Gap Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1ec;
+    --surface: #ffffff;
+    --surface2: #faf8f5;
+    --border: #e4ddd4;
+    --text: #1a1714;
+    --muted: #7a7168;
+    --accent: #2d6a4f;
+    --accent-light: #e8f4ee;
+    --accent2: #b5451b;
+    --accent2-light: #faeae4;
+    --warn: #c97b2a;
+    --warn-light: #fdf3e4;
+    --blue: #1a4a7a;
+    --blue-light: #e6eef6;
+    --tag-high: #2d6a4f;
+    --tag-med: #c97b2a;
+    --tag-low: #7a7168;
+    --shadow: 0 2px 12px rgba(26,23,20,0.07);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+  .header {
+    background: var(--text);
+    color: #f4f1ec;
+    padding: 36px 48px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 200px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(45,106,79,0.3);
+  }
+  .header-inner { position: relative; z-index: 1; }
+  .header-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .header h1 em {
+    font-style: italic;
+    color: #a8d5b9;
+  }
+  .header-meta {
+    font-size: 13px;
+    color: rgba(244,241,236,0.6);
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .header-meta span::before { content: '· '; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 36px 24px; }
+
+  .note-banner {
+    background: var(--blue-light);
+    border: 1px solid #c0d4e8;
+    border-left: 4px solid var(--blue);
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--blue);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+  .note-banner strong { font-weight: 600; }
+
+  /* Section headers */
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  /* Summary cards */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+  .summary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .summary-card .val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .summary-card .val.green { color: var(--accent); }
+  .summary-card .val.red { color: var(--accent2); }
+  .summary-card .val.amber { color: var(--warn); }
+  .summary-card .val.blue { color: var(--blue); }
+  .summary-card .lbl { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid var(--border); }
+  .tab-btn {
+    background: none; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--muted);
+    padding: 10px 18px 12px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+  .tab-btn:hover:not(.active) { color: var(--text); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Keyword table */
+  .kw-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    font-size: 13.5px;
+  }
+  .kw-table thead tr {
+    background: var(--surface2);
+    border-bottom: 2px solid var(--border);
+  }
+  .kw-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .kw-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .kw-table tr:last-child td { border-bottom: none; }
+  .kw-table tr:hover td { background: var(--surface2); }
+  .kw-table .kw-text { font-weight: 500; color: var(--text); }
+  .kw-table .kw-category {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted);
+  }
+
+  /* Volume bar */
+  .vol-cell { min-width: 130px; }
+  .vol-wrap { display: flex; align-items: center; gap: 10px; }
+  .vol-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .vol-bar { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.4s; }
+  .vol-num { font-size: 12px; font-weight: 600; color: var(--text); min-width: 36px; text-align: right; }
+
+  /* Competition badge */
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .comp-low { background: var(--accent-light); color: var(--accent); }
+  .comp-med { background: var(--warn-light); color: var(--warn); }
+  .comp-high { background: var(--accent2-light); color: var(--accent2); }
+
+  /* Priority badge */
+  .prio-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .prio-1 { background: #fde8e8; color: #b91c1c; }
+  .prio-2 { background: var(--warn-light); color: var(--warn); }
+  .prio-3 { background: var(--accent-light); color: var(--accent); }
+
+  /* Page gap section */
+  .gap-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .gap-col { display: flex; flex-direction: column; gap: 10px; }
+  .gap-col-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .gap-col-title.has { color: var(--accent); border-color: var(--accent); }
+  .gap-col-title.missing { color: var(--accent2); border-color: var(--accent2); }
+  
+  .service-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .service-card.has-page { border-left: 3px solid var(--accent); }
+  .service-card.no-page { border-left: 3px solid var(--accent2); }
+  .service-card.partial { border-left: 3px solid var(--warn); }
+  
+  .service-icon {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+  .service-icon.green { background: var(--accent-light); }
+  .service-icon.red { background: var(--accent2-light); }
+  .service-icon.amber { background: var(--warn-light); }
+
+  .service-info .name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .service-info .url { font-size: 11px; color: var(--accent); font-family: monospace; background: var(--accent-light); padding: 2px 6px; border-radius: 3px; display: inline-block; margin-top: 3px; }
+  .service-info .status { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .service-info .kws { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* LLM opportunity */
+  .llm-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .llm-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+  .llm-card .query {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .llm-card .type-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--blue);
+    background: var(--blue-light);
+    padding: 2px 8px; border-radius: 12px;
+    display: inline-block; margin-bottom: 8px;
+  }
+  .llm-card .desc { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+  .llm-card .recommend {
+    margin-top: 10px;
+    font-size: 12px; font-weight: 500;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 6px 10px; border-radius: 5px;
+    line-height: 1.5;
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .filter-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 500; color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .filter-btn.active { background: var(--text); color: #f4f1ec; border-color: var(--text); }
+  .filter-btn:hover:not(.active) { border-color: var(--text); color: var(--text); }
+
+  /* Action items */
+  .action-list { display: flex; flex-direction: column; gap: 10px; }
+  .action-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: var(--shadow);
+  }
+  .action-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .action-item .action-text { font-size: 13.5px; font-weight: 500; flex: 1; }
+  .action-item .action-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .action-item .action-tag {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .hidden { display: none; }
+
+  @media (max-width: 720px) {
+    .summary-row { grid-template-columns: repeat(2, 1fr); }
+    .gap-grid { grid-template-columns: 1fr; }
+    .llm-grid { grid-template-columns: 1fr; }
+    .header { padding: 24px 20px; }
+    .container { padding: 24px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-label">Damco Digital · Client: Wellspring Therapeutic Partners</div>
+    <h1>Keyword Research &amp; <em>Page Gap Analysis</em></h1>
+    <div class="header-meta">
+      <span>Target: Troy &amp; Clinton Township, MI</span>
+      <span>Focus: Therapy Services (Non-Medication)</span>
+      <span>Prepared: May 2026</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="note-banner">
+    <strong>📌 Note on Search Volumes:</strong> Local volume data for Troy &amp; Clinton Township is not publicly available via free tools. Volumes shown are <strong>estimated monthly local figures</strong> based on: national benchmark data from SEO industry sources, scaled to the combined market population (~185K), seasonal patterns, and observed SERP competition. Use as directional guidance — validate against Google Keyword Planner with location filters set to zip codes 48084 / 48038 before finalizing bids.
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="val blue">38</div>
+      <div class="lbl">Keywords Researched</div>
+    </div>
+    <div class="summary-card">
+      <div class="val green">4</div>
+      <div class="lbl">Existing Dedicated Pages</div>
+    </div>
+    <div class="summary-card">
+      <div class="val red">7</div>
+      <div class="lbl">Pages Missing (Need Build)</div>
+    </div>
+    <div class="summary-card">
+      <div class="val amber">~590</div>
+      <div class="lbl">Est. Total Monthly Searches (Combined)</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('keywords', this)">🔍 Keyword Research</button>
+    <button class="tab-btn" onclick="switchTab('pages', this)">📄 Page Gap Analysis</button>
+    <button class="tab-btn" onclick="switchTab('llm', this)">🤖 LLM / GEO Opportunities</button>
+    <button class="tab-btn" onclick="switchTab('actions', this)">✅ Action Plan</button>
+  </div>
+
+  <!-- KEYWORDS TAB -->
+  <div class="tab-panel active" id="tab-keywords">
+    <div class="section-label">Keyword Research</div>
+    <div class="section-title">38 Keywords · Troy &amp; Clinton Township, Michigan</div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterKW('all', this)">All</button>
+      <button class="filter-btn" onclick="filterKW('emerging', this)">Emerging Adults</button>
+      <button class="filter-btn" onclick="filterKW('teen', this)">Teen Therapy</button>
+      <button class="filter-btn" onclick="filterKW('adult', this)">Adult Therapy</button>
+      <button class="filter-btn" onclick="filterKW('women', this)">Women</button>
+      <button class="filter-btn" onclick="filterKW('life', this)">Life Transitions</button>
+      <button class="filter-btn" onclick="filterKW('adhd', this)">ADHD</button>
+      <button class="filter-btn" onclick="filterKW('anxiety', this)">Anxiety/Depression</button>
+    </div>
+
+    <table class="kw-table" id="kw-table">
+      <thead>
+        <tr>
+          <th>Keyword</th>
+          <th>Category</th>
+          <th class="vol-cell">Est. Monthly Vol. (Local)</th>
+          <th>Competition</th>
+          <th>Intent</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody id="kw-tbody">
+        <!-- Populated by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGE GAP TAB -->
+  <div class="tab-panel" id="tab-pages">
+    <div class="section-label">Website Audit</div>
+    <div class="section-title">Service Page Inventory — what exists vs. what's missing</div>
+
+    <div class="gap-grid">
+      <div>
+        <div class="gap-col-title has">✅ Pages That Exist (Dedicated URL)</div>
+        <div class="gap-col" id="has-pages"></div>
+      </div>
+      <div>
+        <div class="gap-col-title missing">🔴 Pages Missing (Need to Be Created)</div>
+        <div class="gap-col" id="missing-pages"></div>
+      </div>
+    </div>
+
+    <div class="note-banner" style="margin-top:8px; border-left-color: var(--warn); background: var(--warn-light); color: #7a4a10; border-color: #e8c99a;">
+      <strong>⚠️ Watch out for keyword cannibalization:</strong> Services like "Adult Therapy" and "Therapy for Women" are currently mentioned on the homepage and /our-therapy-services/ without dedicated landing pages. These shared mentions dilute SEO signal. Each target service needs its own URL with unique content before adding keywords to ads.
+    </div>
+  </div>
+
+  <!-- LLM TAB -->
+  <div class="tab-panel" id="tab-llm">
+    <div class="section-label">GEO Strategy — Generative Engine Optimization</div>
+    <div class="section-title">How Wellspring can appear when people ask AI (ChatGPT, Claude, Gemini)</div>
+
+    <div class="llm-grid" id="llm-grid"></div>
+  </div>
+
+  <!-- ACTIONS TAB -->
+  <div class="tab-panel" id="tab-actions">
+    <div class="section-label">Next Steps — Rishabh &amp; Diksha</div>
+    <div class="section-title">Prioritized Task List (Before Tuesday Check-In)</div>
+    <div class="action-list" id="action-list"></div>
+  </div>
+
+</div>
+
+<script>
+// ────────── DATA ──────────
+
+const keywords = [
+  // Emerging Adults / Life Transitions
+  { kw: "therapist for young adults Troy MI", cat: "emerging", vol: 40, comp: "med", intent: "Commercial", prio: 1 },
+  { kw: "emerging adults therapy Clinton Township", cat: "emerging", vol: 20, comp: "low", intent: "Commercial", prio: 1 },
+  { kw: "therapy for feeling stuck Michigan", cat: "emerging", vol: 25, comp: "low", intent: "Informational", prio: 1 },
+  { kw: "adulting issues therapist near me", cat: "emerging", vol: 15, comp: "low", intent: "Commercial", prio: 1 },
+  { kw: "therapy after graduation Troy MI", cat: "emerging", vol: 10, comp: "low", intent: "Commercial", prio: 2 },
+  { kw: "feeling behind in life therapist Michigan", cat: "emerging", vol: 15, comp: "low", intent: "Informational", prio: 2 },
+  { kw: "life transitions therapist Troy Michigan", cat: "life", vol: 30, comp: "low", intent: "Commercial", prio: 1 },
+  { kw: "life transitions counseling Clinton Township", cat: "life", vol: 20, comp: "low", intent: "Commercial", prio: 1 },
+  { kw: "therapy for career stress Michigan", cat: "life", vol: 20, comp: "med", intent: "Informational", prio: 2 },
+  { kw: "therapy for self-discipline Troy MI", cat: "emerging", vol: 10, comp: "low", intent: "Informational", prio: 3 },
+
+  // Teen Therapy
+  { kw: "teen therapist Troy MI", cat: "teen", vol: 50, comp: "med", intent: "Commercial", prio: 1 },
+  { kw: "teen therapy Clinton Township Michigan", cat: "teen", vol: 35, comp: "med", intent: "Commercial", prio: 1 },
+  { kw: "therapist for teenagers Troy Michigan", cat: "teen", vol: 30, comp: "med", intent: "Commercial", prio: 1 },
+  { kw: "adolescent therapy Macomb County", cat: "teen", vol: 25, comp: "low", intent: "Commercial", prio: 1 },
+  { kw: "teen mental health counseling Troy MI", cat: "teen", vol: 20, comp: "med", intent: "Commercial", prio: 2 },
+  { kw: "anxiety therapy for teens Michigan", cat: "teen", vol: 30, comp: "med", intent: "Commercial", prio: 2 },
+  { kw: "depression counseling for teens Troy", cat: "teen", vol: 20, comp: "med", intent: "Commercial", prio: 2 },
+
+  // Adult Therapy
+  { kw: "therapist in Troy MI", cat: "adult", vol: 90, comp: "high", intent: "Commercial", prio: 1 },
+  { kw: "therapist near me Troy Michigan", cat: "adult", vol: 120, comp: "high", intent: "Commercial", prio: 1 },
+  { kw: "adult therapist Clinton Township", cat: "adult", vol: 40, comp: "med", intent: "Commercial", prio: 1 },
+  { kw: "counseling Troy Michigan", cat: "adult", vol: 70, comp: "high", intent: "Commercial", prio: 1 },
+  { kw: "individual therapy Troy MI", cat: "adult", vol: 35, comp: "med", intent: "Commercial", prio: 2 },
+  { kw: "psychotherapist Oakland County Michigan", cat: "adult", vol: 25, comp: "med", intent: "Commercial", prio: 2 },
+  { kw: "mental health counselor Troy Michigan", cat: "adult", vol: 40, comp: "med", intent: "Commercial", prio: 2 },
+
+  // Therapy for Women
+  { kw: "therapy for women Troy MI", cat: "women", vol: 30, comp: "low", intent: "Commercial", prio: 1 },
+  { kw: "women's therapist Clinton Township", cat: "women", vol: 20, comp: "low", intent: "Commercial", prio: 1 },
+  { kw: "female therapist near me Troy Michigan", cat: "women", vol: 25, comp: "low", intent: "Commercial", prio: 2 },
+  { kw: "postpartum therapy Troy MI", cat: "women", vol: 15, comp: "low", intent: "Commercial", prio: 2 },
+
+  // ADHD
+  { kw: "ADHD therapist Troy MI", cat: "adhd", vol: 50, comp: "med", intent: "Commercial", prio: 1 },
+  { kw: "ADHD therapy Clinton Township Michigan", cat: "adhd", vol: 30, comp: "low", intent: "Commercial", prio: 1 },
+  { kw: "ADHD therapist for teens Troy Michigan", cat: "adhd", vol: 30, comp: "low", intent: "Commercial", prio: 1 },
+  { kw: "ADHD counseling Macomb County", cat: "adhd", vol: 20, comp: "low", intent: "Commercial", prio: 2 },
+
+  // Anxiety / Depression
+  { kw: "anxiety therapist Troy MI", cat: "anxiety", vol: 80, comp: "high", intent: "Commercial", prio: 1 },
+  { kw: "depression therapy Clinton Township", cat: "anxiety", vol: 60, comp: "high", intent: "Commercial", prio: 1 },
+  { kw: "anxiety counseling near me Troy Michigan", cat: "anxiety", vol: 55, comp: "high", intent: "Commercial", prio: 2 },
+  { kw: "anxiety treatment Oakland County MI", cat: "anxiety", vol: 30, comp: "med", intent: "Commercial", prio: 2 },
+  { kw: "therapist for social anxiety Troy MI", cat: "anxiety", vol: 20, comp: "med", intent: "Commercial", prio: 3 },
+  { kw: "burnout therapist Troy Michigan", cat: "anxiety", vol: 15, comp: "low", intent: "Commercial", prio: 2 },
+];
+
+const maxVol = Math.max(...keywords.map(k => k.vol));
+
+const hasPages = [
+  { name: "Medication Management", url: "/medication-management-in-troy-and-clinton-twp/", note: "Fully built dedicated page", kws: "medication management Troy, psychiatrist Clinton Twp" },
+  { name: "Therapy for Women", url: "/therapy-for-women-in-troy-and-clinton-twp/", note: "Fully built dedicated page", kws: "women's therapy Troy MI, female therapist Clinton Twp" },
+  { name: "Trauma Therapy", url: "/trauma-therapy-in-troy-and-clinton-twp/", note: "Fully built dedicated page", kws: "trauma therapist Troy MI, EMDR Clinton Twp" },
+  { name: "Grief Counseling", url: "/grief-counseling-in-troy-and-clinton-twp/", note: "Fully built dedicated page", kws: "grief counselor Troy MI, bereavement therapy" },
+];
+
+const missingPages = [
+  { name: "Teen Therapy", note: "Mentioned on homepage/services — NO dedicated page or URL", kws: "teen therapist Troy MI, adolescent therapy Clinton Twp, therapy for teenagers", priority: "🔴 High" },
+  { name: "Adult Therapy", note: "Referenced in homepage copy — NO dedicated landing page", kws: "adult therapist Troy MI, individual therapy Clinton Twp, counseling Troy Michigan", priority: "🔴 High" },
+  { name: "Emerging Adults Therapy", note: "Zero page or content exists for this — biggest intake source", kws: "therapy young adults Troy MI, feeling stuck therapist Michigan, adulting therapy", priority: "🔴 High" },
+  { name: "Life Transitions Therapy", note: "Listed in 'areas of support' section only — no page", kws: "life transitions therapist Troy MI, graduation therapy, career change therapy", priority: "🟠 High" },
+  { name: "ADHD Therapy", note: "Listed as area of support only — no dedicated page", kws: "ADHD therapist Troy MI, ADHD therapy for teens, ADHD counseling Macomb County", priority: "🟠 High" },
+  { name: "Anxiety Therapy", note: "Listed as area of support — high search volume, no page", kws: "anxiety therapist Troy MI, anxiety therapy Clinton Twp, anxiety counseling near me", priority: "🟠 High" },
+  { name: "Child Therapy", note: "Mentioned on homepage (serving children 6+) — no dedicated page", kws: "child therapist Troy MI, therapy for kids Clinton Twp, child counseling near me", priority: "🟡 Medium" },
+];
+
+const llmItems = [
+  { query: "I just graduated and feel completely lost", type: "Emerging Adults", desc: "Users search AI for guidance when feeling behind or stuck after major milestones. This is Wellspring's #1 intake driver.", recommend: "Create a long-form page + Reddit thread on 'therapy for post-graduation identity crisis' — high LLM pick-up." },
+  { query: "How do I stop feeling behind in life?", type: "Emerging Adults", desc: "Classic adulting anxiety query. Users don't search Google — they ask ChatGPT or Claude for coping advice.", recommend: "Wellspring blog post with structured Q&A format targeting this exact phrasing will be crawled by LLMs." },
+  { query: "Best therapist for teens in Troy Michigan", type: "Teen Therapy", desc: "Parents search AI for local teen therapy recommendations — LLMs surface therapydirectories and local practice websites.", recommend: "Teen therapy page with specific location + age-group signals will rank in both Google and LLM citations." },
+  { query: "I feel stuck and can't adult properly", type: "Life Transitions", desc: "Colloquial, emotional queries are exactly what people type into AI. Wellspring's language needs to mirror this.", recommend: "Reddit post or blog titled 'Why therapy helps when you feel like you can't adult' — naturally references Wellspring." },
+  { query: "therapy for life transitions near me", type: "Life Transitions", desc: "Mid-funnel query — someone already considering therapy but looking for match. LLMs prioritise practices with a dedicated page.", recommend: "Dedicated Life Transitions page is the single biggest unlock for both GEO and local SEO." },
+  { query: "ADHD therapist in Clinton Township Michigan", type: "ADHD", desc: "Hyper-local queries with strong commercial intent. LLMs increasingly cite local businesses with rich, structured pages.", recommend: "ADHD therapy page with location modifiers, schema markup, and a FAQ section for maximum LLM citation chance." },
+];
+
+const actions = [
+  { n: 1, text: "Keyword validation in Google Keyword Planner", sub: "Set location filters to ZIP 48084 (Troy) + 48038 (Clinton Twp). Pull exact volumes for the 38 keywords in this report.", tag: "Rishabh · Today", tagColor: "#b91c1c", tagBg: "#fde8e8" },
+  { n: 2, text: "Create 5 new service pages — brief to Adhyanshi", sub: "Pages needed: Teen Therapy, Adult Therapy, Emerging Adults/Life Transitions, ADHD Therapy, Anxiety Therapy. Each needs 900–1200 words, location modifiers, FAQ section.", tag: "Rishabh + Adhyanshi", tagColor: "#7a4a10", tagBg: "#fdf3e4" },
+  { n: 3, text: "Competitor keyword research — therapy services", sub: "Research what service pages Open Door Counseling, Perspectives of Troy, and Thriveworks Troy are targeting. Identify keyword gaps Wellspring doesn't cover.", tag: "Diksha · By Monday", tagColor: "#1a4a7a", tagBg: "#e6eef6" },
+  { n: 4, text: "Update Google Ads keywords away from medication management", sub: "Reduce medication management keyword budget. Shift to adult therapy, teen therapy, anxiety, ADHD, and life transitions. New ad groups per service page.", tag: "Rishabh · After pages go live", tagColor: "#1a1714", tagBg: "#f4f1ec" },
+  { n: 5, text: "Pull March performance benchmark data", sub: "Extract Wellspring's best month (March) metrics from the dashboard: leads, scheduling rate, conversion, CPC. Set as internal benchmark for next quarter.", tag: "Rishabh · By Tuesday", tagColor: "#b91c1c", tagBg: "#fde8e8" },
+  { n: 6, text: "Reddit account setup — emerging adults content", sub: "Diksha to log in via VPN before Tuesday. Initial content focus: adulting, feeling stuck, post-graduation therapy. Wellspring mentioned naturally in thread context.", tag: "Diksha · Before Tuesday", tagColor: "#7a4a10", tagBg: "#fdf3e4" },
+  { n: 7, text: "Tuesday 4pm team check-in with Harshit", sub: "Bring keyword research, page gap summary, and competitor analysis. Harshit needs to take this to Wellspring on Wednesday.", tag: "All · Tuesday 4PM", tagColor: "#1a4a7a", tagBg: "#e6eef6" },
+];
+
+// ────────── RENDER ──────────
+
+function renderTable(filter = 'all') {
+  const tbody = document.getElementById('kw-tbody');
+  const filtered = filter === 'all' ? keywords : keywords.filter(k => k.cat === filter);
+  tbody.innerHTML = filtered.map(k => {
+    const barWidth = Math.round((k.vol / maxVol) * 100);
+    const compClass = k.comp === 'low' ? 'comp-low' : k.comp === 'med' ? 'comp-med' : 'comp-high';
+    const compLabel = k.comp === 'low' ? 'Low' : k.comp === 'med' ? 'Medium' : 'High';
+    const prioClass = k.prio === 1 ? 'prio-1' : k.prio === 2 ? 'prio-2' : 'prio-3';
+    const prioLabel = k.prio === 1 ? '🔴 P1' : k.prio === 2 ? '🟠 P2' : '🟢 P3';
+    const catLabel = {emerging:'Emerging Adults',teen:'Teen Therapy',adult:'Adult Therapy',women:'Women',life:'Life Transitions',adhd:'ADHD',anxiety:'Anxiety/Depression'}[k.cat];
+    return `<tr data-cat="${k.cat}">
+      <td class="kw-text">${k.kw}</td>
+      <td><span class="kw-category">${catLabel}</span></td>
+      <td class="vol-cell">
+        <div class="vol-wrap">
+          <div class="vol-bar-track"><div class="vol-bar" style="width:${barWidth}%"></div></div>
+          <div class="vol-num">~${k.vol}</div>
+        </div>
+      </td>
+      <td><span class="comp-badge ${compClass}">${compLabel}</span></td>
+      <td><span style="font-size:12px;color:var(--muted)">${k.intent}</span></td>
+      <td><span class="prio-badge ${prioClass}">${prioLabel}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterKW(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable(cat);
+}
+
+function renderPages() {
+  document.getElementById('has-pages').innerHTML = hasPages.map(p => `
+    <div class="service-card has-page">
+      <div class="service-icon green">✅</div>
+      <div class="service-info">
+        <div class="name">${p.name}</div>
+        <div class="url">${p.url}</div>
+        <div class="kws" style="margin-top:5px;font-size:11px;color:var(--muted)">Keywords: ${p.kws}</div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('missing-pages').innerHTML = missingPages.map(p => `
+    <div class="service-card no-page">
+      <div class="service-icon red">🔴</div>
+      <div class="service-info">
+        <div class="name">${p.name} <span style="font-size:11px;font-weight:400;color:var(--accent2);margin-left:4px">${p.priority}</span></div>
+        <div class="status" style="color:var(--accent2)">${p.note}</div>
+        <div class="kws">Target keywords: ${p.kws}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderLLM() {
+  document.getElementById('llm-grid').innerHTML = llmItems.map(item => `
+    <div class="llm-card">
+      <div class="type-tag">${item.type}</div>
+      <div class="query">"${item.query}"</div>
+      <div class="desc">${item.desc}</div>
+      <div class="recommend">→ ${item.recommend}</div>
+    </div>
+  `).join('');
+}
+
+function renderActions() {
+  document.getElementById('action-list').innerHTML = actions.map(a => `
+    <div class="action-item">
+      <div class="action-num">${a.n}</div>
+      <div style="flex:1">
+        <div class="action-text">${a.text}</div>
+        <div class="action-sub">${a.sub}</div>
+      </div>
+      <div class="action-tag" style="color:${a.tagColor};background:${a.tagBg}">${a.tag}</div>
+    </div>
+  `).join('');
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Init
+renderTable();
+renderPages();
+renderLLM();
+renderActions();
+</script>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Wellspring &mdash; Geographic Analysis Apr 1 &ndash; Jun 26, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --cream:#F7F3EE; --cream-dark:#EDE7DC; --charcoal:#1C1C1A;
+  --warm-mid:#6B6460; --teal:#3D7A72; --teal-pale:#EAF3F2;
+  --rust:#C25B3F; --amber:#C9882A; --violet:#5C4E9E;
+  --green:#3D8A60; --red:#C44040; --border:#DDD5C8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#f0ece6;font-family:'DM Sans',sans-serif;color:var(--charcoal);font-size:13px;line-height:1.6;}
+
+/* Password gate */
+#pw-gate{position:fixed;inset:0;background:#1a2e2b;display:flex;align-items:center;justify-content:center;z-index:9999;}
+#pw-gate.hidden{display:none;}
+.pw-box{background:#F7F3EE;border-radius:14px;padding:40px 48px;width:360px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.4);}
+.pw-logo{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;color:#1C1C1A;}
+.pw-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#C25B3F;margin-top:4px;font-weight:500;}
+.pw-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#6B6460;font-weight:500;margin:24px 0 8px;}
+.pw-input{width:100%;padding:10px 14px;border:1.5px solid #DDD5C8;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C1C1A;background:#fff;outline:none;text-align:center;letter-spacing:2px;}
+.pw-input:focus{border-color:#3D7A72;}
+.pw-btn{width:100%;margin-top:14px;padding:11px;background:#3D7A72;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+.pw-btn:hover{background:#2e5e58;}
+.pw-error{font-size:11.5px;color:#C25B3F;margin-top:10px;min-height:18px;}
+.pw-footer{font-size:10px;color:#6B6460;margin-top:20px;}
+.pw-footer strong{color:#1C1C1A;}
+
+/* Page layout */
+.page{max-width:1100px;margin:0 auto;padding:28px 32px;background:var(--cream);min-height:100vh;}
+
+/* Header */
+.header{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:16px;border-bottom:1.5px solid var(--border);margin-bottom:16px;}
+.logo-name{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:500;letter-spacing:-0.5px;color:var(--charcoal);line-height:1;}
+.logo-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:4px;font-weight:500;}
+.header-meta{text-align:right;}
+.report-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--warm-mid);font-weight:500;}
+.report-week{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--charcoal);margin-top:2px;}
+.report-prepared{font-size:11px;color:var(--warm-mid);margin-top:4px;}
+
+/* Section helpers */
+.section-label{font-size:9px;text-transform:uppercase;letter-spacing:3px;color:var(--teal);font-weight:500;margin-bottom:8px;}
+.section-divider{margin:20px 0 14px;padding-top:18px;border-top:2px solid var(--cream-dark);display:flex;align-items:center;gap:12px;}
+.sdot{width:9px;height:9px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+.section-divider h2{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--charcoal);}
+.stag{font-size:10px;color:var(--warm-mid);font-weight:400;font-family:'DM Sans',sans-serif;}
+
+/* KPI cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+.kpi-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 20px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal);border-radius:10px 10px 0 0;}
+.kpi-card.amber::before{background:var(--amber);}
+.kpi-card.green::before{background:var(--green);}
+.kpi-card.rust::before{background:var(--rust);}
+.kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--warm-mid);font-weight:500;margin-bottom:6px;}
+.kpi-value{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:600;color:var(--charcoal);line-height:1;}
+.kpi-explain{font-size:12px;color:var(--warm-mid);margin-top:5px;line-height:1.5;}
+.kpi-badge{display:inline-block;font-size:9.5px;padding:3px 8px;border-radius:20px;margin-top:6px;font-weight:500;}
+.badge-up{background:#E8F5EC;color:#2E7D4F;}
+.badge-down{background:#FDF1EE;color:#C25B3F;}
+.badge-warn{background:#FDF6EC;color:#C9882A;}
+.badge-teal{background:var(--teal-pale);color:var(--teal);}
+
+/* Two-col panels */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--charcoal);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.panel-title .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+
+/* Charts */
+canvas{max-height:260px;}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;}
+.dt{width:100%;border-collapse:collapse;font-size:12.5px;}
+.dt thead tr{background:var(--teal);color:#fff;}
+.dt thead th{padding:9px 12px;text-align:left;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;white-space:nowrap;cursor:pointer;user-select:none;}
+.dt thead th:hover{background:#2e5e58;}
+.dt tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+.dt tbody tr:last-child{border-bottom:none;}
+.dt tbody tr:hover{background:rgba(61,122,114,0.06);}
+.dt td{padding:9px 12px;}
+.dt td.rank{color:var(--warm-mid);font-size:11px;width:30px;}
+.dt td.loc{font-weight:500;color:var(--charcoal);}
+.dt td.num{text-align:right;color:var(--warm-mid);}
+.dt td.cpl-cell{text-align:right;font-weight:600;color:var(--teal);}
+.loc-badge{display:inline-block;background:var(--teal);color:#fff;font-size:8.5px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:1px 6px;border-radius:3px;margin-left:6px;vertical-align:middle;}
+
+/* Insight cards */
+.insight-card{border-left:3px solid var(--teal);padding:10px 14px;margin-bottom:8px;background:var(--teal-pale);border-radius:0 8px 8px 0;font-size:12.5px;line-height:1.6;}
+.insight-card.amber{border-left-color:var(--amber);background:#FDF6EC;}
+.insight-card.rust{border-left-color:var(--rust);background:#FDF1EE;}
+.insight-card:last-child{margin-bottom:0;}
+
+/* Footer */
+.divider{border:none;border-top:1px solid var(--border);margin:14px 0;}
+.footer{margin-top:20px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.footer-left{font-size:10.5px;color:var(--warm-mid);line-height:1.7;}
+.footer-right{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:var(--teal);}
+
+@media print{body{background:white;}.page{padding:16px 20px;}#pw-gate{display:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="pw-gate">
+  <div class="pw-box">
+    <div class="pw-logo">Wellspring</div>
+    <div class="pw-sub">Therapeutic Partners</div>
+    <div class="pw-label">Enter report password</div>
+    <input id="pw-input" class="pw-input" type="password" placeholder="............" autocomplete="off"/>
+    <button class="pw-btn" onclick="checkPassword()">View Report</button>
+    <div id="pw-error" class="pw-error"></div>
+    <div class="pw-footer">Confidential &middot; Prepared by <strong>Damco Digital</strong></div>
+  </div>
+</div>
+<script>
+(function(){if(sessionStorage.getItem('ws_auth')==='1'){document.addEventListener('DOMContentLoaded',function(){document.getElementById('pw-gate').classList.add('hidden');});}}());
+function checkPassword(){
+  if(document.getElementById('pw-input').value==='Wellspring123'){
+    sessionStorage.setItem('ws_auth','1');
+    document.getElementById('pw-gate').classList.add('hidden');
+  }else{
+    document.getElementById('pw-error').textContent='Incorrect password.';
+    document.getElementById('pw-input').value='';
+    document.getElementById('pw-input').focus();
+  }
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var inp=document.getElementById('pw-input');
+  if(inp){
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter')checkPassword();});
+    if(sessionStorage.getItem('ws_auth')!=='1')inp.focus();
+  }
+});
+</script>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="logo-name">Wellspring</div>
+      <div class="logo-sub">Therapeutic Partners</div>
+    </div>
+    <div class="header-meta">
+      <div class="report-label">Geographic Performance Analysis</div>
+      <div class="report-week">Apr 1 &ndash; Jun 26, 2026</div>
+      <div class="report-prepared">Prepared by Damco Digital &nbsp;&middot;&nbsp; Google Ads &mdash; Matched Locations</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: OVERVIEW KPIs -->
+  <div class="section-label">Geographic Overview &mdash; Where your ads are reaching across Michigan</div>
+  <div class="kpi-grid">
+    <div class="kpi-card teal">
+      <div class="kpi-label">Total clicks from ads</div>
+      <div class="kpi-value">1,184</div>
+      <div class="kpi-explain">Across all 101 active zip codes, Apr 1 &ndash; Jun 26</div>
+      <span class="kpi-badge badge-teal">1,184 total clicks</span>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Conversions (form fills &amp; calls)</div>
+      <div class="kpi-value">52</div>
+      <div class="kpi-explain">People who clicked an ad and submitted a contact form or called</div>
+      <span class="kpi-badge badge-up">51.7 conversions tracked</span>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-label">Average cost per conversion</div>
+      <div class="kpi-value">$100.01</div>
+      <div class="kpi-explain">How much was spent on average to generate each enquiry</div>
+      <span class="kpi-badge badge-warn">vs $44 March benchmark</span>
+    </div></div>
+  <div class="kpi-grid">
+    <div class="kpi-card teal">
+      <div class="kpi-label">Active zip codes</div>
+      <div class="kpi-value">101</div>
+      <div class="kpi-explain">Zip codes in Michigan that received at least one click</div>
+      <span class="kpi-badge badge-teal">9 near Wellspring offices</span>
+    </div>
+    <div class="kpi-card teal">
+      <div class="kpi-label">Total ad spend</div>
+      <div class="kpi-value">$5,167.41</div>
+      <div class="kpi-explain">Total Google Ads spend attributed to location-matched zip codes</div>
+      <span class="kpi-badge badge-teal">Apr 1 &ndash; Jun 26, 2026</span>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Overall CTR</div>
+      <div class="kpi-value">6.09%</div>
+      <div class="kpi-explain">Percentage of impressions that resulted in a click across all active zips</div>
+      <span class="kpi-badge badge-up">6%+ = strong for healthcare</span>
+    </div></div>
+
+  <!-- SECTION 2: CHARTS -->
+  
+    <div class="section-divider">
+      <span class="sdot" style="background:var(--teal)"></span>
+      <h2>Top Performers &mdash; Zip Code &amp; City Breakdown</h2><span class="stag">101 active zip codes &middot; 58 cities with clicks</span>
+    </div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title"><span class="dot"></span>Top 10 Zip Codes by Clicks</div>
+      <canvas id="zipChart"></canvas>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--amber)"></span>Top 10 Cities by Clicks</div>
+      <canvas id="cityChart"></canvas>
+    </div>
+  </div>
+
+  <!-- SECTION 3: CITY TABLE -->
+  
+    <div class="section-divider">
+      <span class="sdot" style="background:var(--amber)"></span>
+      <h2>City Performance</h2><span class="stag">Top 20 cities by clicks &middot; click any header to re-sort</span>
+    </div>
+  <div class="panel" style="padding:0;">
+    <div class="tbl-wrap">
+      <table class="dt" id="cityTable">
+        <thead><tr>
+          <th>#</th><th>City</th><th>Clicks</th><th>Impr.</th>
+          <th>CTR</th><th>Avg CPC</th><th>Spend</th><th>Conv.</th><th>CPL</th>
+        </tr></thead>
+        <tbody><tr><td class="rank">1</td><td class="loc">Clinton Township</td><td class="num">382</td><td class="num">4,470</td><td class="num">8.55%</td><td class="num">$3.20</td><td class="num">$1223.89</td><td class="num">13</td><td class="cpl-cell">$96.60</td></tr><tr><td class="rank">2</td><td class="loc">Troy</td><td class="num">342</td><td class="num">5,993</td><td class="num">5.71%</td><td class="num">$3.92</td><td class="num">$1340.06</td><td class="num">16</td><td class="cpl-cell">$83.75</td></tr><tr><td class="rank">3</td><td class="loc">Sterling Heights</td><td class="num">57</td><td class="num">1,156</td><td class="num">4.93%</td><td class="num">$5.79</td><td class="num">$329.90</td><td class="num">4</td><td class="cpl-cell">$82.47</td></tr><tr><td class="rank">4</td><td class="loc">Warren</td><td class="num">54</td><td class="num">894</td><td class="num">6.04%</td><td class="num">$7.14</td><td class="num">$385.59</td><td class="num">5</td><td class="cpl-cell">$77.12</td></tr><tr><td class="rank">5</td><td class="loc">Royal Oak</td><td class="num">42</td><td class="num">806</td><td class="num">5.21%</td><td class="num">$5.00</td><td class="num">$210.11</td><td class="num">3</td><td class="cpl-cell">$70.04</td></tr><tr><td class="rank">6</td><td class="loc">Macomb</td><td class="num">34</td><td class="num">937</td><td class="num">3.63%</td><td class="num">$5.27</td><td class="num">$179.06</td><td class="num">2</td><td class="cpl-cell">$89.53</td></tr><tr><td class="rank">7</td><td class="loc">Shelby Township</td><td class="num">31</td><td class="num">657</td><td class="num">4.72%</td><td class="num">$5.27</td><td class="num">$163.30</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">8</td><td class="loc">Detroit</td><td class="num">28</td><td class="num">661</td><td class="num">4.24%</td><td class="num">$4.42</td><td class="num">$123.75</td><td class="num">1</td><td class="cpl-cell">$123.75</td></tr><tr><td class="rank">9</td><td class="loc">Rochester Hills</td><td class="num">24</td><td class="num">519</td><td class="num">4.62%</td><td class="num">$4.57</td><td class="num">$109.71</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">10</td><td class="loc">Mount Clemens</td><td class="num">23</td><td class="num">496</td><td class="num">4.64%</td><td class="num">$4.59</td><td class="num">$105.49</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">11</td><td class="loc">Bloomfield Township</td><td class="num">20</td><td class="num">382</td><td class="num">5.24%</td><td class="num">$3.95</td><td class="num">$78.99</td><td class="num">1</td><td class="cpl-cell">$78.99</td></tr><tr><td class="rank">12</td><td class="loc">New Baltimore</td><td class="num">17</td><td class="num">429</td><td class="num">3.96%</td><td class="num">$4.77</td><td class="num">$81.12</td><td class="num">1</td><td class="cpl-cell">$81.12</td></tr><tr><td class="rank">13</td><td class="loc">Madison Heights</td><td class="num">17</td><td class="num">243</td><td class="num">7.00%</td><td class="num">$4.77</td><td class="num">$81.03</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">14</td><td class="loc">Auburn Hills</td><td class="num">15</td><td class="num">244</td><td class="num">6.15%</td><td class="num">$7.13</td><td class="num">$106.89</td><td class="num">1</td><td class="cpl-cell">$106.89</td></tr><tr><td class="rank">15</td><td class="loc">Birmingham</td><td class="num">14</td><td class="num">405</td><td class="num">3.46%</td><td class="num">$6.34</td><td class="num">$88.74</td><td class="num">1</td><td class="cpl-cell">$88.74</td></tr><tr><td class="rank">16</td><td class="loc">Harrison Township</td><td class="num">12</td><td class="num">212</td><td class="num">5.66%</td><td class="num">$5.38</td><td class="num">$64.55</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">17</td><td class="loc">Fraser</td><td class="num">11</td><td class="num">163</td><td class="num">6.75%</td><td class="num">$2.52</td><td class="num">$27.72</td><td class="num">1</td><td class="cpl-cell">$27.72</td></tr><tr><td class="rank">18</td><td class="loc">Dearborn</td><td class="num">10</td><td class="num">118</td><td class="num">8.47%</td><td class="num">$4.88</td><td class="num">$48.78</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">19</td><td class="loc">Roseville</td><td class="num">10</td><td class="num">266</td><td class="num">3.76%</td><td class="num">$3.50</td><td class="num">$35.03</td><td class="num">1</td><td class="cpl-cell">$35.03</td></tr><tr><td class="rank">20</td><td class="loc">Clawson</td><td class="num">10</td><td class="num">210</td><td class="num">4.76%</td><td class="num">$3.85</td><td class="num">$38.52</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 4: ZIP TABLE -->
+  
+    <div class="section-divider">
+      <span class="sdot" style="background:var(--violet)"></span>
+      <h2>Zip Code Performance</h2><span class="stag">Top 20 zip codes by clicks &middot; teal highlight = near Troy or Clinton Twp office &middot; click header to re-sort</span>
+    </div>
+  <div class="panel" style="padding:0;">
+    <div class="tbl-wrap">
+      <table class="dt" id="zipTable">
+        <thead><tr>
+          <th>#</th><th>Zip Code</th><th>Clicks</th><th>Impr.</th>
+          <th>CTR</th><th>Avg CPC</th><th>Spend</th><th>Conv.</th><th>CPL</th>
+        </tr></thead>
+        <tbody><tr style="background:var(--teal-pale);"><td class="rank">1</td><td class="loc">48038 <span class="loc-badge">near office</span></td><td class="num">262</td><td class="num">2,576</td><td class="num">10.17%</td><td class="num">$2.41</td><td class="num">$632.28</td><td class="num">11</td><td class="cpl-cell">$59.26</td></tr><tr style="background:var(--teal-pale);"><td class="rank">2</td><td class="loc">48084 <span class="loc-badge">near office</span></td><td class="num">161</td><td class="num">2,428</td><td class="num">6.63%</td><td class="num">$3.85</td><td class="num">$620.33</td><td class="num">8</td><td class="cpl-cell">$77.54</td></tr><tr style="background:var(--teal-pale);"><td class="rank">3</td><td class="loc">48083 <span class="loc-badge">near office</span></td><td class="num">76</td><td class="num">1,488</td><td class="num">5.11%</td><td class="num">$3.77</td><td class="num">$286.44</td><td class="num">3</td><td class="cpl-cell">$95.48</td></tr><tr style="background:var(--teal-pale);"><td class="rank">4</td><td class="loc">48035 <span class="loc-badge">near office</span></td><td class="num">56</td><td class="num">675</td><td class="num">8.30%</td><td class="num">$5.49</td><td class="num">$307.29</td><td class="num">2</td><td class="cpl-cell">$153.65</td></tr><tr style="background:var(--teal-pale);"><td class="rank">5</td><td class="loc">48036 <span class="loc-badge">near office</span></td><td class="num">45</td><td class="num">778</td><td class="num">5.78%</td><td class="num">$4.69</td><td class="num">$211.24</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr style="background:var(--teal-pale);"><td class="rank">6</td><td class="loc">48098 <span class="loc-badge">near office</span></td><td class="num">42</td><td class="num">597</td><td class="num">7.04%</td><td class="num">$5.67</td><td class="num">$238.14</td><td class="num">1</td><td class="cpl-cell">$238.14</td></tr><tr><td class="rank">7</td><td class="loc">48067</td><td class="num">23</td><td class="num">322</td><td class="num">7.14%</td><td class="num">$4.23</td><td class="num">$97.36</td><td class="num">3</td><td class="cpl-cell">$32.45</td></tr><tr><td class="rank">8</td><td class="loc">48043</td><td class="num">22</td><td class="num">475</td><td class="num">4.63%</td><td class="num">$4.34</td><td class="num">$95.42</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr style="background:var(--teal-pale);"><td class="rank">9</td><td class="loc">48044 <span class="loc-badge">near office</span></td><td class="num">20</td><td class="num">512</td><td class="num">3.91%</td><td class="num">$4.07</td><td class="num">$81.49</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">10</td><td class="loc">48073</td><td class="num">19</td><td class="num">482</td><td class="num">3.94%</td><td class="num">$5.93</td><td class="num">$112.75</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">11</td><td class="loc">48312</td><td class="num">18</td><td class="num">285</td><td class="num">6.32%</td><td class="num">$6.20</td><td class="num">$111.57</td><td class="num">4</td><td class="cpl-cell">$27.89</td></tr><tr><td class="rank">12</td><td class="loc">48071</td><td class="num">17</td><td class="num">243</td><td class="num">7.00%</td><td class="num">$4.77</td><td class="num">$81.03</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">13</td><td class="loc">48313</td><td class="num">17</td><td class="num">390</td><td class="num">4.36%</td><td class="num">$6.86</td><td class="num">$116.54</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr style="background:var(--teal-pale);"><td class="rank">14</td><td class="loc">48085 <span class="loc-badge">near office</span></td><td class="num">17</td><td class="num">499</td><td class="num">3.41%</td><td class="num">$4.29</td><td class="num">$72.87</td><td class="num">2</td><td class="cpl-cell">$36.44</td></tr><tr><td class="rank">15</td><td class="loc">48326</td><td class="num">15</td><td class="num">229</td><td class="num">6.55%</td><td class="num">$7.13</td><td class="num">$106.89</td><td class="num">1</td><td class="cpl-cell">$106.89</td></tr><tr><td class="rank">16</td><td class="loc">48310</td><td class="num">14</td><td class="num">293</td><td class="num">4.78%</td><td class="num">$4.81</td><td class="num">$67.27</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">17</td><td class="loc">48317</td><td class="num">14</td><td class="num">235</td><td class="num">5.96%</td><td class="num">$6.69</td><td class="num">$93.72</td><td class="num">0</td><td class="cpl-cell">&mdash;</td></tr><tr><td class="rank">18</td><td class="loc">48009</td><td class="num">14</td><td class="num">405</td><td class="num">3.46%</td><td class="num">$6.34</td><td class="num">$88.74</td><td class="num">1</td><td class="cpl-cell">$88.74</td></tr><tr><td class="rank">19</td><td class="loc">48092</td><td class="num">14</td><td class="num">198</td><td class="num">7.07%</td><td class="num">$8.84</td><td class="num">$123.83</td><td class="num">2</td><td class="cpl-cell">$61.91</td></tr><tr><td class="rank">20</td><td class="loc">48091</td><td class="num">12</td><td class="num">187</td><td class="num">6.42%</td><td class="num">$6.84</td><td class="num">$82.12</td><td class="num">1</td><td class="cpl-cell">$82.12</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 5: INSIGHTS -->
+  
+    <div class="section-divider">
+      <span class="sdot" style="background:var(--teal)"></span>
+      <h2>Key Observations</h2><span class="stag">auto-generated from location data</span>
+    </div>
+  <div class="panel">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div><div class="insight-card">
+  <strong>&#8593; Best-performing zip code: 48224</strong><br>
+  Lowest CPL at <strong>$8.21</strong> with 2 conversions
+  (4 clicks, $16.41 spend).
+  Recommend increasing bids or applying a positive location bid modifier for this zip.
+</div><div class="insight-card">
+  <strong>&#128205; Office vicinity coverage</strong><br>
+  Zip codes near the Troy and Clinton Township offices account for
+  <strong>58.4% of all clicks</strong> &mdash; 691 clicks and 27 conversions
+  across 9 proximate zip codes. These remain the core service area and perform as expected.
+</div></div>
+      <div><div class="insight-card amber">
+  <strong>&#9651; Zero-conversion spend to review</strong><br>
+  <strong>8 zip codes</strong> (48036, 48015, 48313&hellip;)
+  spent a combined <strong>$930.67</strong> with 0 conversions.
+  Consider excluding these areas or reducing bids to recover budget for higher-performing zones.
+</div><div class="insight-card">
+  <strong>&#127942; Top cities driving results</strong><br>
+  <strong>Clinton Township</strong> leads by click volume (382 clicks, $96.62 CPL).
+  <strong>Troy</strong> is a close second (342 clicks, $83.75 CPL).
+  <strong>Royal Oak</strong> punches above its weight (42 clicks, 3 conversions, <strong>$70.04 CPL</strong>).
+  <strong>Warren</strong> shows solid returns (54 clicks, 5 conversions, $77.12 CPL).
+</div></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="footer">
+    <div class="footer-left">
+      Prepared by <strong>Damco Digital</strong> &nbsp;&middot;&nbsp; Confidential: For Wellspring Team Use Only<br>
+      Data source: Google Ads Matched Locations Report (Apr 1 &ndash; Jun 26, 2026) &nbsp;&middot;&nbsp; Generated 26 June 2026
+    </div>
+    <div class="footer-right">Wellspring Therapeutic Partners</div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+window.addEventListener('load', function() {
+  const cfg = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 }, color: '#6B6460', padding: 14 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y % 1 === 0 ? ctx.parsed.y : ctx.parsed.y.toFixed(1)}` } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 10 }, color: '#6B6460' } },
+      y:  { grid: { color: '#EDE7DC' }, ticks: { font: { family: 'DM Sans', size: 10 }, color: '#6B6460' }, title: { display: true, text: 'Clicks', font: { family:'DM Sans', size:10 }, color:'#6B6460' } },
+      y2: { position: 'right', grid: { drawOnChartArea: false }, ticks: { font: { family:'DM Sans', size:10 }, color:'#C9882A' }, title: { display: true, text: 'Conv.', font: { family:'DM Sans', size:10 }, color:'#C9882A' } }
+    }
+  };
+
+  new Chart(document.getElementById('zipChart'), {
+    type: 'bar',
+    data: {
+      labels: ["48038", "48084", "48083", "48035", "48036", "48098", "48067", "48043", "48044", "48073"],
+      datasets: [
+        { label: 'Clicks', data: [262, 161, 76, 56, 45, 42, 23, 22, 20, 19], backgroundColor: '#3D7A72', borderRadius: 4, yAxisID: 'y' },
+        { label: 'Conversions', data: [10.67, 8.0, 3.0, 2.0, 0.0, 1.0, 3.0, 0.0, 0.0, 0.0], backgroundColor: '#C9882A', borderRadius: 4, yAxisID: 'y2' }
+      ]
+    },
+    options: cfg
+  });
+
+  new Chart(document.getElementById('cityChart'), {
+    type: 'bar',
+    data: {
+      labels: ["Clinton Township", "Troy", "Sterling Heights", "Warren", "Royal Oak", "Macomb", "Shelby Township", "Detroit", "Rochester Hills", "Mount Clemens"],
+      datasets: [
+        { label: 'Clicks', data: [382, 342, 57, 54, 42, 34, 31, 28, 24, 23], backgroundColor: '#3D7A72', borderRadius: 4, yAxisID: 'y' },
+        { label: 'Conversions', data: [12.67, 16.0, 4.0, 5.0, 3.0, 2.0, 0.0, 1.0, 0.0, 0.0], backgroundColor: '#C9882A', borderRadius: 4, yAxisID: 'y2' }
+      ]
+    },
+    options: cfg
+  });
+
+  // Sortable tables
+  document.querySelectorAll('.dt').forEach(function(table) {
+    table.querySelectorAll('thead th').forEach(function(th, col) {
+      let asc = false;
+      th.addEventListener('click', function() {
+        const tbody = table.querySelector('tbody');
+        const rows  = [...tbody.querySelectorAll('tr')];
+        rows.sort(function(a, b) {
+          const av = a.cells[col]?.innerText.replace(/[$,%]/g,'').replace(/—/g,'').trim()||'';
+          const bv = b.cells[col]?.innerText.replace(/[$,%]/g,'').replace(/—/g,'').trim()||'';
+          const an = parseFloat(av), bn = parseFloat(bv);
+          if(!isNaN(an)&&!isNaN(bn)) return asc ? an-bn : bn-an;
+          return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+        });
+        asc = !asc;
+        rows.forEach(function(r){tbody.appendChild(r);});
+        table.querySelectorAll('thead th').forEach(function(h){h.textContent=h.textContent.replace(/ [▲▼]$/,'');});
+        th.textContent += asc ? ' ▲' : ' ▼';
+      });
+    });
+  });
+});
+</script>
+</body>
+</html>

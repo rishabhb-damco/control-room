@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellspring Dashboard Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{--cream:#F7F3EE;--cream-dark:#EDE7DC;--charcoal:#1C1C1A;--warm-mid:#6B6460;--teal:#3D7A72;--teal-light:#5A9E95;--teal-pale:#EAF3F2;--rust:#C25B3F;--amber:#C9882A;--violet:#5C4E9E;--green:#3D8A60;--pink:#C4527A;--red:#C44040;--border:#DDD5C8;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#f0ece6;font-family:'DM Sans',sans-serif;color:var(--charcoal);font-size:13px;line-height:1.6;}
+  #form-view{max-width:820px;margin:0 auto;padding:36px 28px;}
+  .form-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;padding-bottom:18px;border-bottom:1.5px solid var(--border);}
+  .form-logo{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;line-height:1;}
+  .form-logo span{display:block;font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3px;}
+  .form-title{font-size:11px;color:var(--warm-mid);text-align:right;line-height:1.8;}
+  .form-section{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:14px;}
+  .form-section-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--charcoal);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--cream-dark);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .fsec-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+  .auto-tag{font-size:11px;font-family:'DM Sans',sans-serif;font-weight:400;color:var(--teal);margin-left:4px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .form-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;}
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:9.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--warm-mid);font-weight:500;}
+  .field input,.field textarea{background:var(--cream);border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--charcoal);outline:none;transition:border-color 0.15s;}
+  .field input:focus,.field textarea:focus{border-color:var(--teal);background:#fff;}
+  .field textarea{resize:vertical;min-height:70px;line-height:1.5;}
+  .field input.auto-filled{border-color:var(--teal);background:var(--teal-pale);}
+  .campaign-row{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
+  .campaign-row-title{font-size:11px;font-weight:500;color:var(--teal);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;}
+  .reason-row{display:grid;grid-template-columns:2fr 80px 60px;gap:8px;align-items:center;margin-bottom:8px;}
+  .reason-row label{font-size:12px;color:var(--charcoal);}
+  .reason-row input.auto-filled{border-color:var(--teal);background:var(--teal-pale);}
+  .generate-btn{width:100%;background:var(--teal);color:#fff;border:none;border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s;margin-top:6px;}
+  .generate-btn:hover{background:var(--teal-light);}
+  .flag-toggle{display:flex;align-items:center;gap:10px;margin-top:8px;}
+  .flag-toggle input[type=checkbox]{width:15px;height:15px;accent-color:var(--amber);}
+  .flag-toggle label{font-size:12px;color:var(--charcoal);}
+  .import-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+  .import-card{background:#fff;border:2px dashed var(--border);border-radius:12px;padding:18px 20px;transition:border-color 0.2s;}
+  .import-card.drag-over{border-color:var(--teal);background:var(--teal-pale);}
+  .import-card-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--charcoal);margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+  .import-card-hint{font-size:10.5px;color:var(--warm-mid);margin-bottom:12px;line-height:1.6;}
+  .drop-zone{border:1.5px dashed var(--border);border-radius:8px;padding:18px 12px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--cream);}
+  .drop-zone:hover{border-color:var(--teal);background:var(--teal-pale);}
+  .drop-icon{font-size:22px;margin-bottom:6px;}
+  .drop-text{font-size:11.5px;color:var(--warm-mid);}
+  .drop-text strong{color:var(--teal);}
+  .import-status{margin-top:10px;border-radius:8px;padding:10px 12px;font-size:11.5px;display:none;}
+  .import-status.success{display:block;background:var(--teal-pale);border:1px solid #b2d8d4;color:var(--teal);}
+  .import-status.error{display:block;background:#FDF1EE;border:1px solid #f0b4a4;color:var(--rust);}
+  .import-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+  .import-stat{background:#fff;border-radius:6px;padding:7px 10px;text-align:center;border:1px solid var(--border);}
+  .import-stat-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--charcoal);line-height:1;}
+  .import-stat-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--warm-mid);margin-top:2px;}
+  .import-breakdown{font-size:10.5px;color:var(--warm-mid);margin-top:8px;line-height:1.8;}
+  .import-breakdown strong{color:var(--charcoal);}
+  .date-filter-section{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:14px;}
+  .filter-mode-tabs{display:flex;gap:6px;margin-bottom:14px;}
+  .filter-tab{padding:6px 16px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:var(--cream);color:var(--warm-mid);transition:all 0.15s;}
+  .filter-tab.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .filter-panel{display:none;}
+  .filter-panel.active{display:block;}
+  .filter-week-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .filter-week-row label,.filter-date-row label{font-size:11px;color:var(--warm-mid);font-weight:500;}
+  .filter-week-row input[type=week],.filter-date-row input[type=date]{background:var(--cream);border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--charcoal);outline:none;}
+  .filter-date-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .filter-date-row label{min-width:32px;}
+  .filter-badge{display:inline-block;background:var(--teal-pale);border:1px solid #b2d8d4;border-radius:8px;padding:8px 14px;font-size:12px;color:var(--teal);margin-top:10px;line-height:1.6;}
+  .filter-badge strong{font-weight:500;}
+  #dashboard-view{display:none;}
+  .dash-actions{background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 24px;gap:12px;font-size:12.5px;}
+  .dash-actions button{background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:6px;padding:6px 14px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:background 0.15s;}
+  .dash-actions button:hover{background:rgba(255,255,255,0.35);}
+  .dash-actions-left{display:flex;gap:8px;}
+  .page{max-width:1100px;margin:0 auto;padding:28px 32px;background:var(--cream);min-height:100vh;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:16px;border-bottom:1.5px solid var(--border);margin-bottom:16px;}
+  .logo-name{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:500;letter-spacing:-0.5px;color:var(--charcoal);line-height:1;}
+  .logo-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:4px;font-weight:500;}
+  .header-meta{text-align:right;}
+  .header-meta .report-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--warm-mid);font-weight:500;}
+  .header-meta .report-week{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--charcoal);margin-top:2px;}
+  .header-meta .report-prepared{font-size:11px;color:var(--warm-mid);margin-top:4px;}
+  .section-label{font-size:9px;text-transform:uppercase;letter-spacing:3px;color:var(--teal);font-weight:500;margin-bottom:8px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+  .kpi-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 18px;position:relative;overflow:hidden;}
+  .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal);border-radius:10px 10px 0 0;}
+  .kpi-card.amber::before{background:var(--amber);}.kpi-card.violet::before{background:var(--violet);}
+  .kpi-card.green::before{background:var(--green);}.kpi-card.rust::before{background:var(--rust);}
+  .kpi-card.pink::before{background:var(--pink);}
+  .kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--warm-mid);font-weight:500;margin-bottom:4px;}
+  .kpi-value{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;color:var(--charcoal);line-height:1;}
+  .kpi-sub{font-size:11px;color:var(--warm-mid);margin-top:3px;}
+  .kpi-badge{display:inline-block;font-size:9.5px;padding:2px 7px;border-radius:20px;margin-top:4px;font-weight:500;}
+  .badge-up{background:#E8F5EC;color:#2E7D4F;}.badge-neutral{background:#F0EDE8;color:#6B6460;}.badge-warn{background:#FDF6EC;color:#C9882A;}
+  .badge-cpl-ok{background:#E8F5EC;color:#2E7D4F;font-size:9px;padding:1px 6px;border-radius:10px;display:inline-block;margin-top:2px;}
+  .badge-cpl-over{background:#FDF1EE;color:#C25B3F;font-size:9px;padding:1px 6px;border-radius:10px;display:inline-block;margin-top:2px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  .panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+  .panel-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--charcoal);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .panel-title .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+  .campaign-table{width:100%;border-collapse:collapse;}
+  .campaign-table th{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--warm-mid);font-weight:500;padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;}
+  .campaign-table th:first-child{text-align:left;}
+  .campaign-table td{padding:11px 10px;font-size:12.5px;text-align:right;border-bottom:1px solid #F0EDE8;color:var(--charcoal);}
+  .campaign-table td:first-child{text-align:left;}
+  .campaign-table tr.total-row td{border-bottom:none;font-weight:500;background:var(--teal-pale);}
+  .campaign-table tr.total-row td:first-child{border-radius:6px 0 0 6px;}
+  .campaign-table tr.total-row td:last-child{border-radius:0 6px 6px 0;}
+  .campaign-name{font-size:11px;color:var(--warm-mid);max-width:180px;line-height:1.3;}
+  .campaign-name strong{display:block;font-size:12px;color:var(--charcoal);font-weight:500;}
+  .badge-tag{display:inline-block;font-size:8.5px;padding:2px 6px;border-radius:4px;font-weight:500;margin-top:3px;}
+  .tag-search{background:#EAF0FF;color:#3D5FA0;}.tag-dsa{background:#EEF9EC;color:#2E7D4F;}
+  .metric-highlight{display:inline-block;background:var(--teal-pale);color:var(--teal);font-weight:500;border-radius:4px;padding:1px 6px;font-size:12px;}
+  .highlight-green{color:var(--green);font-weight:600;}
+  .hbar-row{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+  .hbar-label{font-size:11.5px;color:var(--charcoal);min-width:190px;flex-shrink:0;}
+  .hbar-track{flex:1;background:var(--cream-dark);border-radius:4px;height:26px;}
+  .hbar-fill{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;min-width:48px;}
+  .hbar-pct{font-size:11px;font-weight:600;color:#fff;white-space:nowrap;}
+  .hbar-count{font-size:12px;color:var(--warm-mid);min-width:20px;text-align:right;font-weight:600;}
+  .insight-card{border-left:3px solid var(--teal);padding:8px 12px;margin-bottom:7px;background:var(--teal-pale);border-radius:0 8px 8px 0;font-size:12px;line-height:1.5;}
+  .insight-card.amber{border-left-color:var(--amber);background:#FDF6EC;}
+  .insight-card.rust{border-left-color:var(--rust);background:#FDF1EE;}
+  .insight-card strong{font-weight:500;color:var(--charcoal);}
+  .next-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;}
+  .step-num{width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .step-text{font-size:12px;line-height:1.6;color:var(--charcoal);}
+  .step-text strong{font-weight:500;}
+  .flag-card{background:#FDF6EC;border:1px solid #F0D9B5;border-radius:10px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+  .flag-icon{font-size:16px;flex-shrink:0;}
+  .flag-text{font-size:12px;line-height:1.6;}
+  .flag-text strong{font-weight:500;color:var(--charcoal);}
+  .footer{margin-top:20px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .footer-left{font-size:10.5px;color:var(--warm-mid);line-height:1.7;}
+  .footer-right{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:var(--teal);}
+  .divider{border:none;border-top:1px solid var(--border);margin:14px 0;}
+  canvas{max-height:220px;}
+  @media print{.dash-actions{display:none !important;}body{background:white;}.page{padding:16px 20px;}}
+</style>
+</head>
+<body>
+
+<div id="form-view">
+  <div class="form-header">
+    <div><div class="form-logo">Wellspring <span>Therapeutic Partners</span></div></div>
+    <div class="form-title">Weekly Dashboard Generator<br>Upload Excel files → Pick week → Generate</div>
+  </div>
+
+  <!-- STEP 1: UPLOAD -->
+  <div class="form-section">
+    <div class="form-section-title"><span class="fsec-dot"></span> Step 1 — Upload Excel Files</div>
+    <div class="import-grid">
+      <div class="import-card" id="crmCard">
+        <div class="import-card-title"><span class="fsec-dot" style="background:var(--amber)"></span> CRM / Lead Sheet</div>
+        <div class="import-card-hint">Download full sheet as Excel:<br><strong>File → Download → Microsoft Excel (.xlsx)</strong><br>All weekly tabs included automatically.</div>
+        <div class="drop-zone" id="crmDrop" onclick="document.getElementById('crmInput').click()">
+          <div class="drop-icon">📋</div>
+          <div class="drop-text"><strong>Drop CRM .xlsx here</strong><br>or click to browse</div>
+          <input type="file" id="crmInput" style="display:none" accept=".xlsx,.xls,.csv" onchange="handleCRM(event)" />
+        </div>
+        <div class="import-status" id="crmStatus"></div>
+      </div>
+      <div class="import-card" id="adsCard">
+        <div class="import-card-title"><span class="fsec-dot" style="background:var(--violet)"></span> Google Ads Sheet</div>
+        <div class="import-card-hint">Download full Ads sheet as Excel:<br><strong>File → Download → Microsoft Excel (.xlsx)</strong><br>All weekly data included automatically.</div>
+        <div class="drop-zone" id="adsDrop" onclick="document.getElementById('adsInput').click()">
+          <div class="drop-icon">📊</div>
+          <div class="drop-text"><strong>Drop Ads .xlsx here</strong><br>or click to browse</div>
+          <input type="file" id="adsInput" style="display:none" accept=".xlsx,.xls,.csv" onchange="handleAds(event)" />
+        </div>
+        <div class="import-status" id="adsStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: DATE FILTER -->
+  <div class="date-filter-section">
+    <div class="form-section-title" style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--cream-dark);">
+      <span class="fsec-dot" style="background:var(--violet)"></span> Step 2 — Select Week
+      <span class="auto-tag">Auto-finds current + 3 previous weeks for sparklines</span>
+    </div>
+    <div class="filter-mode-tabs">
+      <div class="filter-tab active" id="tab-week" onclick="switchTab('week')">Week Picker</div>
+      <div class="filter-tab" id="tab-custom" onclick="switchTab('custom')">Custom Range</div>
+      <div class="filter-tab" id="tab-all" onclick="switchTab('all')">All Data</div>
+    </div>
+    <div class="filter-panel active" id="panel-week">
+      <div class="filter-week-row">
+        <label>Select week</label>
+        <input type="week" id="weekPicker" onchange="applyWeekFilter()" />
+        <span style="font-size:11px;color:var(--warm-mid);">Mon – Sun</span>
+      </div>
+    </div>
+    <div class="filter-panel" id="panel-custom">
+      <div class="filter-date-row">
+        <label>From</label><input type="date" id="dateStart" onchange="applyCustomFilter()" />
+        <label>To</label><input type="date" id="dateEnd" onchange="applyCustomFilter()" />
+      </div>
+    </div>
+    <div class="filter-panel" id="panel-all">
+      <p style="font-size:12px;color:var(--warm-mid);padding-top:4px;">Using all data — no date filtering applied. Sparklines will not be available.</p>
+    </div>
+    <div id="filterSummary" style="display:none;" class="filter-badge"></div>
+  </div>
+
+  <!-- HIDDEN FIELDS -->
+  <input type="hidden" id="c1_platform_conv" value="0" />
+  <input type="hidden" id="c2_platform_conv" value="0" />
+  <input type="hidden" id="googleLeads" value="-1" />
+  <input type="hidden" id="googleSched" value="-1" />
+
+  <!-- STEP 3: REPORT DETAILS -->
+  <div class="form-section">
+    <div class="form-section-title"><span class="fsec-dot"></span> Step 3 — Report Details</div>
+    <div class="form-grid-2">
+      <div class="field"><label>Date Range Label</label><input type="text" id="weekRange" placeholder="e.g. April 5 – April 11, 2026" /></div>
+      <div class="field"><label>Prepared By</label><input type="text" id="preparedBy" value="Damco Digital" /></div>
+    </div>
+    <div style="margin-top:12px;">
+      <div class="field"><label>CPL Benchmark ($) — shows target line on Cost/Conv. sparkline</label><input type="number" id="cplBenchmark" value="100" min="0" step="1" style="max-width:160px;" /></div>
+    </div>
+  </div>
+
+  <!-- CAMPAIGN 1 -->
+  <div class="form-section">
+    <div class="form-section-title">
+      <span class="fsec-dot" style="background:var(--violet)"></span> Campaign 1 — Generic Search
+      <span class="auto-tag">← auto-filled from Ads Excel</span>
+    </div>
+    <div class="campaign-row">
+      <div class="campaign-row-title">Generic Search Campaign</div>
+      <div class="form-grid-4">
+        <div class="field"><label>Conversions</label><input type="number" id="c1_conv" placeholder="0" /></div>
+        <div class="field"><label>Phone Conv.</label><input type="number" id="c1_phone" placeholder="0" /></div>
+        <div class="field"><label>Clicks</label><input type="number" id="c1_clicks" placeholder="0" /></div>
+        <div class="field"><label>Impressions</label><input type="number" id="c1_impr" placeholder="0" /></div>
+        <div class="field"><label>Avg. CPC ($)</label><input type="number" step="0.01" id="c1_cpc" placeholder="0.00" /></div>
+        <div class="field"><label>Total Cost ($)</label><input type="number" step="0.01" id="c1_cost" placeholder="0.00" /></div>
+        <div class="field"><label>Conv. Rate (%)</label><input type="number" step="0.01" id="c1_cvr" placeholder="0.00" /></div>
+        <div class="field"><label>CTR (%)</label><input type="number" step="0.01" id="c1_ctr" placeholder="0.00" /></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMPAIGN 2 -->
+  <div class="form-section">
+    <div class="form-section-title">
+      <span class="fsec-dot" style="background:var(--green)"></span> Campaign 2 — DSA
+      <span class="auto-tag">← auto-filled from Ads Excel</span>
+    </div>
+    <div class="campaign-row">
+      <div class="campaign-row-title">DSA Campaign</div>
+      <div class="form-grid-4">
+        <div class="field"><label>Conversions</label><input type="number" id="c2_conv" placeholder="0" /></div>
+        <div class="field"><label>Phone Conv.</label><input type="number" id="c2_phone" placeholder="0" /></div>
+        <div class="field"><label>Clicks</label><input type="number" id="c2_clicks" placeholder="0" /></div>
+        <div class="field"><label>Impressions</label><input type="number" id="c2_impr" placeholder="0" /></div>
+        <div class="field"><label>Avg. CPC ($)</label><input type="number" step="0.01" id="c2_cpc" placeholder="0.00" /></div>
+        <div class="field"><label>Total Cost ($)</label><input type="number" step="0.01" id="c2_cost" placeholder="0.00" /></div>
+        <div class="field"><label>Conv. Rate (%)</label><input type="number" step="0.01" id="c2_cvr" placeholder="0.00" /></div>
+        <div class="field"><label>CTR (%)</label><input type="number" step="0.01" id="c2_ctr" placeholder="0.00" /></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEAD SCHEDULING -->
+  <div class="form-section">
+    <div class="form-section-title">
+      <span class="fsec-dot" style="background:var(--amber)"></span> Lead Scheduling
+      <span class="auto-tag">← auto-filled from CRM Excel</span>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Total Leads (filtered period)</label><input type="number" id="totalLeads" placeholder="0" /></div>
+      <div class="field"><label>Scheduled Leads</label><input type="number" id="scheduledLeads" placeholder="0" /></div>
+    </div>
+  </div>
+
+  <!-- REASON NOT SCHEDULED -->
+  <div class="form-section">
+    <div class="form-section-title">
+      <span class="fsec-dot" style="background:var(--rust)"></span> Reason Not Scheduled
+      <span class="auto-tag">← auto-filled from CRM Excel</span>
+    </div>
+    <p style="margin-bottom:12px;color:var(--warm-mid);font-size:11px;">Auto-detected. Edit manually if needed.</p>
+    <div class="reason-row"><label>Didn't Answer Consult Call</label><input type="number" id="r_noanswer" value="0" min="0" /><span style="font-size:10px;color:var(--warm-mid)">leads</span></div>
+    <div class="reason-row"><label>Incomplete Inquiry</label><input type="number" id="r_incomplete" value="0" min="0" /><span style="font-size:10px;color:var(--warm-mid)">leads</span></div>
+    <div class="reason-row"><label>HAP Insurance / Financial</label><input type="number" id="r_hap" value="0" min="0" /><span style="font-size:10px;color:var(--warm-mid)">leads</span></div>
+    <div class="reason-row"><label>Service Not Offered (ESA)</label><input type="number" id="r_esa" value="0" min="0" /><span style="font-size:10px;color:var(--warm-mid)">leads</span></div>
+    <div class="reason-row"><label>No Provider Available</label><input type="number" id="r_noprovider" value="0" min="0" /><span style="font-size:10px;color:var(--warm-mid)">leads</span></div>
+    <div class="reason-row"><label>Testing Waitlist</label><input type="number" id="r_waitlist" value="0" min="0" /><span style="font-size:10px;color:var(--warm-mid)">leads</span></div>
+    <div class="reason-row"><label>Other / Unspecified</label><input type="number" id="r_other" value="0" min="0" /><span style="font-size:10px;color:var(--warm-mid)">leads</span></div>
+  </div>
+
+  <!-- SERVICE TYPE -->
+  <div class="form-section">
+    <div class="form-section-title">
+      <span class="fsec-dot" style="background:var(--violet)"></span> Lead Service Type
+      <span class="auto-tag">← auto-filled from CRM Excel</span>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Psychotherapy</label><input type="number" id="s_psycho" value="0" min="0" /></div>
+      <div class="field"><label>Unknown</label><input type="number" id="s_unknown" value="0" min="0" /></div>
+      <div class="field"><label>Medication Management</label><input type="number" id="s_med" value="0" min="0" /></div>
+      <div class="field"><label>Testing</label><input type="number" id="s_testing" value="0" min="0" /></div>
+      <div class="field"><label>Couple's Therapy</label><input type="number" id="s_couples" value="0" min="0" /></div>
+      <div class="field"><label>Other Service</label><input type="number" id="s_other" value="0" min="0" /></div>
+    </div>
+  </div>
+
+  <!-- FLAGS -->
+  <div class="form-section">
+    <div class="form-section-title"><span class="fsec-dot" style="background:var(--amber)"></span> Key Question for Wellspring Team</div>
+    <div class="flag-toggle" style="margin-bottom:10px;">
+      <input type="checkbox" id="showHAPFlag" />
+      <label for="showHAPFlag">Include HAP insurance open question</label>
+    </div>
+    <div class="field">
+      <label>Custom question / flag (optional)</label>
+      <textarea id="customFlag" placeholder="e.g. Incomplete Forms: What exactly do these represent?"></textarea>
+    </div>
+  </div>
+
+  <!-- OBSERVATIONS -->
+  <div class="form-section">
+    <div class="form-section-title"><span class="fsec-dot" style="background:var(--teal)"></span> Key Observations (optional override)</div>
+    <p style="margin-bottom:12px;color:var(--warm-mid);font-size:11px;">Leave blank to auto-generate. Each line = one card. Prefix <strong>!</strong> for amber, <strong>!!</strong> for red.</p>
+    <div class="field">
+      <label>Custom Observations</label>
+      <textarea id="customObs" rows="5" placeholder="DSA is our strongest performer this week.&#10;!60% of leads went unscheduled — structural causes.&#10;!!Missed call rate increased vs last week."></textarea>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="form-section">
+    <div class="form-section-title"><span class="fsec-dot" style="background:var(--amber)"></span> Actions &amp; Recommendations (optional override)</div>
+    <p style="margin-bottom:12px;color:var(--warm-mid);font-size:11px;">Leave blank to auto-generate. Each line = one action. Use **bold** for the headline.</p>
+    <div class="field">
+      <label>Custom Actions</label>
+      <textarea id="customActions" rows="5" placeholder="**Increase DSA budget.** DSA is significantly outperforming Search on CPA.&#10;**Follow up on missed calls.** 2 leads went uncontacted — review timing with the team."></textarea>
+    </div>
+  </div>
+
+  <button class="generate-btn" onclick="generateDashboard()">Generate Dashboard →</button>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div id="dashboard-view">
+  <div class="dash-actions">
+    <span>✦ Wellspring Dashboard: Ready to share</span>
+    <div class="dash-actions-left">
+      <button onclick="downloadReport()" style="background:rgba(255,255,255,0.35);font-weight:500;">⬇ Download Report</button>
+      <button onclick="window.print()">Print / Save as PDF</button>
+      <button onclick="showForm()">← Edit Data</button>
+    </div>
+  </div>
+  <div class="page" id="dashboardContent"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  GLOBAL STORAGE
+// ══════════════════════════════════════════════════
+// CRM: { tabName, startDate, rows[] } for each weekly tab
+let crmWeeklyTabs = [];
+// Ads: flat array of all daily rows with dates
+let adsAllRows = [];
+let adsHeaderCols = { colClicks:9, colCTR:10, colCPC:11, colImpr:12, colCost:13, colConv:16, colPhone:17, colCampaign:2 };
+
+// Sparkline history — array of { label, googleLeads, googleSched, totalConv, totalCost, totalClicks, cpl }
+let sparkHistory = [];
+
+// Build CRM column map dynamically from header row — resilient to column reordering
+function buildCRMColMap(headerRow) {
+  const map = { DATE:1, HEAR:9, SOURCE:10, SERVICE:12, SCHEDULED:15, REASON:16 }; // safe defaults
+  if (!headerRow) return map;
+  headerRow.forEach((cell, i) => {
+    const h = (cell||'').toString().toLowerCase().trim();
+    if (h.includes('date opportunity') || h.includes('date lead') || h.includes('lead was generated')) map.DATE = i;
+    if (h.includes('how did you hear'))   map.HEAR      = i;
+    if (h === 'source')                   map.SOURCE    = i;
+    if (h.includes('type of services') || h.includes('services are you looking')) map.SERVICE = i;
+    if (h.includes('did they schedule'))  map.SCHEDULED = i;
+    if (h.includes('reason not scheduled') || h.includes('reason not sched')) map.REASON = i;
+  });
+  return map;
+}
+let CRM_COL = { DATE:1, HEAR:9, SOURCE:10, SERVICE:12, SCHEDULED:15, REASON:16 };
+const CPL_BENCHMARK = () => parseFloat(document.getElementById('cplBenchmark').value) || 100;
+
+// ══════════════════════════════════════════════════
+//  DATE HELPERS
+// ══════════════════════════════════════════════════
+// Universal date parser — handles all formats Excel and CSV can produce:
+// "2026-03-25", "3/25/2026", "3/25/26", "25/3/2026", "March 25, 2026",
+// Excel serial numbers (numeric), JS Date objects
+function parseAnyDate(val) {
+  if (!val && val !== 0) return null;
+
+  // Already a Date object
+  if (val instanceof Date) {
+    const dt = new Date(val); dt.setHours(0,0,0,0);
+    return isNaN(dt.getTime()) ? null : dt;
+  }
+
+  // Excel serial number (number type)
+  if (typeof val === 'number') {
+    // Excel epoch: Jan 1 1900 = 1, with leap year bug correction
+    const d = new Date(Math.round((val - 25569) * 86400 * 1000));
+    d.setHours(0,0,0,0);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  // Strip null bytes (UTF-16LE artefact from some Excel exports)
+  const s = val.toString().replace(/\u0000/g, '').trim();
+  if (!s || s === '-') return null;
+
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)) {
+    const dt = new Date(s + 'T00:00:00');
+    dt.setHours(0,0,0,0);
+    return isNaN(dt.getTime()) ? null : dt;
+  }
+
+  // M/D/YYYY or M/D/YY
+  if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(s)) {
+    const p = s.split('/');
+    let y = parseInt(p[2]); if (y < 100) y += 2000;
+    const dt = new Date(y, parseInt(p[0])-1, parseInt(p[1]));
+    dt.setHours(0,0,0,0);
+    return isNaN(dt.getTime()) ? null : dt;
+  }
+
+  // D/M/YYYY (European) — only if day > 12 makes it unambiguous
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) {
+    const p = s.split('/');
+    if (parseInt(p[0]) > 12) {
+      const dt = new Date(parseInt(p[2]), parseInt(p[1])-1, parseInt(p[0]));
+      dt.setHours(0,0,0,0);
+      return isNaN(dt.getTime()) ? null : dt;
+    }
+  }
+
+  // Fallback: let JS parse it
+  const dt = new Date(s);
+  if (!isNaN(dt.getTime())) { dt.setHours(0,0,0,0); return dt; }
+
+  return null;
+}
+
+function parseCRMDate(val) { return parseAnyDate(val); }
+function parseAdsDate(val) { return parseAnyDate(val); }
+function formatShortDate(dt) {
+  return dt.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
+function formatDateLabel(dt) {
+  return dt.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+}
+function weekPickerToRange(weekStr) {
+  const [yearStr, wStr] = weekStr.split('-W');
+  const year = parseInt(yearStr), week = parseInt(wStr);
+  const jan4 = new Date(year, 0, 4); jan4.setHours(0,0,0,0);
+  const dow = jan4.getDay() || 7;
+  const weekStart = new Date(jan4); weekStart.setDate(jan4.getDate() - dow + 1 + (week-1)*7);
+  const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+  return { start: weekStart, end: weekEnd };
+}
+
+// Parse tab name like "4/5/26-4/11/26" or "4/12/2026-4/18/2026"
+// Parse tab name like "4/12/2026-4/18/2026" or "4122026-4182026"
+// Returns { start, end } dates
+function parseTabDateRange(tabName) {
+  // Try slash format first: "4/12/2026-4/18/2026"
+  let m = tabName.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})[-–](\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (m) {
+    let y1 = parseInt(m[3]); if (y1 < 100) y1 += 2000;
+    let y2 = parseInt(m[6]); if (y2 < 100) y2 += 2000;
+    const s = new Date(y1, parseInt(m[1])-1, parseInt(m[2])); s.setHours(0,0,0,0);
+    const e = new Date(y2, parseInt(m[4])-1, parseInt(m[5])); e.setHours(23,59,59,999);
+    return { start: s, end: e };
+  }
+  // Try compact format: "4526-41126", "32926-4426", "4122026-4182026"
+  m = tabName.match(/^(\d+)-(\d+)$/);
+  if (m) {
+    const parseCompact = str => {
+      // 4 digits  = M/D/YY    e.g. 4526  = Apr 5 2026
+      // 5 digits  = M/DD/YY   e.g. 41126 = Apr 11 2026
+      // 6 digits  = MM/DD/YY  e.g. 32226 = Mar 22 2026
+      // 7 digits  = M/DD/YYYY e.g. 4122026 = Apr 12 2026
+      // 8 digits  = MM/DD/YYYY
+      const n = str.length;
+      let mo, dd, yy;
+      if (n === 4)  { mo=str.slice(0,1); dd=str.slice(1,2); yy=parseInt(str.slice(2))+2000; }
+      else if (n===5) { mo=str.slice(0,1); dd=str.slice(1,3); yy=parseInt(str.slice(3))+2000; }
+      else if (n===6) {
+        // Ambiguous: MM/DD/YY (e.g. 032226) OR M/D/YYYY (e.g. 382026 = 3/8/2026)
+        // If first 2 chars > 12 as a month, it must be M+D+YYYY
+        if (parseInt(str.slice(0,2)) > 12) { mo=str.slice(0,1); dd=str.slice(1,2); yy=parseInt(str.slice(2)); }
+        else { mo=str.slice(0,2); dd=str.slice(2,4); yy=parseInt(str.slice(4))+2000; }
+      }
+      else if (n===7) { mo=str.slice(0,1); dd=str.slice(1,3); yy=parseInt(str.slice(3)); }
+      else if (n===8) { mo=str.slice(0,2); dd=str.slice(2,4); yy=parseInt(str.slice(4)); }
+      else return null;
+      const dt = new Date(yy, parseInt(mo)-1, parseInt(dd));
+      return isNaN(dt.getTime()) ? null : dt;
+    };
+    const s = parseCompact(m[1]); const e = parseCompact(m[2]);
+    if (s && e) {
+      s.setHours(0,0,0,0); e.setHours(23,59,59,999);
+      return { start: s, end: e };
+    }
+  }
+  return null;
+}
+
+function parseTabStartDate(tabName) {
+  const r = parseTabDateRange(tabName);
+  return r ? r.start : null;
+}
+
+// ══════════════════════════════════════════════════
+//  TAB SWITCHING
+// ══════════════════════════════════════════════════
+let currentFilterMode = 'week';
+function switchTab(mode) {
+  currentFilterMode = mode;
+  ['week','custom','all'].forEach(m => {
+    document.getElementById('tab-'+m).classList.toggle('active', m===mode);
+    document.getElementById('panel-'+m).classList.toggle('active', m===mode);
+  });
+  if (mode === 'all') applyAllFilter();
+}
+function applyWeekFilter() {
+  const wval = document.getElementById('weekPicker').value;
+  if (!wval) return;
+  const range = weekPickerToRange(wval);
+  applyDateFilter(range.start, range.end);
+}
+function applyCustomFilter() {
+  const s = document.getElementById('dateStart').value;
+  const e = document.getElementById('dateEnd').value;
+  if (!s || !e) return;
+  applyDateFilter(new Date(s+'T00:00:00'), new Date(e+'T00:00:00'));
+}
+function applyAllFilter() {
+  const allCRM = [];
+  for (const t of crmWeeklyTabs) {
+    const cm = t.colMap || CRM_COL;
+    t.rows.forEach(row => allCRM.push({ row, colMap: cm }));
+  }
+  processCRMRows(allCRM);
+  processAdsRows(adsAllRows);
+  sparkHistory = [];
+  document.getElementById('filterSummary').style.display = 'none';
+  document.getElementById('weekRange').value = 'All Data';
+}
+
+// ══════════════════════════════════════════════════
+//  MAIN DATE FILTER — finds 4 weeks automatically
+// ══════════════════════════════════════════════════
+function getSundaySaturdayWeeks(startDate, endDate) {
+  const firstSun = new Date(startDate);
+  firstSun.setDate(firstSun.getDate() - firstSun.getDay());
+  firstSun.setHours(0,0,0,0);
+  const weeks = [];
+  let wStart = new Date(firstSun);
+  while (wStart <= endDate) {
+    const wEnd = new Date(wStart);
+    wEnd.setDate(wStart.getDate() + 6);
+    wEnd.setHours(23,59,59,999);
+    weeks.push({ start: new Date(wStart), end: new Date(wEnd) });
+    wStart.setDate(wStart.getDate() + 7);
+  }
+  return weeks;
+}
+
+function applyDateFilter(startDate, endDate) {
+
+  // Filter CRM rows by TAB date range — tab name is the source of truth for which week
+  // a lead belongs to, not the individual row date
+  const currentCRM = [];
+  for (const t of crmWeeklyTabs) {
+    const cm = t.colMap || CRM_COL;
+    // Include this tab if its week overlaps the selected period
+    const tabStart = t.startDate, tabEnd = t.endDate || t.startDate;
+    if (!tabStart) continue;
+    // Tab overlaps if: tabStart <= selectedEnd AND tabEnd >= selectedStart
+    if (tabStart <= endDate && tabEnd >= startDate) {
+      for (const row of t.rows) currentCRM.push({ row, colMap: cm });
+    }
+  }
+
+  // Filter Ads rows for current period
+  const currentAds = adsAllRows.filter(row => {
+    const dt = parseAdsDate(row[0]);
+    return dt && dt >= startDate && dt <= endDate;
+  });
+
+  // Always build 4 Sun-Sat weeks ending at the week that contains endDate
+  // Find the Sunday on or before endDate first, then go back 3 weeks
+  const endSun = new Date(endDate);
+  endSun.setDate(endSun.getDate() - endSun.getDay()); // back to Sunday of current week
+  endSun.setHours(0,0,0,0);
+  const sparkWeeks = [];
+  for (let i = 3; i >= 0; i--) {
+    const wStart = new Date(endSun);
+    wStart.setDate(endSun.getDate() - i * 7);
+    const wEnd = new Date(wStart);
+    wEnd.setDate(wStart.getDate() + 6);
+    wEnd.setHours(23,59,59,999);
+    sparkWeeks.push({ start: wStart, end: wEnd });
+  }
+  sparkHistory = [];
+
+  for (const week of sparkWeeks) {
+    const wCRM = [];
+    for (const t of crmWeeklyTabs) {
+      const cm = t.colMap || CRM_COL;
+      const tabStart = t.startDate, tabEnd = t.endDate || t.startDate;
+      if (!tabStart) continue;
+      if (tabStart <= week.end && tabEnd >= week.start) {
+        for (const row of t.rows) wCRM.push({ row, colMap: cm });
+      }
+    }
+    const wAds = adsAllRows.filter(row => {
+      const dt = parseAdsDate(row[0]);
+      return dt && dt >= week.start && dt <= week.end;
+    });
+
+    const crmStats = getCRMStats(wCRM);
+    const adsStats = getAdsStats(wAds);
+    const totalConv = adsStats.c1totalConv + adsStats.c2totalConv;
+    const cpl = totalConv > 0 ? (adsStats.totalCost / totalConv) : 0;
+
+    sparkHistory.push({
+      label: formatShortDate(week.start),
+      googleLeads: crmStats.googleLeads,
+      googleSched: crmStats.googleSched,
+      totalConv,
+      totalCost: adsStats.totalCost,
+      totalClicks: adsStats.totalClicks,
+      cpl,
+      ctr: adsStats.totalImpr > 0 ? (adsStats.totalClicks / adsStats.totalImpr * 100) : 0
+    });
+  }
+
+  // Process current period into form fields
+  processCRMRows(currentCRM);
+  processAdsRows(currentAds);
+
+  // Update label
+  const label = `${formatDateLabel(startDate)} – ${formatDateLabel(endDate)}`;
+  document.getElementById('weekRange').value = label;
+
+  // Show summary with detected CRM tabs
+  const matchedTabs = crmWeeklyTabs
+    .filter(t => t.startDate && t.startDate >= new Date(startDate.getTime() - 4 * (durationMs + 86400000)))
+    .map(t => t.tabName).slice(0,4);
+
+  const summaryEl = document.getElementById('filterSummary');
+  summaryEl.style.display = 'block';
+  summaryEl.innerHTML =
+    `<strong>Period:</strong> ${label}<br>` +
+    `<strong>CRM leads found:</strong> ${currentCRM.length} &nbsp;·&nbsp; <strong>Ads rows:</strong> ${currentAds.length}<br>` +
+    `<strong>Sparkline weeks (Sun–Sat):</strong> ${sparkWeeks.map(w=>formatShortDate(w.start)+' – '+formatShortDate(w.end)).join(' → ')}`;
+}
+
+// ══════════════════════════════════════════════════
+//  DRAG & DROP
+// ══════════════════════════════════════════════════
+function wireDrop(dropId, cardId, handler) {
+  const drop = document.getElementById(dropId);
+  const card = document.getElementById(cardId);
+  drop.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drag-over'); });
+  drop.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+  drop.addEventListener('drop', e => { e.preventDefault(); card.classList.remove('drag-over'); const f = e.dataTransfer.files[0]; if(f) handler(f); });
+}
+wireDrop('crmDrop','crmCard', processCRMFile);
+wireDrop('adsDrop','adsCard', processAdsFile);
+function handleCRM(e) { if(e.target.files[0]) processCRMFile(e.target.files[0]); }
+function handleAds(e) { if(e.target.files[0]) processAdsFile(e.target.files[0]); }
+
+// ══════════════════════════════════════════════════
+//  CLASSIFICATION HELPERS
+// ══════════════════════════════════════════════════
+function classifySource(row, colMap) {
+  const cm = colMap || CRM_COL;
+  const hear   = (row[cm.HEAR]  ||'').toString().trim().toLowerCase();
+  const source = (row[cm.SOURCE]||'').toString().trim().toLowerCase();
+
+  // Rule 1: Internal
+  if (source === 'internal') return 'Internal';
+
+  // Rule 2: Google explicit
+  if (source === 'google ads' || hear === 'google') return 'Google';
+
+  // Rule 3: Google implicit (no referral info)
+  if (hear === '' || hear === '-' || hear === 'other' || hear === 'online') return 'Google';
+
+  // Rule 4: Psychology Today
+  if (hear.includes('psychology today')) return 'Psychology Today';
+
+  // Rule 5: Referral — Col K is "external" or Col J has a named person/org
+  if (source === 'external' || source === 'referral' || hear.length > 0) return 'Referral';
+
+  // Rule 6: Other — safety net for anything that slips through
+  return 'Other';
+}
+function normaliseServices(raw) {
+  if (!raw) return ['Unknown'];
+  const v = raw.toString().trim().toLowerCase();
+  if (!v) return ['Unknown'];
+  return [...new Set(v.split(',').map(p => {
+    p = p.trim();
+    if (p.includes('psychotherapy'))               return 'Psychotherapy';
+    if (p.includes('medication'))                  return 'Medication Management';
+    if (p.includes('couple')||p.includes('couples')) return "Couple's Therapy";
+    if (p.includes('testing'))                     return 'Testing';
+    if (!p || p.includes('unknown'))               return 'Unknown';
+    return 'Other';
+  }))];
+}
+function classifyReason(raw) {
+  const v = (raw||'').toString().trim().toLowerCase();
+  if (!v) return null;
+  if (v.includes('didn')||v.includes('answer')||v.includes('call')||v.includes('lvm')) return 'r_noanswer';
+  if (v.includes('incomplete')||v.includes('inquiry')||v.includes('form'))             return 'r_incomplete';
+  if (v.includes('hap')||v.includes('insurance')||v.includes('financial'))             return 'r_hap';
+  if (v.includes('esa')||v.includes('emotional')||v.includes('not offered'))           return 'r_esa';
+  if (v.includes('provider')||v.includes('capacity')||v.includes('available'))         return 'r_noprovider';
+  if (v.includes('waitlist')||v.includes('wait list'))                                 return 'r_waitlist';
+  return 'r_other';
+}
+
+// ══════════════════════════════════════════════════
+//  CRM EXCEL PARSE — reads all tabs
+// ══════════════════════════════════════════════════
+function processCRMFile(file) {
+  const statusEl = document.getElementById('crmStatus');
+  statusEl.className = 'import-status';
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      let tabs = [];
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (ext === 'csv') {
+        // Single CSV fallback
+        const text = new TextDecoder().decode(e.target.result);
+        const rows = text.split('\n').map(r => r.split(',').map(c => c.replace(/^"|"$/g,'').trim()));
+        const headerRow = rows[0] || [];
+        const colMap = buildCRMColMap(headerRow);
+        const dataRows = rows.slice(1).filter(r => r[0] && r[0].trim());
+        CRM_COL = colMap; // update global for this CSV
+        tabs = [{ tabName: 'CRM Data', startDate: null, rows: dataRows, colMap }];
+      } else {
+        const wb = XLSX.read(e.target.result, { type:'array', cellDates:true });
+        tabs = wb.SheetNames
+          .filter(n => !n.toLowerCase().includes('patient') && !n.toLowerCase().includes('testimonial'))
+          .map(name => {
+            const ws = wb.Sheets[name];
+            const rawRead = XLSX.utils.sheet_to_json(ws, { header:1, raw:false, defval:'' });
+            const raw = rawRead.map(row => row.map(cell => typeof cell === 'string' ? cell.replace(/\u0000/g,'') : cell));
+            const headerRow = raw[0] || [];
+            const colMap = buildCRMColMap(headerRow);
+            const dataRows = raw.slice(1).filter(r => r[0] && r[0].toString().trim());
+            const tabRange = parseTabDateRange(name);
+            const startDate = tabRange ? tabRange.start : null;
+            const endDate   = tabRange ? tabRange.end   : null;
+            return { tabName: name, startDate, endDate, rows: dataRows, colMap };
+          })
+          .filter(t => t.rows.length > 0)
+          .sort((a,b) => (b.startDate||new Date(0)) - (a.startDate||new Date(0)));
+      }
+      crmWeeklyTabs = tabs;
+      const totalLeads = tabs.reduce((s,t) => s + t.rows.length, 0);
+      statusEl.className = 'import-status success';
+      statusEl.innerHTML = `✓ CRM loaded — ${tabs.length} weekly tabs · ${totalLeads} total leads<br>
+        <div class="import-breakdown"><strong>Tabs detected:</strong> ${tabs.slice(0,6).map(t=>t.tabName).join(' · ')}${tabs.length>6?' · ...':''}</div>`;
+      reapplyFilter();
+    } catch(err) {
+      statusEl.className = 'import-status error';
+      statusEl.textContent = 'Error reading CRM file: ' + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ══════════════════════════════════════════════════
+//  ADS EXCEL PARSE — reads all daily rows from all tabs
+// ══════════════════════════════════════════════════
+function parseNum(val) { return parseFloat((val||'').toString().replace(/\u0000/g,'').replace(/[^0-9.-]/g,'')) || 0; }
+
+function processAdsFile(file) {
+  const statusEl = document.getElementById('adsStatus');
+  statusEl.className = 'import-status';
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      let allRows = [];
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (ext === 'csv') {
+        // Handle UTF-16LE (with BOM) or UTF-8
+        let text;
+        const bytes = new Uint8Array(e.target.result);
+        if (bytes[0] === 0xFF && bytes[1] === 0xFE) {
+          // UTF-16LE BOM detected
+          text = new TextDecoder('utf-16le').decode(e.target.result);
+        } else {
+          text = new TextDecoder('utf-8').decode(e.target.result);
+        }
+        text = text.replace(/\u0000/g,'').replace(/\uFEFF/g,''); // strip null bytes and BOM
+        // Detect delimiter — Google Ads exports use tabs
+        const firstLine = text.split('\n')[0];
+        const delim = firstLine.includes('\t') ? '\t' : ',';
+        const lines = text.split('\n').map(r => r.split(delim).map(c => c.replace(/^"|"$/g,'').trim()));
+        // Find header
+        let hIdx = 0;
+        for (let i=0; i<lines.length; i++) {
+          if (lines[i][0]==='Day' && lines[i][2]==='Campaign') { hIdx=i; break; }
+        }
+        mapAdsHeader(lines[hIdx]);
+        allRows = lines.slice(hIdx+1).filter(r => r[0] && r[0]!=='Day' && r[0]!=='Total: Account' && r[0].trim());
+      } else {
+        const wb = XLSX.read(e.target.result, { type:'array', cellDates:true, defval:'' });
+        for (const sheetName of wb.SheetNames) {
+          const ws = wb.Sheets[sheetName];
+          const rowsRaw = XLSX.utils.sheet_to_json(ws, { header:1, raw:true, defval:'' });
+          const rows = rowsRaw.map(row => {
+            // Strip null bytes from every cell
+            const cleaned = row.map(cell => typeof cell === 'string' ? cell.replace(/\u0000/g,'') : cell);
+            // If entire row came as single tab-delimited string (UTF-16LE CSV misread by XLSX)
+            // split it into proper columns
+            if (cleaned.length <= 2 && typeof cleaned[0] === 'string' && cleaned[0].includes('\t')) {
+              return cleaned[0].split('\t');
+            }
+            return cleaned;
+          });
+          for (let i=0; i<rows.length; i++) {
+            if ((rows[i][0]||'').toString().trim()==='Day' && (rows[i][2]||'').toString().trim()==='Campaign') {
+              mapAdsHeader(rows[i]);
+              const dataRows = rows.slice(i+1).filter(r => {
+                const c0 = (r[0]||'').toString().trim();
+                return c0 && c0!=='Day' && c0!=='Total: Account';
+              });
+              allRows = allRows.concat(dataRows);
+            }
+          }
+        }
+      }
+      adsAllRows = allRows;
+      const sampleDates = allRows.slice(0,3).map(r => JSON.stringify(r[0])).join(' | ');
+      const parsedSample = allRows.slice(0,3).map(r => { const d=parseAnyDate(r[0]); return d?d.toISOString().slice(0,10):'null'; }).join(' | ');
+      const stats = getAdsStats(allRows);
+      statusEl.className = 'import-status success';
+      statusEl.innerHTML = `✓ Ads loaded — ${allRows.length} daily rows across all weeks
+        <div class="import-breakdown"><strong>Date format:</strong> ${sampleDates}<br><strong>Parsed as:</strong> ${parsedSample}</div>
+        <div class="import-breakdown"><strong>Total clicks:</strong> ${stats.totalClicks} · <strong>Total spend:</strong> $${Math.round(stats.totalCost)} · <strong>Platform conv:</strong> ${stats.c1totalConv+stats.c2totalConv}</div>`;
+      reapplyFilter();
+    } catch(err) {
+      statusEl.className = 'import-status error';
+      statusEl.textContent = 'Error reading Ads file: ' + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function mapAdsHeader(headerRow) {
+  let convExact = false;
+  adsHeaderCols = { colClicks:9, colCTR:10, colCPC:11, colImpr:12, colCost:13, colConv:16, colPhone:17, colCampaign:2 };
+  for (let j=0; j<headerRow.length; j++) {
+    const h = (headerRow[j]||'').toString().replace(/\u0000/g,'').trim().toLowerCase();
+    if (h==='clicks')     adsHeaderCols.colClicks   = j;
+    if (h==='ctr')        adsHeaderCols.colCTR      = j;
+    if (h==='avg. cpc')   adsHeaderCols.colCPC      = j;
+    if (h==='impr.')      adsHeaderCols.colImpr     = j;
+    if (h==='cost')       adsHeaderCols.colCost     = j;
+    if (h.includes('phone')) adsHeaderCols.colPhone = j;
+    if (h==='campaign')   adsHeaderCols.colCampaign = j;
+    if (h==='conversions') { adsHeaderCols.colConv = j; convExact = true; }
+    else if (!convExact && h.startsWith('conv.') && !h.includes('cost') && !h.includes('/')) adsHeaderCols.colConv = j;
+  }
+}
+
+function reapplyFilter() {
+  if (currentFilterMode==='week') { const wval=document.getElementById('weekPicker').value; if(wval) applyWeekFilter(); }
+  else if (currentFilterMode==='custom') { const s=document.getElementById('dateStart').value, e2=document.getElementById('dateEnd').value; if(s&&e2) applyCustomFilter(); }
+  else applyAllFilter();
+}
+
+// ══════════════════════════════════════════════════
+//  STATS CALCULATORS (pure, no side effects)
+// ══════════════════════════════════════════════════
+function getCRMStats(dataRows) {
+  let total=0, sched=0, googleLeads=0, googleSched=0;
+  const sources  = { Google:0, Internal:0, Referral:0, 'Psychology Today':0, Other:0 };
+  const services = { Psychotherapy:0, 'Medication Management':0, "Couple's Therapy":0, Testing:0, Unknown:0, Other:0 };
+  const reasons  = { r_noanswer:0, r_incomplete:0, r_hap:0, r_esa:0, r_noprovider:0, r_waitlist:0, r_other:0 };
+  for (const item of dataRows) {
+    // Support both plain rows and {row, colMap} wrapped objects
+    const row = item.row !== undefined ? item.row : item;
+    const cm  = item.colMap || CRM_COL;
+    total++;
+    const isSched = (row[cm.SCHEDULED]||'').toString().trim().toLowerCase()==='yes';
+    if (isSched) sched++;
+    const src = classifySource(row, cm);
+    sources[src] = (sources[src]||0)+1;
+    if (src==='Google') { googleLeads++; if(isSched) googleSched++; }
+    for (const s of normaliseServices(row[cm.SERVICE])) { if(services[s]!==undefined) services[s]++; else services.Other++; }
+    if (!isSched) { const rk=classifyReason(row[cm.REASON]); if(rk) reasons[rk]++; }
+  }
+  return { total, sched, googleLeads, googleSched, sources, services, reasons };
+}
+
+function getAdsStats(dataRows) {
+  const { colClicks, colCPC, colImpr, colCost, colConv, colPhone, colCampaign } = adsHeaderCols;
+  const c1={clicks:0,impr:0,cost:0,conv:0,phone:0}, c2={clicks:0,impr:0,cost:0,conv:0,phone:0};
+  for (const row of dataRows) {
+    const camp = (row[colCampaign]||'').toString().trim().toLowerCase();
+    const isSearch = camp.includes('generic')||camp.includes('search');
+    const isDSA    = camp.includes('dsa')||camp.includes('wellspring_ad');
+    if (!isSearch&&!isDSA) continue;
+    const t = isSearch?c1:c2;
+    t.clicks += parseNum(row[colClicks]); t.impr += parseNum(row[colImpr]);
+    t.cost   += parseNum(row[colCost]);   t.conv += parseNum(row[colConv]);
+    t.phone  += parseNum(row[colPhone]);
+  }
+  const c1totalConv = c1.conv+c1.phone, c2totalConv = c2.conv+c2.phone;
+  const totalClicks = c1.clicks+c2.clicks, totalImpr = c1.impr+c2.impr;
+  const totalCost   = c1.cost+c2.cost;
+  return { c1, c2, c1totalConv, c2totalConv, totalClicks, totalImpr, totalCost };
+}
+
+// ══════════════════════════════════════════════════
+//  PROCESS CRM ROWS → fill form fields
+// ══════════════════════════════════════════════════
+function processCRMRows(dataRows) {
+  const stats = getCRMStats(dataRows);
+  const sf = (id, val) => { const el=document.getElementById(id); if(el){el.value=val;el.classList.add('auto-filled');} };
+  sf('totalLeads', stats.total); sf('scheduledLeads', stats.sched);
+  sf('googleLeads', stats.googleLeads); sf('googleSched', stats.googleSched);
+  sf('r_noanswer', stats.reasons.r_noanswer); sf('r_incomplete', stats.reasons.r_incomplete);
+  sf('r_hap', stats.reasons.r_hap); sf('r_esa', stats.reasons.r_esa);
+  sf('r_noprovider', stats.reasons.r_noprovider); sf('r_waitlist', stats.reasons.r_waitlist); sf('r_other', stats.reasons.r_other);
+  sf('s_psycho', stats.services.Psychotherapy); sf('s_unknown', stats.services.Unknown);
+  sf('s_med', stats.services['Medication Management']); sf('s_testing', stats.services.Testing);
+  sf('s_couples', stats.services["Couple's Therapy"]); sf('s_other', stats.services.Other);
+
+  const el = document.getElementById('crmStatus');
+  if (el.classList.contains('success')) {
+    const gPct = stats.googleLeads ? ((stats.googleSched/stats.googleLeads)*100).toFixed(1) : 0;
+    const srcSummary = Object.entries(stats.sources).filter(([,v])=>v>0).map(([k,v])=>`<strong>${k}:</strong> ${v}`).join(' · ');
+    el.innerHTML = `✓ ${stats.total} leads in period (${stats.googleLeads} Google)
+      <div class="import-stats">
+        <div class="import-stat"><div class="import-stat-val">${stats.googleLeads}</div><div class="import-stat-label">Google Leads</div></div>
+        <div class="import-stat"><div class="import-stat-val">${stats.googleSched}</div><div class="import-stat-label">Google Sched.</div></div>
+        <div class="import-stat"><div class="import-stat-val">${stats.total-stats.googleLeads}</div><div class="import-stat-label">Other Sources</div></div>
+        <div class="import-stat"><div class="import-stat-val">${gPct}%</div><div class="import-stat-label">Google Rate</div></div>
+      </div>
+      <div class="import-breakdown">${srcSummary}</div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  PROCESS ADS ROWS → fill form fields
+// ══════════════════════════════════════════════════
+function processAdsRows(dataRows) {
+  const s = getAdsStats(dataRows);
+  const { c1, c2, c1totalConv, c2totalConv, totalClicks, totalImpr, totalCost } = s;
+  const c1ctr = c1.impr?(c1.clicks/c1.impr*100):0, c2ctr = c2.impr?(c2.clicks/c2.impr*100):0;
+  const c1cpc = c1.clicks?(c1.cost/c1.clicks):0,   c2cpc = c2.clicks?(c2.cost/c2.clicks):0;
+  const c1cvr = c1.clicks?(c1totalConv/c1.clicks*100):0, c2cvr = c2.clicks?(c2totalConv/c2.clicks*100):0;
+  const sf2 = (id, val, d=2) => { const el=document.getElementById(id); if(el){el.value=parseFloat(val.toFixed(d));el.classList.add('auto-filled');} };
+  sf2('c1_conv',c1.conv,0); sf2('c1_phone',c1.phone,0); sf2('c1_clicks',c1.clicks,0); sf2('c1_impr',c1.impr,0);
+  sf2('c1_cpc',c1cpc); sf2('c1_cost',c1.cost); sf2('c1_cvr',c1cvr); sf2('c1_ctr',c1ctr);
+  sf2('c2_conv',c2.conv,0); sf2('c2_phone',c2.phone,0); sf2('c2_clicks',c2.clicks,0); sf2('c2_impr',c2.impr,0);
+  sf2('c2_cpc',c2cpc); sf2('c2_cost',c2.cost); sf2('c2_cvr',c2cvr); sf2('c2_ctr',c2ctr);
+  sf2('c1_platform_conv',c1totalConv,0); sf2('c2_platform_conv',c2totalConv,0);
+  const el = document.getElementById('adsStatus');
+  if (el.classList.contains('success')) {
+    el.innerHTML = `✓ Ads data for period: ${totalClicks} clicks · $${Math.round(totalCost)} spend · ${c1totalConv+c2totalConv} platform conv
+      <div class="import-stats">
+        <div class="import-stat"><div class="import-stat-val">${totalClicks}</div><div class="import-stat-label">Clicks</div></div>
+        <div class="import-stat"><div class="import-stat-val">$${Math.round(totalCost)}</div><div class="import-stat-label">Spend</div></div>
+        <div class="import-stat"><div class="import-stat-val">${c1totalConv+c2totalConv}</div><div class="import-stat-label">Conv.</div></div>
+        <div class="import-stat"><div class="import-stat-val">${c1.impr+c2.impr}</div><div class="import-stat-label">Impr.</div></div>
+      </div>
+      <div class="import-breakdown"><strong>Search:</strong> ${c1.clicks} clicks · $${c1.cost.toFixed(2)} · ${c1totalConv} conv &nbsp;·&nbsp; <strong>DSA:</strong> ${c2.clicks} clicks · $${c2.cost.toFixed(2)} · ${c2totalConv} conv</div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  SPARKLINE SVG BUILDER
+// ══════════════════════════════════════════════════
+function buildSparkline(values, color, benchmarkValue) {
+  const W=72, H=36, PAD=3;
+  const vals = values.map(v => v||0);
+  const allVals = benchmarkValue != null ? [...vals, benchmarkValue] : vals;
+  const minV = Math.min(...allVals), maxV = Math.max(...allVals);
+  const range = maxV - minV || 1;
+  const toY = v => PAD + (H - 2*PAD) * (1 - (v-minV)/range);
+  const toX = i => PAD + (W - 2*PAD) * (i/(vals.length-1||1));
+
+  const pts = vals.map((v,i) => `${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ');
+  const lastX = toX(vals.length-1), lastY = toY(vals[vals.length-1]);
+
+  let benchLine = '';
+  if (benchmarkValue != null) {
+    const by = toY(benchmarkValue).toFixed(1);
+    benchLine = `<line x1="${PAD}" y1="${by}" x2="${W-PAD}" y2="${by}" stroke="#DDD5C8" stroke-width="0.8" stroke-dasharray="2,2"/>`;
+  }
+
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    ${benchLine}
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="2.5" fill="${color}"/>
+  </svg>`;
+}
+
+function sparkCard(colorClass, label, value, sub, sparkVals, sparkColor, badge, benchmarkVal, formatter) {
+  const wowBadge = badge ? `<span class="kpi-badge ${badge.cls}">${badge.text}</span>` : '';
+  return `
+    <div class="kpi-card ${colorClass}">
+      <div class="kpi-label">${label}</div>
+      <div class="kpi-value">${value}</div>
+      <div class="kpi-sub">${sub}</div>
+      ${wowBadge}
+    </div>`;
+}
+
+function wowBadge(current, previous) {
+  if (previous == null || previous === 0) return null;
+  const diff = current - previous;
+  const pct = Math.abs((diff/previous)*100).toFixed(1);
+  if (diff > 0) return { cls:'badge-up', text:`↑ +${pct}% WoW` };
+  if (diff < 0) return { cls:'badge-warn', text:`↓ −${pct}% WoW` };
+  return { cls:'badge-neutral', text:'= No change' };
+}
+
+// ══════════════════════════════════════════════════
+//  FORM HELPERS
+// ══════════════════════════════════════════════════
+function v(id) { const el=document.getElementById(id); if(!el) return ''; return el.type==='checkbox'?el.checked:(el.value||''); }
+function n(id,fb=0) { const val=v(id); if(val===''||val===null) return fb; const p=parseFloat(val); return isNaN(p)?fb:p; }
+function pct(a,b) { return b?((a/b)*100).toFixed(1):'0.0'; }
+function fmt(num) { return '$'+num.toFixed(2); }
+function fmtN(num) { return num.toLocaleString(); }
+function showForm() { document.getElementById('form-view').style.display='block'; document.getElementById('dashboard-view').style.display='none'; Chart.helpers.each(Chart.instances,c=>c.destroy()); }
+
+// ══════════════════════════════════════════════════
+//  DOWNLOAD
+// ══════════════════════════════════════════════════
+function downloadReport() {
+  document.querySelectorAll('#dashboardContent canvas').forEach(canvas => {
+    const img = document.createElement('img');
+    img.src = canvas.toDataURL('image/png');
+    img.style.cssText = canvas.style.cssText;
+    img.style.maxHeight = '220px'; img.style.width = '100%';
+    canvas.parentNode.replaceChild(img, canvas);
+  });
+  const content = document.getElementById('dashboardContent').innerHTML;
+  const weekRange = document.querySelector('.report-week') ? document.querySelector('.report-week').textContent.trim() : 'report';
+  const css = Array.from(document.styleSheets).map(ss=>{try{return Array.from(ss.cssRules).map(r=>r.cssText).join('\n');}catch(e){return '';}}).join('\n');
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Wellspring — ${weekRange}</title><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"><style>${css}body{background:#f0ece6!important;}.page{max-width:1100px;margin:0 auto;padding:28px 32px;background:#F7F3EE;min-height:100vh;}</style></head><body><div class="page">${content}</div></body></html>`;
+  const slug = weekRange.replace(/[^a-zA-Z0-9]+/g,'-').toLowerCase().replace(/^-|-$/g,'');
+  const blob = new Blob([html],{type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=`wellspring-report-${slug}.html`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════════════════
+//  GENERATE DASHBOARD
+// ══════════════════════════════════════════════════
+function generateDashboard() {
+  const weekRange  = v('weekRange') || 'This Period';
+  const preparedBy = v('preparedBy') || 'Damco Digital';
+  const cplBench   = CPL_BENCHMARK();
+
+  const c1 = { conv:n('c1_conv'), phone:n('c1_phone'), clicks:n('c1_clicks'), impr:n('c1_impr'), cpc:n('c1_cpc'), cost:n('c1_cost'), cvr:n('c1_cvr'), ctr:n('c1_ctr') };
+  const c2 = { conv:n('c2_conv'), phone:n('c2_phone'), clicks:n('c2_clicks'), impr:n('c2_impr'), cpc:n('c2_cpc'), cost:n('c2_cost'), cvr:n('c2_cvr'), ctr:n('c2_ctr') };
+
+  const totalPhone  = c1.phone+c2.phone;
+  const totalClicks = c1.clicks+c2.clicks;
+  const totalImpr   = c1.impr+c2.impr;
+  const totalCost   = c1.cost+c2.cost;
+  const totalCTR    = totalImpr?(totalClicks/totalImpr*100).toFixed(2):'0.00';
+
+  const totalLeads  = n('totalLeads');
+  const _gl = n('googleLeads',-1), _gs = n('googleSched',-1);
+  const googleLeads = _gl===-1?totalLeads:_gl;
+  const googleSched = _gs===-1?n('scheduledLeads'):_gs;
+  const notScheduled  = googleLeads-googleSched;
+  const scheduledPct  = pct(googleSched, googleLeads);
+
+  const c1totalConv  = n('c1_platform_conv')||(c1.conv+c1.phone);
+  const c2totalConv  = n('c2_platform_conv')||(c2.conv+c2.phone);
+  const totalAllConv = c1totalConv+c2totalConv;
+  const totalCVR     = totalClicks?(totalAllConv/totalClicks*100).toFixed(2):'0.00';
+  const totalCostPerConv = totalAllConv?totalCost/totalAllConv:0;
+  const c1CostPerConv = c1totalConv?c1.cost/c1totalConv:0;
+  const c2CostPerConv = c2totalConv?c2.cost/c2totalConv:0;
+
+  // Sparkline data arrays (index 0=oldest, 3=current)
+  const prevWeek = sparkHistory.length >= 2 ? sparkHistory[sparkHistory.length-2] : null;
+  const sparkGL   = sparkHistory.map(w=>w.googleLeads);
+  const sparkGS   = sparkHistory.map(w=>w.googleSched);
+  const sparkConv = sparkHistory.map(w=>w.totalConv);
+  const sparkCost = sparkHistory.map(w=>w.totalCost);
+  const sparkCPL  = sparkHistory.map(w=>w.cpl);
+  const sparkCTR  = sparkHistory.map(w=>w.ctr);
+
+  // CPL status
+  const cplOk = totalCostPerConv <= cplBench;
+  const cplBadge = totalAllConv > 0
+    ? `<span class="${cplOk?'badge-cpl-ok':'badge-cpl-over'}">${cplOk?'✓ Under':'⚠ Over'} $${cplBench} benchmark</span>`
+    : '';
+
+  // WoW badges
+  const wowGL  = wowBadge(totalAllConv, prevWeek?.totalConv);
+  const wowGS  = wowBadge(googleSched, prevWeek?.googleSched);
+  const wowCPL = prevWeek?.cpl > 0 ? wowBadge(totalCostPerConv, prevWeek.cpl) : null;
+  const wowCTR = wowBadge(parseFloat(totalCTR), prevWeek?.ctr);
+
+  // Reasons / Services
+  const reasons = [
+    { label:"Didn't Answer Consult Call", count:n('r_noanswer'), color:'var(--red)' },
+    { label:'Incomplete Inquiry',         count:n('r_incomplete'), color:'var(--red)' },
+    { label:'HAP Insurance / Financial',  count:n('r_hap'), color:'var(--amber)' },
+    { label:'Service Not Offered (ESA)',  count:n('r_esa'), color:'var(--amber)' },
+    { label:'No Provider Available',      count:n('r_noprovider'), color:'var(--amber)' },
+    { label:'Testing Waitlist',           count:n('r_waitlist'), color:'var(--amber)' },
+    { label:'Other / Unspecified',        count:n('r_other'), color:'#A0A0A0' }
+  ].filter(r=>r.count>0);
+  const totalNotSched = reasons.reduce((a,r)=>a+r.count,0)||1;
+
+  const services = [
+    { label:'Psychotherapy',         count:n('s_psycho'),  color:'#5C4E9E' },
+    { label:'Unknown',               count:n('s_unknown'), color:'#9E9589' },
+    { label:'Medication Management', count:n('s_med'),     color:'#3D8A60' },
+    { label:'Testing',               count:n('s_testing'), color:'#C25B3F' },
+    { label:"Couple's Therapy",      count:n('s_couples'), color:'#C4527A' },
+    { label:'Other Service',         count:n('s_other'),   color:'#8899AA' }
+  ].filter(s=>s.count>0).sort((a,b)=>b.count-a.count);
+  const totalSvcLeads = services.reduce((a,s)=>a+s.count,0)||1;
+  const topService    = services[0]||{label:'Psychotherapy',count:0};
+  const topSvcPct     = pct(topService.count,totalSvcLeads);
+
+  const showHAP = v('showHAPFlag');
+  const customFlag = v('customFlag');
+  const customObs  = v('customObs').trim();
+  const customActions = v('customActions').trim();
+
+  const flagSection = (showHAP||customFlag) ? `
+    <div class="flag-card"><div class="flag-icon">⚑</div><div class="flag-text">
+      <strong>Key Question for the Wellspring Team:</strong>
+      ${showHAP?`We've noticed that <strong>HAP insurance leads are not being accepted.</strong> Could you confirm whether HAP falls under the same category as Medicare and Medicaid? This is contributing to ${pct(n('r_hap'),totalNotSched)}% of lost leads.`:''}
+      ${customFlag?`<br>${customFlag}`:''}
+    </div></div>` : '';
+
+  function parseObsCards(text) {
+    return text.split('\n').map(l=>l.trim()).filter(Boolean).map(line => {
+      let cls='';
+      if (line.startsWith('!!'))     { cls='rust';  line=line.slice(2).trim(); }
+      else if (line.startsWith('!')) { cls='amber'; line=line.slice(1).trim(); }
+      const dot=line.indexOf('.');
+      const html = dot>0?`<strong>${line.slice(0,dot+1)}</strong>${line.slice(dot+1)}`:`<strong>${line}</strong>`;
+      return `<div class="insight-card ${cls}">${html}</div>`;
+    }).join('');
+  }
+  function parseActionsCards(text) {
+    return text.split('\n').map(l=>l.trim()).filter(Boolean).map((line,i) =>
+      `<div class="next-step"><div class="step-num">${i+1}</div><div class="step-text">${line.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')}</div></div>`
+    ).join('');
+  }
+
+  const prevInsight = prevWeek != null
+    ? `We moved from ${prevWeek.googleLeads} to ${googleLeads} Google-sourced leads week-on-week.`
+    : `${googleLeads} Google-sourced leads this period.`;
+
+  const obsSection = customObs ? parseObsCards(customObs)
+    : `<div class="insight-card"><strong>Conversions are trending in the right direction.</strong> ${prevInsight} Without increasing spend, the campaigns are becoming more efficient.</div>
+       <div class="insight-card amber"><strong>DSA is our strongest performer this period.</strong> Cost per conversion of ${fmt(c2CostPerConv)} on DSA vs. ${fmt(c1CostPerConv)} on Search, with CTR of ${c2.ctr.toFixed(2)}% confirming strong intent match.</div>
+       <div class="insight-card rust"><strong>${scheduledPct}% of Google leads scheduled.</strong> Several leads could not convert due to service or provider gaps. We recommend the Wellspring team reviews capacity as a parallel action.</div>
+       <div class="insight-card amber"><strong>${topService.label} is driving most inbound volume at ${topSvcPct}%.</strong> We plan to test copy redirecting ADHD, Anxiety, and ADD queries toward medication management.</div>
+       <div class="insight-card"><strong>${n('r_noanswer')} lead(s) went uncontacted after the consult call.</strong> We'd like to explore improving the re-contact rate together.</div>`;
+
+  const actionsSection = customActions ? parseActionsCards(customActions)
+    : `<div class="next-step"><div class="step-num">1</div><div class="step-text"><strong>Increase budget allocation toward DSA.</strong> At ${fmt(c2CostPerConv)} CPA and ${c2.ctr.toFixed(2)}% CTR, DSA is significantly outperforming Search.</div></div>
+       <div class="next-step"><div class="step-num">2</div><div class="step-text"><strong>Improve the missed-call follow-up process.</strong> With ${n('r_noanswer')} lead(s) uncontacted, review timing, channel, and messaging to improve re-contact rate.</div></div>
+       <div class="next-step"><div class="step-num">3</div><div class="step-text"><strong>Add ESA-related negative keywords.</strong> Adding "ESA letter" as a negative will reduce wasted spend on leads that cannot be served.</div></div>
+       <div class="next-step"><div class="step-num">4</div><div class="step-text"><strong>Build condition-specific ad copy and landing page assets.</strong> Lead with ADHD, Anxiety, and ADD messaging to shift the mix toward higher-value leads.</div></div>
+       <div class="next-step"><div class="step-num">5</div><div class="step-text"><strong>Review re-engagement sequence together.</strong> Bring intent signals, query patterns, and peak response windows to sharpen timing for better conversion on missed calls.</div></div>`;
+
+  const reasonBars = reasons.map(r => {
+    const pv=pct(r.count,totalNotSched), fw=Math.max(15,(r.count/totalNotSched)*100);
+    return `<div class="hbar-row"><div class="hbar-label">${r.label}</div><div class="hbar-track"><div class="hbar-fill" style="width:${fw}%;background:${r.color};"><span class="hbar-pct">${pv}%</span></div></div><div class="hbar-count">${r.count}</div></div>`;
+  }).join('');
+
+  document.getElementById('dashboardContent').innerHTML = `
+    <div class="header">
+      <div><div class="logo-name">Wellspring</div><div class="logo-sub">Therapeutic Partners</div></div>
+      <div class="header-meta">
+        <div class="report-label">Performance Report</div>
+        <div class="report-week">${weekRange}</div>
+        <div class="report-prepared">Prepared by ${preparedBy} &nbsp;·&nbsp; Google Ads</div>
+      </div>
+    </div>
+    ${flagSection}
+    <div class="section-label">Platform Overview: Google Ads</div>
+    <div class="kpi-grid">
+      ${sparkCard('', 'Total Conversions', totalAllConv,
+        `Google CRM leads: ${googleLeads}`,
+        sparkConv, '#3D7A72', wowGL, null, v => Math.round(v||0))}
+      ${sparkCard('amber', 'Scheduled (Google)', googleSched,
+        `${scheduledPct}% of Google leads`,
+        sparkGS, '#C9882A', wowGS, null, v => Math.round(v||0))}
+      ${sparkCard('violet', 'Total Spend', '$'+Math.round(totalCost),
+        'This period',
+        sparkCost, '#5C4E9E', null, null, v => '$'+Math.round(v||0))}
+      ${sparkCard('green', 'Conv. Rate', totalCVR+'%',
+        `${totalClicks} clicks`,
+        sparkCTR, '#3D8A60', wowCTR, null, v => (v||0).toFixed(1)+'%')}
+      <div class="kpi-card rust">
+        <div class="kpi-label">Cost / Conv.</div>
+        <div class="kpi-value">$${Math.round(totalCostPerConv)}</div>
+        <div class="kpi-sub">DSA: ${fmt(c2CostPerConv)}</div>
+        ${cplBadge}
+        ${wowCPL?`<span class="kpi-badge ${wowCPL.cls}" style="display:block;margin-top:2px;">${wowCPL.text}</span>`:''}
+      </div>
+      ${sparkCard('pink', 'Avg. CTR', totalCTR+'%',
+        `${fmtN(totalImpr)} impressions`,
+        sparkCTR, '#C4527A', null, null, v => (v||0).toFixed(1)+'%')}
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title"><span class="dot"></span> Campaign Performance</div>
+        <table class="campaign-table">
+          <thead><tr><th>Campaign</th><th>Conv.</th><th>Ph. Conv.</th><th>Clicks</th><th>CTR</th><th>CPC</th><th>Cost</th><th>Cost/Conv.</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="campaign-name"><strong>Generic Search</strong>Damco_WS_Generic_Search<span class="badge-tag tag-search">Search</span></div></td>
+              <td>${c1.conv}</td><td>${c1.phone}</td><td>${c1.clicks}</td>
+              <td><span class="metric-highlight">${c1.ctr.toFixed(2)}%</span></td>
+              <td>${fmt(c1.cpc)}</td><td>${fmt(c1.cost)}</td><td>${fmt(c1CostPerConv)}</td>
+            </tr>
+            <tr>
+              <td><div class="campaign-name"><strong>DSA Campaign</strong>Damco_DSA_Wellspring<span class="badge-tag tag-dsa">DSA</span></div></td>
+              <td>${c2.conv}</td><td>${c2.phone}</td><td>${c2.clicks}</td>
+              <td><span class="metric-highlight">${c2.ctr.toFixed(2)}%</span></td>
+              <td>${fmt(c2.cpc)}</td><td>${fmt(c2.cost)}</td>
+              <td class="highlight-green">${fmt(c2CostPerConv)}</td>
+            </tr>
+            <tr class="total-row">
+              <td><strong>Total</strong></td>
+              <td><strong>${c1.conv+c2.conv}</strong></td><td><strong>${totalPhone}</strong></td><td><strong>${totalClicks}</strong></td>
+              <td><strong>${totalCTR}%</strong></td><td><strong>${fmt(c1.cpc+c2.cpc)}</strong></td>
+              <td><strong>${fmt(totalCost)}</strong></td><td><strong>${fmt(totalCostPerConv)}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="dot" style="background:var(--amber)"></span> Lead Scheduling Breakdown</div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:140px;flex-shrink:0;"><canvas id="scheduleDonut"></canvas></div>
+          <div style="flex:1;">
+            <div style="margin-bottom:10px;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><div style="width:10px;height:10px;border-radius:50%;background:var(--teal);flex-shrink:0;"></div><span style="font-size:11.5px;">Scheduled</span><strong style="margin-left:auto;">${googleSched} &nbsp;(${scheduledPct}%)</strong></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:var(--rust);flex-shrink:0;"></div><span style="font-size:11.5px;">Not Scheduled</span><strong style="margin-left:auto;">${notScheduled} &nbsp;(${pct(notScheduled,googleLeads)}%)</strong></div>
+            </div>
+            <div style="background:var(--teal-pale);border-radius:8px;padding:10px 12px;font-size:11.5px;line-height:1.6;"><strong>${scheduledPct}%</strong> of Google-sourced leads confirmed an appointment.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title"><span class="dot" style="background:var(--rust)"></span> Reason Not Scheduled (${totalNotSched} leads)</div>
+        ${reasonBars||'<p style="font-size:12px;color:var(--warm-mid);">No reasons recorded for this period.</p>'}
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="dot" style="background:var(--violet)"></span> Lead Service Type</div>
+        <canvas id="serviceBar" style="max-height:230px;"></canvas>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="two-col">
+      <div><div class="section-label">Key Observations</div>${obsSection}</div>
+      <div><div class="section-label">Actions and Recommendations</div>${actionsSection}</div>
+    </div>
+    <div class="footer">
+      <div class="footer-left">Prepared by <strong>${preparedBy}</strong> &nbsp;·&nbsp; Confidential: For Wellspring Team Use Only<br>Data source: Google Ads + CRM &nbsp;·&nbsp; ${weekRange}</div>
+      <div class="footer-right">Wellspring Therapeutic Partners</div>
+    </div>`;
+
+  document.getElementById('form-view').style.display='none';
+  document.getElementById('dashboard-view').style.display='block';
+  window.scrollTo(0,0);
+
+  setTimeout(() => {
+    new Chart(document.getElementById('scheduleDonut').getContext('2d'), {
+      type:'doughnut',
+      data:{ labels:['Scheduled','Not Scheduled'], datasets:[{ data:[googleSched,notScheduled], backgroundColor:['#3D7A72','#C25B3F'], borderWidth:0, hoverOffset:4 }] },
+      options:{ cutout:'70%', plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.raw}`}} } }
+    });
+    if (services.length) {
+      new Chart(document.getElementById('serviceBar').getContext('2d'), {
+        type:'bar',
+        data:{ labels:services.map(s=>s.label), datasets:[{ label:'Leads', data:services.map(s=>s.count), backgroundColor:services.map(s=>s.color), borderRadius:5, borderSkipped:false }] },
+        options:{ indexAxis:'y', plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.raw} leads`}}}, scales:{ x:{grid:{color:'#EDE7DC'},ticks:{font:{family:'DM Sans',size:11},color:'#6B6460'}}, y:{grid:{display:false},ticks:{font:{family:'DM Sans',size:11},color:'#1C1C1A'}} } }
+      });
+    }
+  }, 100);
+}
+</script>
+</body>
+</html>

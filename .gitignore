@@ -1,0 +1,26 @@
+# Python virtual environments (rebuild fresh per machine — never portable)
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+
+# Secrets — never commit
+.env
+*.env
+credentials.json
+*.key
+*.pem
+**/.claude/settings.local.json
+
+# Temp / backup files
+~$*
+*.tmp

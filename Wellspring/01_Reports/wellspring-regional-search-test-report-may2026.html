@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wellspring — Regional Search Campaign Test Report | May 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --teal-dark:  #1a3a3a;
+      --teal-mid:   #2a5a5a;
+      --teal-light: #3d7a7a;
+      --gold:       #c9a84c;
+      --gold-light: #e8c96a;
+      --cream:      #f5f0e8;
+      --cream-dark: #ede7d9;
+      --white:      #ffffff;
+      --red:        #c0392b;
+      --green:      #1a6b3a;
+      --amber:      #b8670a;
+      --text-dark:  #1a1a1a;
+      --text-mid:   #3a3a3a;
+      --text-light: #666666;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
+
+    /* ── PASSWORD GATE ── */
+    #pw-gate {
+      position: fixed; inset: 0; background: var(--teal-dark);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    #pw-gate.hidden { display: none; }
+    .pw-box {
+      background: var(--white); border-radius: 10px;
+      padding: 48px 40px; width: 360px; text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .pw-logo {
+      font-family: 'Cormorant Garamond', serif; font-size: 22px;
+      font-weight: 600; color: var(--teal-dark); margin-bottom: 6px;
+    }
+    .pw-sub { font-size: 12px; color: var(--text-light); margin-bottom: 28px; letter-spacing: 1px; text-transform: uppercase; }
+    .pw-label { font-size: 12px; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; text-align: left; }
+    .pw-input {
+      width: 100%; padding: 12px 14px; border: 1.5px solid #ddd;
+      border-radius: 6px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+      outline: none; margin-bottom: 12px; transition: border-color 0.2s;
+    }
+    .pw-input:focus { border-color: var(--teal-mid); }
+    .pw-btn {
+      width: 100%; padding: 13px; background: var(--teal-dark); color: var(--white);
+      border: none; border-radius: 6px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+    }
+    .pw-btn:hover { background: var(--teal-mid); }
+    .pw-error { color: var(--red); font-size: 12px; margin-top: 8px; display: none; }
+
+    /* ── HEADER ── */
+    .header { background: var(--teal-dark); padding: 48px 64px 40px; color: var(--white); }
+    .header-meta { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .header h1 { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 600; line-height: 1.15; margin-bottom: 8px; }
+    .header-sub { font-size: 14px; color: rgba(255,255,255,0.65); margin-top: 6px; }
+    .header-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .header-badge {
+      display: inline-block; background: rgba(201,168,76,0.18);
+      border: 1px solid var(--gold); color: var(--gold-light);
+      font-size: 11px; letter-spacing: 1px; padding: 5px 14px; border-radius: 3px;
+    }
+    .badge-paused { background: rgba(192,57,43,0.15); border-color: #e07060; color: #e07060; }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1060px; margin: 0 auto; padding: 48px 40px; }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 52px; }
+    .section-label { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; font-weight: 600; }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--teal-dark); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--gold); }
+
+    /* ── KPI CARDS ── */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 0; }
+    .kpi-row-2 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 14px; }
+    .kpi-card { background: var(--white); border-radius: 6px; padding: 20px 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-top: 3px solid var(--gold); text-align: center; }
+    .kpi-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); margin-bottom: 8px; }
+    .kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 700; color: var(--teal-dark); line-height: 1; }
+    .kpi-sub { font-size: 11px; color: var(--text-light); margin-top: 5px; }
+    .kpi-card.positive { border-top-color: var(--green); }
+    .kpi-card.warning  { border-top-color: var(--amber); }
+    .kpi-card.danger   { border-top-color: var(--red); }
+
+    /* ── TABLES ── */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--white); border-radius: 6px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    thead tr { background: var(--teal-dark); }
+    thead th { padding: 12px 14px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--gold-light); }
+    tbody tr { border-bottom: 1px solid #eee; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 11px 14px; color: var(--text-mid); vertical-align: middle; }
+    tfoot tr { background: #f0f4f0; border-top: 2px solid var(--teal-dark); }
+    tfoot td { padding: 12px 14px; font-weight: 700; font-size: 13px; color: var(--teal-dark); }
+    .metric-good { color: var(--green); font-weight: 600; }
+    .metric-bad  { color: var(--red);   font-weight: 600; }
+    .metric-mid  { color: var(--amber); font-weight: 600; }
+    .row-highlight { background: #fffdf5; }
+
+    /* ── CALLOUT ── */
+    .callout { border-radius: 6px; padding: 16px 20px; margin-bottom: 16px; font-size: 13px; line-height: 1.65; }
+    .callout-teal  { background: rgba(26,58,58,0.07); border-left: 4px solid var(--teal-mid); color: var(--teal-dark); }
+    .callout-amber { background: #fffbf0; border-left: 4px solid var(--amber); color: #4a3000; }
+    .callout-red   { background: #fff5f5; border-left: 4px solid var(--red); color: #4a0000; }
+    .callout-green { background: #f0fff4; border-left: 4px solid var(--green); color: #003a10; }
+    .callout strong { font-weight: 700; }
+
+    /* ── INSIGHT BLOCK ── */
+    .insight-block { background: var(--teal-dark); color: var(--white); border-radius: 8px; padding: 28px 32px; margin-bottom: 24px; }
+    .insight-eyebrow { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .insight-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; margin-bottom: 12px; }
+    .insight-block p { font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.82); }
+
+    /* ── CARDS ── */
+    .card { background: var(--white); border-radius: 6px; padding: 22px 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    .card-title { font-size: 12px; font-weight: 600; color: var(--teal-dark); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--cream-dark); padding-bottom: 10px; }
+
+    /* ── STEP LIST ── */
+    .step-list { display: flex; flex-direction: column; gap: 12px; }
+    .step-item { display: flex; gap: 16px; align-items: flex-start; background: var(--white); border-radius: 6px; padding: 18px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--teal-dark); color: var(--white); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .step-body strong { display: block; font-size: 13px; font-weight: 600; color: var(--teal-dark); margin-bottom: 4px; }
+    .step-body p { font-size: 12.5px; color: var(--text-light); line-height: 1.55; margin: 0; }
+
+    /* ── TWO-COL ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    /* ── PILLS ── */
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .pill { background: rgba(201,168,76,0.12); border: 1px solid var(--gold); color: var(--teal-dark); font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
+
+    /* ── VERDICT ── */
+    .verdict-box { background: var(--teal-dark); border-radius: 8px; padding: 28px 36px; color: var(--white); display: flex; gap: 28px; align-items: center; }
+    .verdict-icon { font-size: 40px; flex-shrink: 0; }
+    .verdict-text h3 { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--gold-light); margin-bottom: 8px; }
+    .verdict-text p { font-size: 13px; color: rgba(255,255,255,0.82); line-height: 1.65; }
+
+    /* ── DIVIDER ── */
+    hr.divider { border: none; border-top: 1px solid var(--cream-dark); margin: 40px 0; }
+
+    /* ── FOOTER ── */
+    .footer { background: var(--teal-dark); color: rgba(255,255,255,0.45); text-align: center; padding: 20px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+<!-- ── PASSWORD GATE ── -->
+<div id="pw-gate">
+  <div class="pw-box">
+    <div class="pw-logo">Wellspring Therapeutic Partners</div>
+    <div class="pw-sub">Damco Digital — Internal Report</div>
+    <div class="pw-label">Enter password to continue</div>
+    <input type="password" id="pw-input" class="pw-input" placeholder="Password" />
+    <button class="pw-btn" onclick="checkPw()">View Report</button>
+    <div class="pw-error" id="pw-error">Incorrect password. Please try again.</div>
+  </div>
+</div>
+<script>
+  (function() {
+    if (sessionStorage.getItem('ws_auth') === '1') {
+      document.getElementById('pw-gate').classList.add('hidden');
+    }
+  })();
+  function checkPw() {
+    if (document.getElementById('pw-input').value === 'Wellspring123') {
+      sessionStorage.setItem('ws_auth', '1');
+      document.getElementById('pw-gate').classList.add('hidden');
+    } else {
+      document.getElementById('pw-error').style.display = 'block';
+    }
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkPw();
+  });
+</script>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-meta">Campaign Test Report · Damco Digital</div>
+  <h1>Regional Search Campaign<br>Test Report</h1>
+  <div class="header-sub">Damco_WS_Regional_Search_060525 &nbsp;·&nbsp; May 6–17, 2026 &nbsp;·&nbsp; 12 Days</div>
+  <div class="header-badges">
+    <span class="header-badge">Search Campaign</span>
+    <span class="header-badge">Troy + Clinton Twp, MI</span>
+    <span class="header-badge">Therapy Services</span>
+    <span class="header-badge badge-paused">Currently Paused</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ── SECTION 1: KEY METRICS ── -->
+  <div class="section">
+    <div class="section-label">Section 1</div>
+    <div class="section-title">Campaign Performance — Key Metrics</div>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Spend</div>
+        <div class="kpi-value">$211</div>
+        <div class="kpi-sub">May 6–17, 12 days</div>
+      </div>
+      <div class="kpi-card positive">
+        <div class="kpi-label">Total Clicks</div>
+        <div class="kpi-value">41</div>
+        <div class="kpi-sub">Avg 3.4 clicks/day</div>
+      </div>
+      <div class="kpi-card positive">
+        <div class="kpi-label">Total Impressions</div>
+        <div class="kpi-value">240</div>
+        <div class="kpi-sub">Avg 20 impressions/day</div>
+      </div>
+      <div class="kpi-card positive">
+        <div class="kpi-label">Avg. CTR</div>
+        <div class="kpi-value">17.1%</div>
+        <div class="kpi-sub">Strong ad relevance signal</div>
+      </div>
+    </div>
+    <div class="kpi-row-2">
+      <div class="kpi-card warning">
+        <div class="kpi-label">Avg. CPC</div>
+        <div class="kpi-value">$5.16</div>
+        <div class="kpi-sub">Range: $3.76–$8.02</div>
+      </div>
+      <div class="kpi-card danger">
+        <div class="kpi-label">Conversions</div>
+        <div class="kpi-value">1</div>
+        <div class="kpi-sub">Out of 41 clicks</div>
+      </div>
+      <div class="kpi-card danger">
+        <div class="kpi-label">Conv. Rate</div>
+        <div class="kpi-value">2.4%</div>
+        <div class="kpi-sub">1 conversion tracked</div>
+      </div>
+      <div class="kpi-card danger">
+        <div class="kpi-label">Cost / Conv.</div>
+        <div class="kpi-value">$211</div>
+        <div class="kpi-sub">vs DSA benchmark ~$22</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: DAILY PERFORMANCE TABLE ── -->
+  <div class="section">
+    <div class="section-label">Section 2</div>
+    <div class="section-title">Day-by-Day Performance</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Impressions</th>
+          <th>Clicks</th>
+          <th>CTR</th>
+          <th>Avg. CPC</th>
+          <th>Cost</th>
+          <th>Conversions</th>
+          <th>Conv. Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>6 May 2026</td>
+          <td>10</td><td>0</td><td>0.00%</td><td>—</td><td>$0.00</td>
+          <td>0</td><td>—</td>
+        </tr>
+        <tr class="row-highlight">
+          <td>7 May 2026</td>
+          <td>19</td><td>4</td><td class="metric-good">21.05%</td><td class="metric-mid">$7.39</td><td>$29.57</td>
+          <td class="metric-good">1</td><td class="metric-good">25.00%</td>
+        </tr>
+        <tr>
+          <td>8 May 2026</td>
+          <td>16</td><td>6</td><td class="metric-good">37.50%</td><td>$5.72</td><td>$34.32</td>
+          <td>0</td><td>0.00%</td>
+        </tr>
+        <tr>
+          <td>9 May 2026</td>
+          <td>18</td><td>1</td><td>5.56%</td><td>$5.21</td><td>$5.21</td>
+          <td>0</td><td>0.00%</td>
+        </tr>
+        <tr>
+          <td>10 May 2026</td>
+          <td>29</td><td>7</td><td class="metric-good">24.14%</td><td>$4.87</td><td>$34.08</td>
+          <td>0</td><td>0.00%</td>
+        </tr>
+        <tr>
+          <td>11 May 2026</td>
+          <td>13</td><td>4</td><td class="metric-good">30.77%</td><td>$5.14</td><td>$20.54</td>
+          <td>0</td><td>0.00%</td>
+        </tr>
+        <tr>
+          <td>12 May 2026</td>
+          <td>16</td><td>1</td><td>6.25%</td><td>$4.28</td><td>$4.28</td>
+          <td>0</td><td>0.00%</td>
+        </tr>
+        <tr>
+          <td>13 May 2026</td>
+          <td>20</td><td>3</td><td>15.00%</td><td>$4.34</td><td>$13.03</td>
+          <td>0</td><td>0.00%</td>
+        </tr>
+        <tr class="row-highlight">
+          <td>14 May 2026</td>
+          <td>43</td><td>7</td><td>16.28%</td><td class="metric-good">$3.76</td><td>$26.34</td>
+          <td>0</td><td>0.00%</td>
+        </tr>
+        <tr>
+          <td>15 May 2026</td>
+          <td>24</td><td>2</td><td>8.33%</td><td class="metric-good">$3.76</td><td>$7.52</td>
+          <td>0</td><td>0.00%</td>
+        </tr>
+        <tr>
+          <td>16 May 2026</td>
+          <td>19</td><td>4</td><td class="metric-good">21.05%</td><td>$5.12</td><td>$20.48</td>
+          <td>0</td><td>0.00%</td>
+        </tr>
+        <tr>
+          <td>17 May 2026</td>
+          <td>13</td><td>2</td><td>15.38%</td><td class="metric-bad">$8.02</td><td>$16.03</td>
+          <td>0</td><td>0.00%</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>Total (12 days)</td>
+          <td>240</td>
+          <td>41</td>
+          <td class="metric-good">17.08%</td>
+          <td>$5.16</td>
+          <td>$211.40</td>
+          <td>1</td>
+          <td class="metric-mid">2.44%</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ── SECTION 3: SEARCH TERMS ── -->
+  <div class="section">
+    <div class="section-label">Section 3</div>
+    <div class="section-title">Search Terms — What Was Triggering the Ads</div>
+
+    <div class="insight-block" style="margin-bottom:24px;">
+      <div class="insight-eyebrow">Key Finding from This Test</div>
+      <h3>Faith-Based Queries — Clicks Without Conversion</h3>
+      <p>The campaign picked up searches like "muslim therapist", "muslim therapist near me", and "muslim therapist in Troy". These are high-intent, geo-specific searches — someone typing this is actively looking for a provider. The clicks confirmed real demand. But none of them converted. The gap is not demand — it is landing page alignment.</p>
+    </div>
+
+    <table style="margin-bottom: 20px;">
+      <thead>
+        <tr>
+          <th>Search Term Bucket</th>
+          <th>Clicks</th>
+          <th>Impressions</th>
+          <th>CTR</th>
+          <th>Avg. CPC</th>
+          <th>Cost</th>
+          <th>Conversions</th>
+          <th>Cost / Conv.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-highlight">
+          <td>Tracked search terms<br><span style="font-size:11px;color:var(--text-light);">Includes faith-based queries flagged</span></td>
+          <td>26</td><td>128</td>
+          <td class="metric-good">20.31%</td>
+          <td>$5.22</td><td>$135.77</td>
+          <td class="metric-bad">0</td>
+          <td class="metric-bad">—</td>
+        </tr>
+        <tr>
+          <td>Other search terms<br><span style="font-size:11px;color:var(--text-light);">Anonymised by Google (low volume)</span></td>
+          <td>15</td><td>112</td>
+          <td>13.39%</td>
+          <td>$5.04</td><td>$75.63</td>
+          <td class="metric-good">1</td>
+          <td class="metric-mid">$75.63</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>Campaign Total</td>
+          <td>41</td><td>240</td>
+          <td>17.08%</td>
+          <td>$5.16</td><td>$211.40</td>
+          <td>1</td>
+          <td>$211.40</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="callout callout-amber">
+      <strong>Note:</strong> The only conversion came from the "other" (anonymised) search terms — not from the tracked terms. The $135.77 spent on tracked terms returned zero conversions. This strongly indicates the landing page does not address the intent of the specific queries being served.
+    </div>
+
+    <div style="margin-top: 18px;">
+      <div style="font-size:12px;font-weight:600;color:var(--teal-dark);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.8px;">Faith-Based Queries Identified (from campaign observation)</div>
+      <div class="pill-row">
+        <span class="pill">muslim therapist</span>
+        <span class="pill">muslim therapist near me</span>
+        <span class="pill">muslim therapist in Troy</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ── SECTION 4: LEARNINGS ── -->
+  <div class="section">
+    <div class="section-label">Section 4</div>
+    <div class="section-title">Key Learnings</div>
+
+    <div class="callout callout-green">
+      <strong>CTR of 17.08% is a strong signal.</strong> When the ad was shown, people clicked. This tells us the ad copy and targeting are relevant — the campaign is reaching the right people. This is not an awareness problem.
+    </div>
+    <div class="callout callout-amber">
+      <strong>240 total impressions over 12 days is very low.</strong> The regional targeting is working but the search volume for therapy-specific, location-specific queries in Troy and Clinton Township is limited. We cannot scale this campaign on impression volume alone without expanding the keyword or geographic scope.
+    </div>
+    <div class="callout callout-red">
+      <strong>The landing page is not aligned with the ad intent.</strong> Visitors clicking on regional search ads — especially those searching for culturally specific therapy — land on a generic page. There is no message match, which explains the near-zero conversion rate.
+    </div>
+    <div class="callout callout-teal">
+      <strong>The sole conversion came from "other" terms — not the tracked ones.</strong> This is an important signal: there may be effective queries being served that we cannot see because Google anonymises low-volume terms. These deserve more budget to surface and identify.
+    </div>
+    <div class="callout callout-amber" style="margin-bottom:0;">
+      <strong>CPC is volatile ($3.76–$8.02).</strong> The campaign was still in the learning phase when it was paused. Google had not yet stabilised bidding, which explains the wide CPC swing. A longer run period or a target CPA bid strategy may have smoothed this out.
+    </div>
+  </div>
+
+  <!-- ── SECTION 5: NEXT STEPS ── -->
+  <div class="section">
+    <div class="section-label">Section 5</div>
+    <div class="section-title">What We Do Next</div>
+
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Build a faith-based therapy landing page</strong>
+          <p>Create a dedicated page for Muslim therapist and culturally sensitive therapy queries. The page should acknowledge cultural background, mention faith-compatible therapy approaches, and include therapist profiles relevant to this audience. Until this page exists, rerunning the campaign will produce the same result.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Create a dedicated ad group for faith-based queries</strong>
+          <p>Separate "muslim therapist", "faith-based therapist", "culturally sensitive therapy Troy" and related terms into their own ad group with tailored ad copy. This allows message match between the search, the ad, and the landing page — the conversion funnel will close.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Investigate the "other search terms" conversion</strong>
+          <p>The one conversion came from a query Google anonymised. Look in the Google Ads UI search terms report filtered to this campaign to identify what it was. If it is a recurring query, add it as an exact match keyword and build around it.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>Expand geographic targeting and keyword scope</strong>
+          <p>240 impressions over 12 days is too low to draw strong conclusions. Broaden the keyword list to include suburb-level therapy searches (Sterling Heights, Auburn Hills, Rochester Hills) and test broader match types to understand the full demand landscape before narrowing down.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <strong>Relaunch only after landing page is ready</strong>
+          <p>Do not resume the campaign on the generic Wellspring homepage. The ad relevance is proven (17% CTR). The only missing piece is a landing page that converts. Relaunch with the new page, set a 30-day test window, and track form submissions and call clicks separately for this campaign.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 6: VERDICT ── -->
+  <div class="section">
+    <div class="section-label">Section 6</div>
+    <div class="section-title">Test Verdict</div>
+
+    <div class="verdict-box">
+      <div class="verdict-icon">⚠</div>
+      <div class="verdict-text">
+        <h3>Inconclusive — Promising signal, broken funnel</h3>
+        <p>The Regional Search campaign proved that demand exists and that the ads are relevant (17.08% CTR). However, the conversion funnel was not ready — the landing page did not match the intent of the searches being served, particularly the faith-based therapy queries. The $211 spent returned 1 conversion at $211/lead, which is not viable. This is not a failure of the campaign concept — it is a setup gap. The test should be re-run once a dedicated landing page is built and the faith-based ad group is isolated properly.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Report generated 20 May 2026 &nbsp;|&nbsp; Damco Digital &nbsp;|&nbsp; Wellspring Therapeutic Partners</div>
+
+</body>
+</html>
