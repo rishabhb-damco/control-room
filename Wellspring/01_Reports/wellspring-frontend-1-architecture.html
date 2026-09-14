@@ -1,0 +1,531 @@
+<title>Wellspring Ops Platform — Frontend Spec Part 1: Architecture</title>
+<meta name="description" content="Stack rationale, folder structure, routing architecture, component architecture, state management, API integration, authentication, and forms.">
+<style>
+  :root{
+    --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da;
+    --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3;
+    --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0;
+    --warning:#b06a1f; --warning-soft:#f3e3cd;
+    --danger:#a1402f; --danger-soft:#f3ddd6;
+    --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans: "Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733; --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+      --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122; --line:#2c4440; --line-strong:#3c5852;
+      --success:#6fae82; --success-soft:#1d332590; --warning:#dba053; --warning-soft:#3a2d1690; --danger:#d67468; --danger-soft:#3a201b90; }
+  }
+  :root[data-theme="dark"]{ --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733; --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+    --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122; --line:#2c4440; --line-strong:#3c5852;
+    --success:#6fae82; --success-soft:#1d332590; --warning:#dba053; --warning-soft:#3a2d1690; --danger:#d67468; --danger-soft:#3a201b90; }
+  :root[data-theme="light"]{ --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da; --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3; --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0; --warning:#b06a1f; --warning-soft:#f3e3cd; --danger:#a1402f; --danger-soft:#f3ddd6; }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.6; font-size:16px; -webkit-font-smoothing:antialiased; }
+  ::selection{ background:var(--accent-soft); color:var(--ink); }
+  h1,h2,h3,h4{ font-family:var(--serif); font-weight:600; color:var(--ink); text-wrap:balance; }
+  p{ max-width:70ch; }
+  a{ color:var(--accent-deep); }
+  code, .mono{ font-family:var(--mono); }
+  table{ border-collapse:collapse; width:100%; font-size:.85rem; }
+  th{ text-align:left; font-weight:600; color:var(--ink-soft); text-transform:uppercase; font-size:.62rem; letter-spacing:.06em; padding:.5rem .65rem; border-bottom:1px solid var(--line-strong); white-space:nowrap; }
+  td{ padding:.5rem .65rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:hover td{ background:var(--surface-2); }
+
+  .suite-nav{ background:var(--ink); color:var(--paper); font-size:.76rem; padding:.6rem 1.4rem; display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center; }
+  .suite-nav b{ color:var(--accent); font-weight:700; margin-right:.3rem; }
+  .suite-nav a{ color:var(--paper); opacity:.72; text-decoration:none; }
+  .suite-nav a.current{ opacity:1; text-decoration:underline; text-decoration-color:var(--accent); text-underline-offset:3px; }
+  .suite-nav a:hover{ opacity:1; }
+  .suite-nav .sep{ opacity:.35; }
+
+  .shell{ display:grid; grid-template-columns: 250px minmax(0,1fr); max-width:1360px; margin:0 auto; }
+  .rail{ position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto; padding:1.6rem 1.3rem 2rem 2rem; border-right:1px solid var(--line); }
+  .rail-brand{ font-family:var(--serif); font-size:1.02rem; margin:0 0 .15rem; }
+  .rail-brand small{ display:block; font-family:var(--sans); font-size:.63rem; letter-spacing:.09em; text-transform:uppercase; color:var(--accent-deep); margin-top:.35rem; }
+  .rail nav{ margin-top:1.5rem; }
+  .rail-group{ margin-bottom:1.3rem; }
+  .rail-group-title{ font-size:.6rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); margin:0 0 .4rem; }
+  .rail a{ display:block; color:var(--ink-soft); text-decoration:none; font-size:.82rem; padding:.26rem 0; border-left:2px solid transparent; padding-left:.7rem; margin-left:-.72rem; }
+  .rail a:hover{ color:var(--ink); border-left-color:var(--line-strong); }
+  .rail a.active{ color:var(--ink); border-left-color:var(--accent); font-weight:600; }
+  .main{ min-width:0; padding:2.5rem 3.1rem 6rem; }
+  @media (max-width: 980px){ .shell{ grid-template-columns:1fr; } .rail{ position:relative; height:auto; border-right:none; border-bottom:1px solid var(--line); } .main{ padding:2rem 1.2rem 4rem; } }
+
+  section{ margin-bottom:4.2rem; scroll-margin-top:1.5rem; }
+  .eyebrow{ text-transform:uppercase; letter-spacing:.12em; font-size:.68rem; color:var(--accent-deep); font-weight:700; margin:0 0 .5rem; }
+  section > h2{ font-size:1.75rem; margin:0 0 .3rem; }
+  section > h3{ font-size:1.12rem; margin:1.9rem 0 .5rem; }
+  .lede{ color:var(--ink-soft); font-size:1rem; max-width:66ch; margin:0 0 1.3rem; }
+
+  .grid{ display:grid; gap:1rem; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1rem 1.2rem; }
+  .breakout{ width:100%; overflow-x:auto; }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface); margin-bottom:1.4rem; }
+  .table-wrap table{ min-width:600px; }
+
+  .callout{ border-left:3px solid var(--accent); background:var(--surface); border-radius:0 6px 6px 0; padding:.9rem 1.2rem; margin:1.3rem 0; }
+  .callout p{ margin:.2rem 0; }
+  .callout.warn{ border-left-color:var(--warning); }
+
+  pre{ background:var(--ink); color:#d9e8e2; border-radius:6px; padding:1rem 1.2rem; overflow-x:auto; font-family:var(--mono); font-size:.76rem; line-height:1.55; margin:0 0 1.3rem; }
+  @media (prefers-color-scheme: dark){ pre{ background:#081512; } }
+  :root[data-theme="dark"] pre{ background:#081512; }
+  pre .k{ color:#dcb968; } pre .t{ color:#8fd0b8; } pre .c{ color:#7f958f; } pre .s{ color:#e2b8a3; }
+
+  .tree{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1rem 1.2rem; font-family:var(--mono); font-size:.78rem; line-height:1.7; overflow-x:auto; color:var(--ink-soft); }
+  .tree .dir{ color:var(--accent-deep); font-weight:600; }
+  .tree .note{ color:var(--ink-faint); }
+
+  .tag{ display:inline-block; font-size:.64rem; text-transform:uppercase; letter-spacing:.05em; font-weight:700; padding:.15rem .42rem; border-radius:3px; }
+  .tag-zu{ background:#7c5cbf22; color:#7c5cbf; }
+  .tag-rq{ background:var(--success-soft); color:var(--success); }
+  .tag-ctx{ background:var(--warning-soft); color:var(--warning); }
+  .tag-local{ background:var(--line); color:var(--ink-soft); }
+  .tag-url{ background:var(--accent-soft); color:var(--accent-deep); }
+
+  .method{ font-family:var(--mono); font-size:.64rem; font-weight:700; padding:.1rem .38rem; border-radius:3px; }
+  .m-get{ background:var(--success-soft); color:var(--success); }
+  .m-post{ background:var(--accent-soft); color:var(--accent-deep); }
+  .m-patch{ background:var(--warning-soft); color:var(--warning); }
+  .m-delete{ background:var(--danger-soft); color:var(--danger); }
+
+  .flow{ display:flex; flex-direction:column; gap:0; margin:1.3rem 0; }
+  .flow-step{ display:grid; grid-template-columns:2.1rem 1fr; gap:1rem; padding:.7rem 0; }
+  .flow-step .n{ width:2.1rem; height:2.1rem; border-radius:50%; background:var(--surface-2); border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; font-family:var(--serif); color:var(--ink-soft); font-size:.9rem; }
+  .flow-step h5{ margin:.1rem 0 .2rem; font-size:.92rem; }
+  .flow-step p{ margin:0; font-size:.83rem; color:var(--ink-soft); }
+  .flow-connector{ margin-left:1rem; width:1px; height:.5rem; background:var(--line-strong); }
+
+  footer{ border-top:1px solid var(--line); padding-top:1.4rem; color:var(--ink-faint); font-size:.8rem; }
+</style>
+
+<div class="suite-nav">
+  <span><b>Wellspring Ops Platform</b></span>
+  <span class="sep">|</span>
+  <a href="https://claude.ai/code/artifact/36733824-3a8f-4fe8-8a5b-9c0237628a7b">PRD 1 · Product/UX</a>
+  <a href="https://claude.ai/code/artifact/f82028ce-5a81-42aa-b9ed-e3e4b18b2080">PRD 2 · Automation</a>
+  <a href="https://claude.ai/code/artifact/22ae8bf9-df29-40e9-bb1d-1d0db11aa03f">PRD 3 · Data/API</a>
+  <a href="https://claude.ai/code/artifact/83916532-7bff-4a3c-be7b-e6a819446f20">PRD 4 · System/Roadmap</a>
+  <span class="sep">|</span>
+  <a href="https://claude.ai/code/artifact/27964285-c8eb-42e4-9efa-ac8dbcf1aa8f" class="current">FE 1 · Architecture</a>
+  <a href="https://claude.ai/code/artifact/e3558904-df3e-48d0-8d0f-b0fa9a347f3e">FE 2 · Patterns &amp; Delivery</a>
+</div>
+
+<div class="shell">
+  <aside class="rail">
+    <p class="rail-brand">Frontend Spec — Architecture<small>Frontend Part 1 of 2</small></p>
+    <nav id="toc">
+      <div class="rail-group">
+        <p class="rail-group-title">Foundation</p>
+        <a href="#stack">Stack &amp; rationale</a>
+        <a href="#folders">Project folder structure</a>
+        <a href="#routing">Routing architecture</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Structure</p>
+        <a href="#components">Component architecture</a>
+        <a href="#state">State management</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Integration</p>
+        <a href="#api">API integration</a>
+        <a href="#auth">Authentication</a>
+        <a href="#forms">Forms</a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <section id="stack">
+      <p class="eyebrow">Frontend Technical Specification · Part 1 of 2</p>
+      <h2>Stack &amp; rationale</h2>
+      <p class="lede">The PRD, UX Spec, database, API, automation engine, and system architecture are final. This document and its companion (Part 2) translate that approved spec into an implementation-ready frontend architecture — no new product features, only the engineering decisions needed to build it.</p>
+
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Layer</th><th>Choice</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Framework</td><td>Next.js 14+ (App Router)</td><td>Server Components for data-heavy read screens (dashboards, reports) cut client bundle size; file-based routing matches the 36-screen inventory directly</td></tr>
+          <tr><td>Language</td><td>TypeScript, strict mode</td><td>The API layer in PRD Part 3 is fully typed (schema + endpoints) — strict TS is how that contract survives into the client</td></tr>
+          <tr><td>Styling</td><td>Tailwind CSS</td><td>Utility-first maps 1:1 to the design tokens already ratified in PRD Part 4</td></tr>
+          <tr><td>Components</td><td>shadcn/ui (Radix primitives)</td><td>Accessible by default (focus trap, ARIA, keyboard nav) — satisfies PRD Part 4's accessibility bar without hand-building it; copy-owned code, not a black-box dependency, so brand tokens apply cleanly</td></tr>
+          <tr><td>Server state</td><td>TanStack Query</td><td>Every screen in PRD Part 1 is backed by an API in PRD Part 3 — React Query owns all of it: caching, retries, invalidation</td></tr>
+          <tr><td>Forms</td><td>React Hook Form + Zod</td><td>Zod schemas double as runtime validation and the TypeScript source of truth via <code>z.infer</code> — one definition, not two</td></tr>
+          <tr><td>Global UI state</td><td>Zustand</td><td>See callout below — kept deliberately small</td></tr>
+          <tr><td>Charts</td><td>Recharts, +1 addition (see below)</td><td>See callout below</td></tr>
+          <tr><td>Icons</td><td>Lucide</td><td>Ships as shadcn/ui's default icon set — no second icon system to maintain</td></tr>
+          <tr><td>Tables (addition)</td><td>TanStack Table (headless)</td><td>Not in the original list, but essential for implementation — shadcn/ui's own data-table pattern is built on it, and it's the natural pairing with TanStack Query. Adopting anything else means re-deriving sorting/filtering/pagination logic that already exists and is maintained.</td></tr>
+          <tr><td>Virtualization (addition)</td><td>TanStack Virtual</td><td>Required for the Table View and Audit Log per PRD Part 1/4's virtualization requirement; same maintainer family as Table/Query, minimal integration surface</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="callout">
+        <p><strong>Zustand, not Redux/Jotai/plain Context:</strong> almost all meaningful data in this app is server state and belongs in React Query, not global client state. What's left — sidebar collapsed, command palette open, active Smart View, in-flight Kanban drag state — is small, UI-only, and doesn't need Redux's ceremony or Jotai's atom-per-value granularity. Zustand's selector-based subscriptions also avoid the re-render cost a single Context would cause on high-frequency updates like drag position. Full mapping in <a href="#state">State Management</a>.</p>
+      </div>
+      <div class="callout">
+        <p><strong>Recharts, with one deliberate exception:</strong> Recharts covers the KPI trend lines, funnel, and donut charts across every dashboard cleanly, has first-class React ergonomics, and needs no separate design-token bridge. Its one weak spot is the stage-aging <em>heat map</em> on the Operations Dashboard (PRD Part 1) — Recharts has no native heatmap primitive and forcing one through its grid/scatter APIs produces worse output than a small hand-built SVG grid component. That single widget is custom (~80 lines, documented in <a href="#components">Component Architecture</a>); everything else stays on Recharts.</p>
+      </div>
+    </section>
+
+    <section id="folders">
+      <h3 style="margin-top:0;">Project folder structure</h3>
+      <div class="tree">
+<span class="dir">app/</span>                          <span class="note"># routes only — see Routing Architecture</span>
+<span class="dir">components/</span>
+  <span class="dir">ui/</span>                        <span class="note"># shadcn/ui primitives (button, input, dialog, ...) — generated, not hand-edited beyond theme tokens</span>
+  <span class="dir">shared/</span>                    <span class="note"># cross-feature composed components: DataTable, KpiCard, StatusBadge, EmptyState, ErrorState, PageHeader, ConfirmDialog</span>
+  <span class="dir">layout/</span>                    <span class="note"># Sidebar, TopBar, Breadcrumbs, CommandPalette, MobileTabBar</span>
+<span class="dir">features/</span>                     <span class="note"># feature-sliced — the bulk of the app lives here</span>
+  <span class="dir">leads/</span>
+    <span class="dir">components/</span>              <span class="note"># LeadProfileCard, LeadTimeline, NotesPanel, InsuranceCard, TaskPanel, AppointmentWidget, DuplicateBanner, MergeScreen</span>
+    <span class="dir">hooks/</span>                    <span class="note"># useLead, useLeadActivities, useUpdateLeadStage, useMergeLeads</span>
+    <span class="dir">api/</span>                      <span class="note"># leads.service.ts</span>
+    <span class="dir">schema/</span>                   <span class="note"># lead.schema.ts (zod)</span>
+    <span class="dir">types/</span>
+  <span class="dir">pipeline/</span>                  <span class="note"># KanbanBoard, KanbanColumn, KanbanCard, TableView, CalendarView, FilterBar</span>
+  <span class="dir">dashboard/</span>                 <span class="note"># KpiCard config, TrendCard, FunnelChart, Leaderboard, ActivityFeed, QuickActions, Heatmap (custom)</span>
+  <span class="dir">tasks/</span>
+  <span class="dir">notifications/</span>
+  <span class="dir">reports/</span>
+  <span class="dir">admin/</span>                      <span class="note"># users, roles, settings tabs, audit-log, integrations, sync-monitor</span>
+  <span class="dir">auth/</span>
+<span class="dir">hooks/</span>                         <span class="note"># cross-feature generic: useDebounce, useMediaQuery, usePermission, useLocalStorage, useCommandPalette</span>
+<span class="dir">services/</span>                      <span class="note"># apiClient.ts (fetch wrapper, interceptors) + one *.service.ts per PRD Part 3 API group</span>
+<span class="dir">lib/</span>                           <span class="note"># queryClient.ts, permissions.ts (role→action matrix engine), date/format helpers re-export, cn()</span>
+<span class="dir">types/</span>                         <span class="note"># global types mirroring PRD Part 3 schema: api.types.ts, enums (PipelineStage, Role, LeadPriority)</span>
+<span class="dir">utils/</span>                         <span class="note"># pure functions: formatCurrency, formatRelativeTime, validateZip, formatPhone</span>
+<span class="dir">store/</span>                         <span class="note"># Zustand: uiStore.ts, filterStore.ts (persisted Smart Views), commandPaletteStore.ts</span>
+<span class="dir">styles/</span>                        <span class="note"># globals.css — Tailwind layers + design-token CSS variables from PRD Part 4</span>
+<span class="dir">providers/</span>                     <span class="note"># QueryClientProvider, ThemeProvider, ToastProvider, TooltipProvider, SessionProvider</span>
+<span class="dir">layouts/</span>                       <span class="note"># shared layout *components* (AppShell, SettingsShell) consumed by app/**/layout.tsx files</span>
+<span class="dir">middleware.ts</span>                 <span class="note"># root: auth/session/role gate at the edge</span>
+<span class="dir">middleware/</span>                    <span class="note"># composable guard helpers: withAuth(), withRoleGate() used inside middleware.ts</span>
+<span class="dir">constants/</span>                     <span class="note"># ROUTES, PERMISSION_KEYS, PIPELINE_STAGES, QUERY_KEYS factory, NOTIFICATION_TYPES</span>
+      </div>
+      <p class="lede" style="margin-top:.8rem;">Rule of thumb: if it's product logic tied to one PRD Part 1 screen, it lives under <code>features/&lt;name&gt;</code>. If it's reused across 3+ features or is pure infrastructure, it moves up to <code>components/shared</code>, <code>hooks/</code>, <code>lib/</code>, or <code>utils/</code>.</p>
+    </section>
+
+    <section id="routing">
+      <p class="eyebrow">Foundation · 02</p>
+      <h2>Routing architecture</h2>
+      <p class="lede">Maps directly to the 36-screen inventory in PRD Part 1. Two top-level route groups separate unauthenticated and authenticated shells without affecting the URL.</p>
+      <div class="tree">
+<span class="dir">app/</span>
+  layout.tsx                     <span class="note"># root: providers, fonts, globals.css</span>
+  global-error.tsx                <span class="note"># last-resort error boundary</span>
+  <span class="dir">(auth)/</span>
+    layout.tsx                   <span class="note"># centered auth shell, no sidebar</span>
+    <span class="dir">login/</span>page.tsx
+    <span class="dir">reset-password/</span>page.tsx
+  <span class="dir">(app)/</span>                     <span class="note"># authenticated shell — guarded by middleware.ts</span>
+    layout.tsx                   <span class="note"># Sidebar + TopBar + CommandPalette + drawers</span>
+    loading.tsx  error.tsx
+    <span class="dir">welcome/</span>page.tsx           <span class="note"># org setup wizard (Admin, first-run only)</span>
+    <span class="dir">dashboard/</span>
+      <span class="dir">executive/</span>page.tsx
+      <span class="dir">manager/</span>page.tsx
+      <span class="dir">intake/</span>page.tsx
+      <span class="dir">me/</span>page.tsx
+      loading.tsx                 <span class="note"># skeleton KPI row + chart blocks</span>
+    <span class="dir">pipeline/</span>
+      layout.tsx                  <span class="note"># shared FilterBar + view-switch tabs</span>
+      <span class="dir">board/</span>page.tsx
+      <span class="dir">table/</span>page.tsx
+      <span class="dir">calendar/</span>page.tsx
+    <span class="dir">leads/</span>
+      page.tsx                    <span class="note"># redirects to /pipeline/table (leads list lives there)</span>
+      <span class="dir">new/</span>page.tsx
+      <span class="dir">duplicates/</span>page.tsx
+      <span class="dir">[leadId]/</span>
+        page.tsx
+        loading.tsx  error.tsx  not-found.tsx
+        <span class="dir">merge/</span>page.tsx      <span class="note"># intercepted route (modal) — see below</span>
+    <span class="dir">dashboards/</span>               <span class="note"># domain dashboards</span>
+      <span class="dir">referrals/</span>page.tsx
+      <span class="dir">providers/</span>page.tsx
+      <span class="dir">insurance/</span>page.tsx
+    <span class="dir">reports/</span>
+      page.tsx
+      <span class="dir">new/</span>page.tsx
+      <span class="dir">saved/</span>page.tsx
+      <span class="dir">[reportId]/</span>page.tsx
+    <span class="dir">analytics/</span>
+      page.tsx
+      <span class="dir">forecast/</span>page.tsx
+    <span class="dir">tasks/</span>page.tsx
+    <span class="dir">activity/</span>page.tsx
+    <span class="dir">notifications/</span>page.tsx
+    <span class="dir">admin/</span>
+      layout.tsx                  <span class="note"># admin sub-nav — guarded again at layout level (defense in depth)</span>
+      <span class="dir">users/</span>page.tsx
+      <span class="dir">roles/</span>page.tsx
+      <span class="dir">settings/</span>
+        layout.tsx                <span class="note"># tabbed SettingsShell</span>
+        page.tsx                  <span class="note"># General</span>
+        <span class="dir">pipeline/</span>page.tsx
+        <span class="dir">referral-sources/</span>page.tsx
+        <span class="dir">insurance/</span>page.tsx
+      <span class="dir">audit-log/</span>page.tsx
+      <span class="dir">integrations/</span>
+        page.tsx
+        <span class="dir">sheets-sync/</span>page.tsx
+      <span class="dir">api/</span>page.tsx
+      <span class="dir">webhooks/</span>page.tsx
+    <span class="dir">profile/</span>page.tsx
+  not-found.tsx                   <span class="note"># root 404</span>
+      </div>
+
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Concern</th><th>Implementation</th></tr></thead>
+        <tbody>
+          <tr><td>Dynamic routes</td><td><code>[leadId]</code>, <code>[reportId]</code> — validated server-side; an unmatched ID renders the segment's <code>not-found.tsx</code>, not a generic error</td></tr>
+          <tr><td>Nested layouts</td><td><code>(app)/layout.tsx</code> → <code>(app)/pipeline/layout.tsx</code> (view-switch tabs) → page; <code>(app)/admin/layout.tsx</code> → <code>(app)/admin/settings/layout.tsx</code> (tab shell) → page</td></tr>
+          <tr><td>Protected routes</td><td><code>middleware.ts</code> checks the session cookie for every <code>(app)/*</code> request at the edge; role-gated segments (<code>/admin/**</code>) get a second check inside <code>admin/layout.tsx</code> — see <a href="#auth">Authentication</a></td></tr>
+          <tr><td>Loading routes</td><td>A <code>loading.tsx</code> per segment that has its own data fetch (Dashboard variants, Pipeline views, Lead Detail, Reports) — each renders the matching skeleton, never a bare spinner</td></tr>
+          <tr><td>Error routes</td><td>Segment-level <code>error.tsx</code> (recoverable — "Retry" reloads that segment only) + root <code>global-error.tsx</code> for anything that escapes the tree</td></tr>
+          <tr><td>Not Found</td><td>Root <code>not-found.tsx</code> for unknown routes; a Lead-specific <code>not-found.tsx</code> under <code>[leadId]/</code> for a valid-looking but nonexistent/archived ID, offering a search box instead of a dead end</td></tr>
+          <tr><td>Lead Merge as a modal</td><td><code>leads/[leadId]/merge/page.tsx</code> is rendered as an intercepting route (<code>(.)merge</code>) when navigated from within the app — opens as a modal over Lead Detail — and as a full page on direct link/refresh, matching PRD Part 1's "Merge screen" wireframe in both contexts</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="components">
+      <p class="eyebrow">Structure · 01</p>
+      <h2>Component architecture</h2>
+      <p class="lede">Every screen decomposes the same way: a page component fetches nothing itself — it composes feature components, each of which owns exactly one React Query hook. Below: the four screens with the most structure. All 32 remaining screens (domain dashboards, settings tabs, admin lists) follow the identical page → feature-components → hooks pattern at a smaller scale.</p>
+
+      <h3>Dashboard (all 4 personas share this shell)</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Component</th><th>Responsibility</th><th>Relationship</th></tr></thead>
+        <tbody>
+          <tr><td><code>DashboardShell</code></td><td>Layout grid, date-range/filter context provider for its children</td><td>Wraps everything below; reads filter state from URL search params</td></tr>
+          <tr><td><code>KpiCard</code></td><td>One metric + delta badge, click → drill-down link</td><td>Pure presentational; receives value/delta as props from the page's query result</td></tr>
+          <tr><td><code>ChartWidget</code></td><td>Renders one Recharts chart (trend/funnel/donut) from a typed config prop</td><td>Config-driven — see <a href="#state">widget API</a> in Part 2</td></tr>
+          <tr><td><code>Heatmap</code></td><td>Custom SVG stage-aging grid (Operations Dashboard only)</td><td>Same data-in, no-side-effects contract as ChartWidget</td></tr>
+          <tr><td><code>RecentActivity</code></td><td>Scrollable feed of latest Activity entries</td><td>Own <code>useRecentActivity</code> query, paginated by "load more"</td></tr>
+          <tr><td><code>QuickActions</code></td><td>Row of primary buttons (New Lead, New Task, Log Activity)</td><td>Dispatches to shared modals, no local data fetching</td></tr>
+          <tr><td><code>FilterPanel</code></td><td>Date range / location / provider filter controls</td><td>Writes to URL search params — the single source of truth for all sibling widgets</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Lead Pipeline (Board / Table / Calendar)</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Component</th><th>Responsibility</th><th>Relationship</th></tr></thead>
+        <tbody>
+          <tr><td><code>PipelineFilterBar</code></td><td>Shared across all 3 views — stage/location/insurance/owner filters, Smart View selector</td><td>Lives in <code>pipeline/layout.tsx</code>; writes filter state to URL, read by whichever view is active</td></tr>
+          <tr><td><code>KanbanBoard</code></td><td>Renders one <code>KanbanColumn</code> per pipeline stage</td><td>Owns drag state in a transient Zustand slice during a drag, commits via <code>useUpdateLeadStage</code> mutation on drop</td></tr>
+          <tr><td><code>KanbanCard</code></td><td>Lead summary chip — ID, service tag, source, SLA-health dot</td><td>Memoized (<code>React.memo</code>) since board re-renders on every filter change</td></tr>
+          <tr><td><code>PipelineTable</code></td><td>Dense sortable/filterable grid — see <a href="#tables-preview">Tables</a> in Part 2</td><td>Built on the shared <code>DataTable</code>, server-side sort/filter/paginate</td></tr>
+          <tr><td><code>PipelineCalendar</code></td><td>Week grid of scheduled consultations by provider/location</td><td>Own <code>useConsultations</code> query scoped to visible week range</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Lead Detail</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Component</th><th>Responsibility</th><th>Relationship</th></tr></thead>
+        <tbody>
+          <tr><td><code>LeadProfileCard</code></td><td>Editable field block (referral, services, appointment type) with inline autosave</td><td>Each field commits independently via <code>useUpdateLead</code>, optimistic</td></tr>
+          <tr><td><code>StatusBadge</code></td><td>Current pipeline stage pill + "change stage" trigger</td><td>Opens <code>StageChangeDialog</code>, which runs the exit-criteria checks from PRD Part 2 client-side before submitting</td></tr>
+          <tr><td><code>InsuranceCard</code></td><td>Carrier + eligibility flag, edit-in-place</td><td>Eligibility check is server-computed; card only renders the result, never re-derives it</td></tr>
+          <tr><td><code>Timeline</code></td><td>Chronological Activity feed — notes, calls, stage changes, field edits, merges</td><td>Own <code>useLeadActivities</code> query; new entries append via mutation + query invalidation, not local state mutation</td></tr>
+          <tr><td><code>NotesPanel</code></td><td>Quick-add note, renders as an Activity of type <code>note</code></td><td>Posts through the same <code>useLeadActivities</code> mutation the Timeline reads from</td></tr>
+          <tr><td><code>TaskPanel</code></td><td>Open tasks for this lead, complete-in-place</td><td>Own <code>useLeadTasks</code> query, shares the global <code>useCompleteTask</code> mutation used on <code>/tasks</code></td></tr>
+          <tr><td><code>AppointmentWidget</code></td><td>Scheduled consultation summary + reschedule action</td><td>Renders only when stage ≥ Consult Scheduled</td></tr>
+          <tr><td><code>DuplicateBanner</code></td><td>Non-blocking "possible duplicate" notice</td><td>Reads from <code>useLeadDuplicates</code>; link opens the Merge intercepting route</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Intake form &amp; Reports (representative of all form/report screens)</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Component</th><th>Responsibility</th><th>Relationship</th></tr></thead>
+        <tbody>
+          <tr><td><code>IntakeForm</code></td><td>RHF + Zod form composing field components; conditional Guardian fields</td><td>See <a href="#forms">Forms</a> for the full field-component contract</td></tr>
+          <tr><td><code>ReportBuilder</code></td><td>Date range + dimension + metric pickers, live preview</td><td>Debounced query re-run on any control change; preview uses the same <code>ChartWidget</code>/<code>DataTable</code> components as everywhere else</td></tr>
+          <tr><td><code>ReportExportButton</code></td><td>Triggers PDF/CSV export</td><td>Calls the export endpoint, streams a blob, no client-side PDF generation</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="state">
+      <p class="eyebrow">Structure · 02</p>
+      <h2>State management</h2>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Category</th><th>Owner</th><th>Examples</th><th>Rule</th></tr></thead>
+        <tbody>
+          <tr><td>Server state</td><td><span class="tag tag-rq">React Query</span></td><td>Leads, tasks, dashboards, reports, sync status, audit log, notifications — everything from PRD Part 3's API</td><td>If it comes from an API, it lives in React Query. Never copy a query result into Zustand/Context "for convenience."</td></tr>
+          <tr><td>Global UI state</td><td><span class="tag tag-zu">Zustand</span></td><td>Sidebar collapsed, command palette open+query, active Smart View, in-progress Kanban drag, theme</td><td>Only for state 2+ unrelated components need, that isn't itself server data</td></tr>
+          <tr><td>Cross-cutting session data</td><td><span class="tag tag-ctx">Context</span></td><td>Current user + role + permissions (hydrated once at session start)</td><td>Read-heavy, rarely-changing — Context's re-render cost doesn't matter here, and it avoids importing a store for something this static</td></tr>
+          <tr><td>Filter / pagination / sort</td><td><span class="tag tag-url">URL search params</span></td><td>Pipeline Table filters, Report Builder parameters, pagination cursor</td><td>Anything a user should be able to bookmark, share, or hit "back" on belongs in the URL, not in Zustand</td></tr>
+          <tr><td>Form state</td><td><span class="tag tag-local">React Hook Form (local)</span></td><td>Intake form, Settings forms, Merge field selections</td><td>Never mirrored into global state; submitted directly to a mutation</td></tr>
+          <tr><td>Ephemeral component state</td><td><span class="tag tag-local">useState/useReducer</span></td><td>Dialog open/closed, hover states, accordion expand</td><td>Default choice — promote to Zustand only when a second, unrelated component needs it</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout warn"><p><strong>Anti-pattern to block in review:</strong> fetching a lead in a page component and passing it down as props through 4 levels of children. Every component that needs lead data calls its own (cached) <code>useLead(leadId)</code> — React Query dedupes the network request automatically, so this costs nothing and prevents prop-drilling rot.</p></div>
+    </section>
+
+    <section id="api">
+      <p class="eyebrow">Integration · 01</p>
+      <h2>API integration</h2>
+      <p class="lede">One hook per endpoint, one service file per PRD Part 3 API group. Query keys follow a factory pattern (<code>constants/queryKeys.ts</code>) so invalidation is typo-proof: <code>queryKeys.leads.detail(id)</code>, never a hand-typed string.</p>
+
+      <pre><span class="c">// constants/queryKeys.ts</span>
+<span class="k">export const</span> queryKeys = {
+  leads: {
+    all: [<span class="s">'leads'</span>] <span class="k">as const</span>,
+    list: (filters: LeadFilters) =&gt; [<span class="s">'leads'</span>, <span class="s">'list'</span>, filters] <span class="k">as const</span>,
+    detail: (id: string) =&gt; [<span class="s">'leads'</span>, <span class="s">'detail'</span>, id] <span class="k">as const</span>,
+    activities: (id: string) =&gt; [<span class="s">'leads'</span>, id, <span class="s">'activities'</span>] <span class="k">as const</span>,
+    duplicates: (id: string) =&gt; [<span class="s">'leads'</span>, id, <span class="s">'duplicates'</span>] <span class="k">as const</span>,
+  },
+  tasks: { list: (f: TaskFilters) =&gt; [<span class="s">'tasks'</span>, f] <span class="k">as const</span> },
+  <span class="c">// … one namespace per PRD Part 3 API group</span>
+}
+
+<span class="c">// features/leads/hooks/useUpdateLeadStage.ts</span>
+<span class="k">export function</span> useUpdateLeadStage(leadId: string) {
+  <span class="k">const</span> qc = useQueryClient()
+  <span class="k">return</span> useMutation({
+    mutationFn: (stageId: string) =&gt; leadsService.changeStage(leadId, stageId),
+    onMutate: <span class="k">async</span> (stageId) =&gt; {
+      <span class="k">await</span> qc.cancelQueries({ queryKey: queryKeys.leads.detail(leadId) })
+      <span class="k">const</span> prev = qc.getQueryData(queryKeys.leads.detail(leadId))
+      qc.setQueryData(queryKeys.leads.detail(leadId), (old: Lead) =&gt; ({ ...old, stageId })) <span class="c">// optimistic</span>
+      <span class="k">return</span> { prev }
+    },
+    onError: (_err, _vars, ctx) =&gt; qc.setQueryData(queryKeys.leads.detail(leadId), ctx?.prev), <span class="c">// rollback</span>
+    onSettled: () =&gt; qc.invalidateQueries({ queryKey: queryKeys.leads.detail(leadId) }),
+  })
+}</pre>
+
+      <h3>Endpoint → hook mapping (every endpoint from PRD Part 3)</h3>
+
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Endpoint</th><th>Hook</th><th>Stale time</th><th>Invalidated by</th><th>Optimistic</th><th>Retry</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method m-post">POST</span> /auth/login</td><td><code>useLogin</code></td><td>n/a</td><td>—</td><td>No</td><td>0 (surface error immediately)</td></tr>
+          <tr><td><span class="method m-post">POST</span> /auth/logout</td><td><code>useLogout</code></td><td>n/a</td><td>—</td><td>No</td><td>0</td></tr>
+          <tr><td><span class="method m-post">POST</span> /auth/refresh</td><td><code>useAuthRefresh</code> (internal, interceptor-driven)</td><td>n/a</td><td>—</td><td>No</td><td>1, then force logout</td></tr>
+          <tr><td><span class="method m-get">GET</span> /auth/me</td><td><code>useSession</code></td><td>5 min</td><td>login/logout</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-get">GET</span> /leads</td><td><code>useLeads(filters)</code></td><td>30s</td><td>any lead mutation</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /leads</td><td><code>useCreateLead</code></td><td>n/a</td><td>invalidates <code>leads.list(*)</code></td><td>No — server assigns <code>display_id</code></td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /leads/:id</td><td><code>useLead(id)</code></td><td>15s</td><td>update/stage/assign/merge on this id</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-patch">PATCH</span> /leads/:id</td><td><code>useUpdateLead(id)</code></td><td>n/a</td><td>invalidates detail + list</td><td>Yes (field-level)</td><td>0</td></tr>
+          <tr><td><span class="method m-delete">DELETE</span> /leads/:id</td><td><code>useArchiveLead(id)</code></td><td>n/a</td><td>invalidates detail + list</td><td>Yes (removes from list immediately)</td><td>0</td></tr>
+          <tr><td><span class="method m-post">POST</span> /leads/:id/stage</td><td><code>useUpdateLeadStage(id)</code></td><td>n/a</td><td>invalidates detail + list + dashboards</td><td>Yes (see code above)</td><td>0</td></tr>
+          <tr><td><span class="method m-post">POST</span> /leads/:id/assign</td><td><code>useAssignLead(id)</code></td><td>n/a</td><td>invalidates detail + list</td><td>Yes</td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /leads/:id/activities</td><td><code>useLeadActivities(id)</code></td><td>10s</td><td>new activity posted</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /leads/:id/activities</td><td><code>useLogActivity(id)</code></td><td>n/a</td><td>invalidates activities + detail (SLA clock)</td><td>Yes (appends optimistically)</td><td>1</td></tr>
+          <tr><td><span class="method m-post">POST</span> /leads/:id/attachments</td><td><code>useUploadAttachment(id)</code></td><td>n/a</td><td>invalidates activities</td><td>No (shows upload progress instead)</td><td>1</td></tr>
+          <tr><td><span class="method m-get">GET</span> /leads/:id/duplicates</td><td><code>useLeadDuplicates(id)</code></td><td>60s</td><td>merge committed</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /leads/:id/merge</td><td><code>useMergeLeads(id)</code></td><td>n/a</td><td>invalidates both leads + list + duplicates</td><td>No (irreversible-feeling — wait for confirm)</td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /leads/search</td><td><code>useLeadSearch(query)</code></td><td>10s, keyed by query</td><td>—</td><td>No</td><td>1</td></tr>
+          <tr><td><span class="method m-get">GET</span> /tasks</td><td><code>useTasks(filters)</code></td><td>15s</td><td>any task mutation</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /tasks</td><td><code>useCreateTask</code></td><td>n/a</td><td>invalidates tasks.list(*)</td><td>Yes (appends to list)</td><td>0</td></tr>
+          <tr><td><span class="method m-patch">PATCH</span> /tasks/:id</td><td><code>useUpdateTask(id)</code></td><td>n/a</td><td>invalidates tasks.list(*)</td><td>Yes</td><td>0</td></tr>
+          <tr><td><span class="method m-post">POST</span> /tasks/:id/complete</td><td><code>useCompleteTask(id)</code></td><td>n/a</td><td>invalidates tasks.list(*) + lead detail</td><td>Yes (strikes through immediately)</td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /reports/templates</td><td><code>useReportTemplates</code></td><td>10 min</td><td>—</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /reports/run</td><td><code>useRunReport(def)</code></td><td>0 (always fresh)</td><td>—</td><td>No</td><td>1</td></tr>
+          <tr><td><span class="method m-get">GET</span> /reports/saved</td><td><code>useSavedReports</code></td><td>60s</td><td>save/delete</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /reports/saved</td><td><code>useSaveReport</code></td><td>n/a</td><td>invalidates saved list</td><td>No</td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /reports/saved/:id/export</td><td><code>useExportReport(id)</code></td><td>n/a (mutation-style GET, manually triggered)</td><td>—</td><td>No (progress indicator instead)</td><td>1</td></tr>
+          <tr><td><span class="method m-get">GET</span> /dashboards/executive|manager|intake|me</td><td><code>useDashboard(persona)</code></td><td>30s, refetch on window focus</td><td>any underlying lead/task mutation (via AR-044 server recompute + normal invalidation)</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-get">GET</span> /users</td><td><code>useUsers</code></td><td>60s</td><td>invite/edit/deactivate</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /users</td><td><code>useInviteUser</code></td><td>n/a</td><td>invalidates users list</td><td>No</td><td>0</td></tr>
+          <tr><td><span class="method m-patch">PATCH</span> /users/:id</td><td><code>useUpdateUser(id)</code></td><td>n/a</td><td>invalidates users list</td><td>Yes</td><td>0</td></tr>
+          <tr><td><span class="method m-post">POST</span> /users/:id/deactivate</td><td><code>useDeactivateUser(id)</code></td><td>n/a</td><td>invalidates users list</td><td>No (confirmation-gated)</td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /notifications</td><td><code>useNotifications</code></td><td>15s, polling fallback 30s if no WebSocket</td><td>mark-read</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /notifications/:id/read</td><td><code>useMarkNotificationRead(id)</code></td><td>n/a</td><td>invalidates notifications</td><td>Yes (dot disappears instantly)</td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /notifications/settings</td><td><code>useNotificationSettings</code></td><td>5 min</td><td>patch</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-patch">PATCH</span> /notifications/settings</td><td><code>useUpdateNotificationSettings</code></td><td>n/a</td><td>invalidates settings</td><td>Yes</td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /integrations/sheets/status</td><td><code>useSyncStatus</code></td><td>10s polling</td><td>force-sync</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /integrations/sheets/connect</td><td><code>useConnectSheets</code></td><td>n/a</td><td>invalidates sync status</td><td>No</td><td>0</td></tr>
+          <tr><td><span class="method m-post">POST</span> /integrations/sheets/force-sync</td><td><code>useForceSync</code></td><td>n/a</td><td>invalidates sync status + all lead lists</td><td>No (shows progress)</td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /integrations/sheets/conflicts</td><td><code>useSyncConflicts</code></td><td>15s</td><td>resolve</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /integrations/sheets/conflicts/:id/resolve</td><td><code>useResolveSyncConflict(id)</code></td><td>n/a</td><td>invalidates conflicts + affected lead</td><td>Yes (removes from queue immediately)</td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /audit-log</td><td><code>useAuditLog(filters)</code></td><td>30s</td><td>—</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-get">/PATCH</span> /settings/org</td><td><code>useOrgSettings</code> / <code>useUpdateOrgSettings</code></td><td>5 min</td><td>patch</td><td>Yes</td><td>2 / 0</td></tr>
+          <tr><td><span class="method m-get">/POST</span> /settings/pipeline-stages</td><td><code>usePipelineStages</code> / <code>useSavePipelineStage</code></td><td>5 min</td><td>save</td><td>No (stage order affects everyone)</td><td>2 / 0</td></tr>
+          <tr><td><span class="method m-get">/POST</span> /settings/referral-sources</td><td><code>useReferralSources</code> / <code>useSaveReferralSource</code></td><td>10 min</td><td>save</td><td>No</td><td>2 / 0</td></tr>
+          <tr><td><span class="method m-get">/POST</span> /settings/insurance-carriers</td><td><code>useInsuranceCarriers</code> / <code>useSaveInsuranceCarrier</code></td><td>10 min</td><td>save</td><td>No</td><td>2 / 0</td></tr>
+          <tr><td><span class="method m-get">/PATCH</span> /settings/automation-rules</td><td><code>useAutomationRules</code> / <code>useUpdateAutomationRule</code></td><td>5 min</td><td>patch</td><td>Yes (toggle switch)</td><td>2 / 0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /webhooks</td><td><code>useWebhooks</code></td><td>60s</td><td>create/delete</td><td>No</td><td>2</td></tr>
+          <tr><td><span class="method m-post">POST</span> /webhooks</td><td><code>useCreateWebhook</code></td><td>n/a</td><td>invalidates webhooks list</td><td>No</td><td>0</td></tr>
+          <tr><td><span class="method m-delete">DELETE</span> /webhooks/:id</td><td><code>useDeleteWebhook(id)</code></td><td>n/a</td><td>invalidates webhooks list</td><td>Yes (removes from list)</td><td>0</td></tr>
+          <tr><td><span class="method m-get">GET</span> /webhooks/:id/deliveries</td><td><code>useWebhookDeliveries(id)</code></td><td>15s</td><td>—</td><td>No</td><td>2</td></tr>
+        </tbody>
+      </table></div>
+      <p class="lede" style="margin-top:.6rem;">General rule: <strong>GET</strong> hooks retry (2× exponential backoff, capped 10s) since they're safe to repeat. <strong>Mutations retry 0×</strong> by default — a failed write surfaces immediately as a toast with a manual Retry action, so a duplicate side effect never fires silently. The three exceptions (Log Activity, Attachment upload, Auth refresh) retry once because they're idempotent by design (activity IDs are client-generated, refresh is safe to repeat until the token is confirmed dead).</p>
+    </section>
+
+    <section id="auth">
+      <p class="eyebrow">Integration · 02</p>
+      <h2>Authentication</h2>
+
+      <div class="flow">
+        <div class="flow-step"><div class="n">1</div><div><h5>Login</h5><p><code>useLogin</code> posts credentials; server sets an httpOnly, secure, SameSite=Strict refresh-token cookie and returns a short-lived access token in the response body</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">2</div><div><h5>Access token held in memory</h5><p>Stored in a module-level variable inside <code>lib/authToken.ts</code> — never <code>localStorage</code>/<code>sessionStorage</code>, which are readable by any injected script. Lost on hard refresh by design; recovered via step 3.</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">3</div><div><h5>Session bootstrap on load</h5><p>Root <code>(app)/layout.tsx</code> calls <code>useSession</code> (<code>/auth/me</code>) on mount; the httpOnly cookie authenticates this call even with no in-memory access token yet, returning a fresh one</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">4</div><div><h5>Silent refresh on 401</h5><p>A single fetch interceptor in <code>services/apiClient.ts</code> catches any 401, calls <code>/auth/refresh</code> once (a module-level promise lock prevents concurrent requests from each firing their own refresh — "single-flight"), replays the original request, and only force-logs-out if refresh itself fails</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">5</div><div><h5>Protected pages</h5><p><code>middleware.ts</code> checks for the refresh-token cookie on every <code>(app)/*</code> request; missing/expired redirects to <code>/login?next=</code> before any page code runs</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">6</div><div><h5>Permission guards &amp; role-based rendering</h5><p>A <code>&lt;Can action="reassign" subject="lead"&gt;</code> component wraps conditional UI, backed by the same permission matrix as PRD Part 1 — but this is UX only. Every mutation hook's underlying endpoint enforces the same rule server-side (PRD Part 4's acceptance criteria: a hidden button is not a security boundary).</p></div></div>
+      </div>
+
+      <pre><span class="c">// components/shared/Can.tsx</span>
+<span class="k">export function</span> Can({ action, subject, children, fallback = <span class="k">null</span> }: CanProps) {
+  <span class="k">const</span> { role } = useSessionContext()
+  <span class="k">return</span> hasPermission(role, action, subject) ? &lt;&gt;{children}&lt;/&gt; : fallback
+}
+<span class="c">// usage: &lt;Can action="reassign" subject="lead"&gt;&lt;ReassignButton /&gt;&lt;/Can&gt;</span></pre>
+    </section>
+
+    <section id="forms">
+      <p class="eyebrow">Integration · 03</p>
+      <h2>Forms</h2>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Standard</th><th>Spec</th></tr></thead>
+        <tbody>
+          <tr><td>Validation</td><td>One Zod schema per form in <code>features/&lt;x&gt;/schema/</code>; <code>z.infer&lt;typeof schema&gt;</code> is the form's TS type — never hand-written twice</td></tr>
+          <tr><td>Error messages</td><td>Rendered directly under each field via RHF's <code>formState.errors</code>, tied to the input with <code>aria-describedby</code>; message text comes from the Zod schema's <code>.message()</code>, not a generic "Invalid field"</td></tr>
+          <tr><td>Field components</td><td>A fixed set in <code>components/shared/form/</code>: <code>TextField</code>, <code>SelectField</code>, <code>DatePickerField</code>, <code>CheckboxGroupField</code>, <code>PhoneField</code>, <code>ZipField</code> — each wraps a shadcn/ui primitive + RHF's <code>Controller</code>, so no screen hand-wires a new one</td></tr>
+          <tr><td>Dynamic fields</td><td>Intake form's Guardian Name/Phone fields render conditionally via <code>form.watch('dob')</code> → age calculation → <code>isMinor</code>, per PRD Part 2's AR-040</td></tr>
+          <tr><td>Multi-step forms</td><td>Only the Org Setup Wizard is multi-step (locations → providers → referral taxonomy → insurance carriers → Sheets connection); each step is its own Zod schema, combined into one on final submit via <code>z.intersection</code>; a <code>Stepper</code> component tracks progress and blocks "Next" until the current step's schema passes</td></tr>
+          <tr><td>Autosave</td><td>Lead Detail field edits autosave on blur, debounced 500ms, via the optimistic <code>useUpdateLead</code> mutation; a small inline "Saved" / "Saving…" indicator replaces any explicit Save button for these fields</td></tr>
+          <tr><td>Dirty-state detection</td><td><code>formState.isDirty</code> drives a <code>beforeunload</code>/route-change guard on Settings and Report Builder forms (which are explicit-submit, not autosave) — "You have unsaved changes" confirm before navigating away</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <footer>
+      Frontend Technical Specification — Part 1 of 2 · Prepared by Damco Digital · 13 Jul 2026 · Continue to Part 2: Patterns, Performance &amp; Delivery.
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+    var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+    if (!sections.length) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          var id = '#' + entry.target.id;
+          links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px' });
+    sections.forEach(function(s){ io.observe(s); });
+  })();
+</script>

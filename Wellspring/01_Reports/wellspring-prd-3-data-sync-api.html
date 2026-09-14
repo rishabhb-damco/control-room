@@ -1,0 +1,546 @@
+<title>Wellspring Ops Platform — PRD Part 3: Data, Sync &amp; API</title>
+<meta name="description" content="Database schema, ERD, two-way Google Sheets synchronization architecture, and the full REST API specification.">
+<style>
+  :root{
+    --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da;
+    --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3;
+    --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0;
+    --warning:#b06a1f; --warning-soft:#f3e3cd;
+    --danger:#a1402f; --danger-soft:#f3ddd6;
+    --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans: "Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733; --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+      --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122; --line:#2c4440; --line-strong:#3c5852;
+      --success:#6fae82; --success-soft:#1d332590; --warning:#dba053; --warning-soft:#3a2d1690; --danger:#d67468; --danger-soft:#3a201b90; }
+  }
+  :root[data-theme="dark"]{ --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733; --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+    --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122; --line:#2c4440; --line-strong:#3c5852;
+    --success:#6fae82; --success-soft:#1d332590; --warning:#dba053; --warning-soft:#3a2d1690; --danger:#d67468; --danger-soft:#3a201b90; }
+  :root[data-theme="light"]{ --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da; --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3; --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0; --warning:#b06a1f; --warning-soft:#f3e3cd; --danger:#a1402f; --danger-soft:#f3ddd6; }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.6; font-size:16px; -webkit-font-smoothing:antialiased; }
+  ::selection{ background:var(--accent-soft); color:var(--ink); }
+  h1,h2,h3,h4{ font-family:var(--serif); font-weight:600; color:var(--ink); text-wrap:balance; }
+  p{ max-width:68ch; }
+  a{ color:var(--accent-deep); }
+  code, .mono{ font-family:var(--mono); }
+  table{ border-collapse:collapse; width:100%; font-size:.86rem; }
+  th{ text-align:left; font-weight:600; color:var(--ink-soft); text-transform:uppercase; font-size:.62rem; letter-spacing:.06em; padding:.5rem .65rem; border-bottom:1px solid var(--line-strong); white-space:nowrap; }
+  td{ padding:.5rem .65rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:hover td{ background:var(--surface-2); }
+  .num{ font-variant-numeric: tabular-nums; }
+
+  .suite-nav{ background:var(--ink); color:var(--paper); font-size:.78rem; padding:.6rem 1.4rem; display:flex; gap:1.3rem; flex-wrap:wrap; align-items:center; }
+  .suite-nav b{ color:var(--accent); font-weight:700; margin-right:.3rem; }
+  .suite-nav a{ color:var(--paper); opacity:.75; text-decoration:none; }
+  .suite-nav a.current{ opacity:1; text-decoration:underline; text-decoration-color:var(--accent); text-underline-offset:3px; }
+  .suite-nav a:hover{ opacity:1; }
+
+  .shell{ display:grid; grid-template-columns: 250px minmax(0,1fr); max-width:1360px; margin:0 auto; }
+  .rail{ position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto; padding:1.6rem 1.3rem 2rem 2rem; border-right:1px solid var(--line); }
+  .rail-brand{ font-family:var(--serif); font-size:1.05rem; margin:0 0 .15rem; }
+  .rail-brand small{ display:block; font-family:var(--sans); font-size:.65rem; letter-spacing:.09em; text-transform:uppercase; color:var(--accent-deep); margin-top:.35rem; }
+  .rail nav{ margin-top:1.6rem; }
+  .rail-group{ margin-bottom:1.3rem; }
+  .rail-group-title{ font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); margin:0 0 .45rem; }
+  .rail a{ display:block; color:var(--ink-soft); text-decoration:none; font-size:.83rem; padding:.28rem 0; border-left:2px solid transparent; padding-left:.7rem; margin-left:-.72rem; }
+  .rail a:hover{ color:var(--ink); border-left-color:var(--line-strong); }
+  .rail a.active{ color:var(--ink); border-left-color:var(--accent); font-weight:600; }
+  .main{ min-width:0; padding:2.6rem 3.2rem 6rem; }
+  @media (max-width: 980px){ .shell{ grid-template-columns:1fr; } .rail{ position:relative; height:auto; border-right:none; border-bottom:1px solid var(--line); } .main{ padding:2rem 1.2rem 4rem; } }
+
+  section{ margin-bottom:4.2rem; scroll-margin-top:1.5rem; }
+  .eyebrow{ text-transform:uppercase; letter-spacing:.12em; font-size:.7rem; color:var(--accent-deep); font-weight:700; margin:0 0 .5rem; }
+  section > h2{ font-size:1.8rem; margin:0 0 .3rem; }
+  section > h3{ font-size:1.15rem; margin:2rem 0 .5rem; }
+  .lede{ color:var(--ink-soft); font-size:1.02rem; max-width:64ch; margin:0 0 1.4rem; }
+
+  .grid{ display:grid; gap:1rem; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1rem 1.2rem; }
+  .breakout{ width:100%; overflow-x:auto; }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface); margin-bottom:1.4rem; }
+  .table-wrap table{ min-width:640px; }
+  .table-wrap h4{ margin:0; padding:.6rem .9rem; background:var(--surface-2); border-bottom:1px solid var(--line); font-size:.88rem; font-family:var(--mono); }
+
+  .callout{ border-left:3px solid var(--accent); background:var(--surface); border-radius:0 6px 6px 0; padding:.9rem 1.2rem; margin:1.3rem 0; }
+  .callout p{ margin:.2rem 0; }
+  .callout.danger{ border-left-color:var(--danger); }
+
+  pre{ background:var(--ink); color:#d9e8e2; border-radius:6px; padding:1rem 1.2rem; overflow-x:auto; font-family:var(--mono); font-size:.78rem; line-height:1.55; }
+  :root[data-theme="dark"] pre{ background:#081512; }
+  @media (prefers-color-scheme: dark){ pre{ background:#081512; } }
+  pre .k{ color:#dcb968; } pre .t{ color:#8fd0b8; } pre .c{ color:#7f958f; }
+
+  .entity-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:1rem; margin:1.3rem 0; }
+  .entity{ background:var(--surface); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .entity h4{ margin:0; padding:.5rem .8rem; background:var(--surface-2); font-size:.82rem; border-bottom:1px solid var(--line); }
+  .entity ul{ list-style:none; margin:0; padding:.55rem .8rem; font-family:var(--mono); font-size:.72rem; color:var(--ink-soft); }
+  .entity li{ padding:.12rem 0; display:flex; justify-content:space-between; gap:.5rem; }
+  .entity li b{ color:var(--ink); font-weight:600; } .entity li small{ color:var(--ink-faint); white-space:nowrap; }
+
+  .arch-flow{ display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; margin:1.3rem 0; }
+  .arch-node{ background:var(--surface); border:1px solid var(--line-strong); border-radius:6px; padding:.6rem .9rem; font-size:.8rem; text-align:center; max-width:160px; }
+  .arch-node small{ display:block; color:var(--ink-faint); font-size:.68rem; margin-top:.25rem; }
+  .arch-arrow{ color:var(--ink-faint); font-size:1.1rem; }
+  .arch-col{ display:flex; flex-direction:column; gap:.5rem; }
+
+  .method{ font-family:var(--mono); font-size:.66rem; font-weight:700; padding:.12rem .4rem; border-radius:3px; }
+  .m-get{ background:var(--success-soft); color:var(--success); }
+  .m-post{ background:var(--accent-soft); color:var(--accent-deep); }
+  .m-patch{ background:var(--warning-soft); color:var(--warning); }
+  .m-delete{ background:var(--danger-soft); color:var(--danger); }
+
+  footer{ border-top:1px solid var(--line); padding-top:1.4rem; color:var(--ink-faint); font-size:.8rem; }
+</style>
+
+<div class="suite-nav">
+  <span><b>PRD Suite</b> Wellspring Operations Platform</span>
+  <a href="https://claude.ai/code/artifact/36733824-3a8f-4fe8-8a5b-9c0237628a7b">1 · Product &amp; UX Spec</a>
+  <a href="https://claude.ai/code/artifact/f82028ce-5a81-42aa-b9ed-e3e4b18b2080">2 · Automation Engine</a>
+  <a href="https://claude.ai/code/artifact/22ae8bf9-df29-40e9-bb1d-1d0db11aa03f" class="current">3 · Data, Sync &amp; API</a>
+  <a href="https://claude.ai/code/artifact/83916532-7bff-4a3c-be7b-e6a819446f20">4 · Design System, Security &amp; Roadmap</a>
+  <span style="opacity:.35;">|</span>
+  <a href="https://claude.ai/code/artifact/27964285-c8eb-42e4-9efa-ac8dbcf1aa8f">FE 1 · Frontend Architecture</a>
+  <a href="https://claude.ai/code/artifact/e3558904-df3e-48d0-8d0f-b0fa9a347f3e">FE 2 · Frontend Patterns</a>
+</div>
+
+<div class="shell">
+  <aside class="rail">
+    <p class="rail-brand">Data, Sync &amp; API<small>PRD Part 3 of 4</small></p>
+    <nav id="toc">
+      <div class="rail-group">
+        <p class="rail-group-title">Database</p>
+        <a href="#erd">Entity relationship diagram</a>
+        <a href="#schema">Schema (DDL)</a>
+        <a href="#constraints">Constraints &amp; indexes</a>
+        <a href="#scalability">Future scalability</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Sheets sync</p>
+        <a href="#sync-overview">Why two-way sync is hard here</a>
+        <a href="#sync-in">Sheet → CRM</a>
+        <a href="#sync-out">CRM → Sheet</a>
+        <a href="#sync-conflict">Conflict resolution</a>
+        <a href="#sync-offline">Offline queue</a>
+        <a href="#sync-cutover">DB cutover path</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">API</p>
+        <a href="#api-auth">Auth</a>
+        <a href="#api-leads">Leads</a>
+        <a href="#api-tasks">Tasks</a>
+        <a href="#api-reports">Reports &amp; dashboards</a>
+        <a href="#api-users">Users &amp; notifications</a>
+        <a href="#api-sync">Sheets sync &amp; audit</a>
+        <a href="#api-settings">Settings &amp; webhooks</a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <section id="erd">
+      <p class="eyebrow">PRD Part 3 of 4 · Database</p>
+      <h2>Entity relationship diagram</h2>
+      <p class="lede">21 entities. <code>leads</code> is deliberately thin on identity data — <code>client_ref</code> joins out to the clinical system of record rather than duplicating PHI (see Part 1's Compliance carry-forward and Part 4's Security section).</p>
+
+      <div class="entity-grid">
+        <div class="entity"><h4>organizations</h4><ul><li>id <small>pk uuid</small></li><li>name <small>text</small></li></ul></div>
+        <div class="entity"><h4>locations</h4><ul><li>id <small>pk</small></li><li>org_id <small>fk</small></li><li>service_area_zips <small>text[]</small></li></ul></div>
+        <div class="entity"><h4>users</h4><ul><li>id <small>pk</small></li><li>email <small>unique</small></li><li>role_id <small>fk</small></li><li>location_id <small>fk</small></li></ul></div>
+        <div class="entity"><h4>roles</h4><ul><li>id <small>pk</small></li><li>name <small>text</small></li><li>permissions <small>jsonb</small></li></ul></div>
+        <div class="entity"><h4>providers</h4><ul><li>id <small>pk</small></li><li>user_id <small>fk null</small></li><li>specialty <small>text[]</small></li><li>weekly_capacity <small>int</small></li></ul></div>
+        <div class="entity"><h4>referral_sources</h4><ul><li>id <small>pk</small></li><li>channel <small>text</small></li><li>sub_type <small>text</small></li></ul></div>
+        <div class="entity"><h4>insurance_carriers</h4><ul><li>id <small>pk</small></li><li>name <small>text</small></li><li>accepted <small>bool</small></li><li>effective_date <small>date</small></li></ul></div>
+        <div class="entity"><h4>pipeline_stages</h4><ul><li>id <small>pk</small></li><li>sort_order <small>int</small></li><li>is_terminal <small>bool</small></li><li>is_loss <small>bool</small></li></ul></div>
+        <div class="entity"><h4>leads</h4><ul><li>id <small>pk uuid</small></li><li>display_id <small>unique</small></li><li>client_ref <small>text null</small></li><li>stage_id <small>fk</small></li><li>owner_id <small>fk</small></li></ul></div>
+        <div class="entity"><h4>activities</h4><ul><li>id <small>pk</small></li><li>lead_id <small>fk</small></li><li>type <small>text</small></li><li>occurred_at <small>timestamptz</small></li></ul></div>
+        <div class="entity"><h4>tasks</h4><ul><li>id <small>pk</small></li><li>lead_id <small>fk null</small></li><li>assigned_to <small>fk</small></li><li>status <small>text</small></li></ul></div>
+        <div class="entity"><h4>duplicate_matches</h4><ul><li>id <small>pk</small></li><li>lead_id_a/b <small>fk</small></li><li>confidence <small>numeric</small></li></ul></div>
+        <div class="entity"><h4>audit_log_entries</h4><ul><li>id <small>pk</small></li><li>entity_type/id <small>text/uuid</small></li><li>old/new_value <small>jsonb</small></li></ul></div>
+        <div class="entity"><h4>notifications</h4><ul><li>id <small>pk</small></li><li>user_id <small>fk</small></li><li>read <small>bool</small></li></ul></div>
+        <div class="entity"><h4>automation_rules</h4><ul><li>id <small>pk text "AR-001"</small></li><li>condition/action <small>jsonb</small></li><li>enabled <small>bool</small></li></ul></div>
+        <div class="entity"><h4>sync_state</h4><ul><li>id <small>pk</small></li><li>sheet_tab/row_number</li><li>lead_id <small>fk null</small></li><li>row_hash <small>text</small></li></ul></div>
+        <div class="entity"><h4>sync_conflicts</h4><ul><li>id <small>pk</small></li><li>sync_state_id <small>fk</small></li><li>sheet_value/crm_value <small>jsonb</small></li></ul></div>
+        <div class="entity"><h4>webhooks</h4><ul><li>id <small>pk</small></li><li>event <small>text</small></li><li>target_url <small>text</small></li></ul></div>
+        <div class="entity"><h4>api_keys</h4><ul><li>id <small>pk</small></li><li>key_hash <small>text</small></li><li>scopes <small>text[]</small></li></ul></div>
+      </div>
+
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Relationship</th><th>Cardinality</th></tr></thead>
+        <tbody>
+          <tr><td>organizations → locations, users, leads, …</td><td>1 : many (every entity is org-scoped for multi-tenant safety)</td></tr>
+          <tr><td>leads → pipeline_stages</td><td>many : 1</td></tr>
+          <tr><td>leads → activities, tasks</td><td>1 : many</td></tr>
+          <tr><td>leads → referral_sources, insurance_carriers, providers, locations</td><td>many : 1 each</td></tr>
+          <tr><td>leads ↔ leads via duplicate_matches</td><td>many : many</td></tr>
+          <tr><td>leads ↔ leads via reactivated_from_id</td><td>1 : 1 self-reference</td></tr>
+          <tr><td>leads ↔ sync_state (Google Sheets row)</td><td>1 : 1</td></tr>
+          <tr><td>sync_state → sync_conflicts</td><td>1 : many</td></tr>
+          <tr><td>users → roles</td><td>many : 1</td></tr>
+          <tr><td>any entity change → audit_log_entries</td><td>1 : many</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="schema">
+      <h3 style="margin-top:0;">Schema (PostgreSQL DDL)</h3>
+      <p>Representative core tables — full DDL for all 21 tables follows the same conventions: <code>uuid</code> primary keys via <code>gen_random_uuid()</code>, <code>org_id</code> on every row for tenant isolation, <code>created_at</code>/<code>updated_at</code> with trigger-maintained <code>updated_at</code>.</p>
+      <pre><span class="c">-- core lead record: thin on identity, joins out to the clinical system of record</span>
+<span class="k">CREATE TABLE</span> leads (
+  id                  uuid <span class="k">PRIMARY KEY</span> <span class="k">DEFAULT</span> gen_random_uuid(),
+  org_id              uuid <span class="k">NOT NULL REFERENCES</span> organizations(id),
+  display_id          text <span class="k">NOT NULL UNIQUE</span>,          <span class="c">-- WS-100032, generated</span>
+  client_ref          text,                                <span class="c">-- FK into external EHR, nullable</span>
+  stage_id            uuid <span class="k">NOT NULL REFERENCES</span> pipeline_stages(id),
+  priority            text <span class="k">NOT NULL DEFAULT</span> <span class="t">'standard'</span>
+                        <span class="k">CHECK</span> (priority <span class="k">IN</span> (<span class="t">'standard'</span>,<span class="t">'high'</span>,<span class="t">'urgent'</span>)),
+  priority_reason     text,
+  owner_id            uuid <span class="k">REFERENCES</span> users(id),
+  location_id         uuid <span class="k">NOT NULL REFERENCES</span> locations(id),
+  provider_id         uuid <span class="k">REFERENCES</span> providers(id),
+  referral_source_id  uuid <span class="k">NOT NULL REFERENCES</span> referral_sources(id),
+  referrer_name       text,
+  insurance_carrier_id uuid <span class="k">REFERENCES</span> insurance_carriers(id),
+  dob                 date,
+  is_minor            boolean <span class="k">GENERATED ALWAYS AS</span> (
+                        dob <span class="k">IS NOT NULL AND</span> dob &gt; (now() - <span class="k">INTERVAL</span> <span class="t">'18 years'</span>)
+                      ) <span class="k">STORED</span>,
+  guardian_name       text,
+  guardian_phone      text,
+  zip                 text,
+  sex                 text,
+  services            text[] <span class="k">NOT NULL DEFAULT</span> <span class="t">'{}'</span>,
+  appointment_type    text,
+  tags                text[] <span class="k">NOT NULL DEFAULT</span> <span class="t">'{}'</span>,
+  lost_reason         text,
+  lost_at             timestamptz,
+  reactivated_from_id uuid <span class="k">REFERENCES</span> leads(id),
+  created_at          timestamptz <span class="k">NOT NULL DEFAULT</span> now(),
+  updated_at          timestamptz <span class="k">NOT NULL DEFAULT</span> now()
+);
+
+<span class="c">-- append-only interaction log — replaces the sheet's single free-text follow-up cell</span>
+<span class="k">CREATE TABLE</span> activities (
+  id            uuid <span class="k">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  lead_id       uuid <span class="k">NOT NULL REFERENCES</span> leads(id) <span class="k">ON DELETE CASCADE</span>,
+  type          text <span class="k">NOT NULL CHECK</span> (type <span class="k">IN</span>
+                  (<span class="t">'note'</span>,<span class="t">'call'</span>,<span class="t">'email'</span>,<span class="t">'stage_change'</span>,<span class="t">'field_change'</span>,<span class="t">'attachment'</span>,<span class="t">'merge'</span>)),
+  outcome       text,
+  body          text,
+  staff_id      uuid <span class="k">REFERENCES</span> users(id),
+  occurred_at   timestamptz <span class="k">NOT NULL DEFAULT</span> now(),
+  source        text <span class="k">NOT NULL DEFAULT</span> <span class="t">'manual'</span> <span class="k">CHECK</span> (source <span class="k">IN</span> (<span class="t">'manual'</span>,<span class="t">'automation'</span>,<span class="t">'sheet_sync'</span>))
+);
+
+<span class="k">CREATE TABLE</span> tasks (
+  id              uuid <span class="k">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  lead_id         uuid <span class="k">REFERENCES</span> leads(id) <span class="k">ON DELETE CASCADE</span>,
+  type            text <span class="k">NOT NULL CHECK</span> (type <span class="k">IN</span> (<span class="t">'follow_up'</span>,<span class="t">'reminder'</span>,<span class="t">'ops'</span>,<span class="t">'escalation'</span>)),
+  title           text <span class="k">NOT NULL</span>,
+  due_at          timestamptz <span class="k">NOT NULL</span>,
+  assigned_to     uuid <span class="k">NOT NULL REFERENCES</span> users(id),
+  status          text <span class="k">NOT NULL DEFAULT</span> <span class="t">'open'</span> <span class="k">CHECK</span> (status <span class="k">IN</span> (<span class="t">'open'</span>,<span class="t">'completed'</span>,<span class="t">'overdue'</span>)),
+  completed_at    timestamptz,
+  outcome_note    text,
+  source          text <span class="k">NOT NULL DEFAULT</span> <span class="t">'manual'</span>,
+  rule_id         text <span class="k">REFERENCES</span> automation_rules(id)
+);
+
+<span class="k">CREATE TABLE</span> sync_state (
+  id              uuid <span class="k">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  org_id          uuid <span class="k">NOT NULL REFERENCES</span> organizations(id),
+  sheet_id        text <span class="k">NOT NULL</span>,
+  sheet_tab       text <span class="k">NOT NULL</span>,
+  row_number      int <span class="k">NOT NULL</span>,
+  lead_id         uuid <span class="k">REFERENCES</span> leads(id),
+  row_hash        text <span class="k">NOT NULL</span>,
+  last_synced_at  timestamptz,
+  status          text <span class="k">NOT NULL DEFAULT</span> <span class="t">'pending'</span> <span class="k">CHECK</span> (status <span class="k">IN</span> (<span class="t">'synced'</span>,<span class="t">'pending'</span>,<span class="t">'conflict'</span>,<span class="t">'error'</span>)),
+  <span class="k">UNIQUE</span> (sheet_id, sheet_tab, row_number)
+);
+
+<span class="k">CREATE TABLE</span> sync_conflicts (
+  id              uuid <span class="k">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  sync_state_id   uuid <span class="k">NOT NULL REFERENCES</span> sync_state(id) <span class="k">ON DELETE CASCADE</span>,
+  field           text <span class="k">NOT NULL</span>,
+  sheet_value     jsonb,
+  crm_value       jsonb,
+  detected_at     timestamptz <span class="k">NOT NULL DEFAULT</span> now(),
+  resolved        boolean <span class="k">NOT NULL DEFAULT false</span>,
+  resolution      text <span class="k">CHECK</span> (resolution <span class="k">IN</span> (<span class="t">'keep_sheet'</span>,<span class="t">'keep_crm'</span>,<span class="t">'manual'</span>))
+);
+
+<span class="k">CREATE TABLE</span> audit_log_entries (
+  id            uuid <span class="k">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  org_id        uuid <span class="k">NOT NULL REFERENCES</span> organizations(id),
+  entity_type   text <span class="k">NOT NULL</span>,
+  entity_id     uuid <span class="k">NOT NULL</span>,
+  field         text,
+  old_value     jsonb,
+  new_value     jsonb,
+  user_id       uuid <span class="k">REFERENCES</span> users(id),   <span class="c">-- null = system/automation</span>
+  rule_id       text,
+  at            timestamptz <span class="k">NOT NULL DEFAULT</span> now()
+);</pre>
+    </section>
+
+    <section id="constraints">
+      <h3 style="margin-top:0;">Constraints, indexes &amp; validation rules</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Rule</th><th>Enforced by</th></tr></thead>
+        <tbody>
+          <tr><td>Every entity is org-scoped</td><td><code>org_id</code> NOT NULL + row-level security policy filtering on session org context</td></tr>
+          <tr><td><code>display_id</code> is permanent and unique</td><td><code>UNIQUE</code> constraint; generated by sequence at insert, never regenerated on merge</td></tr>
+          <tr><td>A lead can't advance past Contacted without eligible insurance</td><td>Application-layer guard in the stage-change service (AR-018/AR-020), not a DB constraint — insurance rules change over time and must stay editable without a migration</td></tr>
+          <tr><td>Lost requires a reason</td><td><code>CHECK</code>-equivalent app-layer validation (AR-023); DB allows <code>lost_reason</code> null only when <code>is_loss</code> stage is false</td></tr>
+          <tr><td>One sheet row maps to at most one lead</td><td><code>UNIQUE (sheet_id, sheet_tab, row_number)</code> on <code>sync_state</code></td></tr>
+          <tr><td>Fast "what's overdue" queries</td><td><code>INDEX ON tasks (assigned_to, status, due_at)</code></td></tr>
+          <tr><td>Fast pipeline board queries</td><td><code>INDEX ON leads (org_id, stage_id, location_id)</code></td></tr>
+          <tr><td>Fast duplicate lookups</td><td><code>INDEX ON leads (org_id, zip, dob)</code> and a trigram index on a normalized phone column for fuzzy match</td></tr>
+          <tr><td>Audit trail is immutable</td><td>No <code>UPDATE</code>/<code>DELETE</code> grants on <code>audit_log_entries</code> at the DB role level — insert-only</td></tr>
+          <tr><td>Guardian fields required for minors</td><td>Application-layer validation at save time (AR-040); DB permits null so historical/legacy rows aren't blocked on backfill</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="scalability">
+      <h3 style="margin-top:0;">Future scalability considerations</h3>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+        <div class="card"><strong>Partitioning</strong> — <code>activities</code> and <code>audit_log_entries</code> partition by month once volume passes ~5M rows; both are append-mostly and query patterns are date-bounded.</div>
+        <div class="card"><strong>Read replicas</strong> — dashboard/report queries route to a read replica once concurrent staff exceed ~50, keeping the primary free for the write-heavy pipeline board.</div>
+        <div class="card"><strong>Multi-location/multi-tenant</strong> — the org_id-on-every-row + RLS pattern means onboarding a second Wellspring-like client is a data-isolation non-event, not a schema change.</div>
+        <div class="card"><strong>Search</strong> — Postgres full-text to start; if lead volume or query complexity grows, the search layer sits behind an interface so it can move to a dedicated index (e.g. Meilisearch) without touching callers.</div>
+      </div>
+    </section>
+
+    <section id="sync-overview">
+      <p class="eyebrow">PRD Part 3 of 4 · Google Sheets Sync</p>
+      <h2>Two-way synchronization architecture</h2>
+      <p class="lede">Non-negotiable per the brief: the sheet stays the primary data source in Phase 1. The design below treats the sheet as just another <em>repository implementation</em> behind the same interface the database will use later — so replacing it is a swap, not a rebuild.</p>
+      <div class="callout"><p><strong>Known constraint:</strong> the Sheets API enforces 60 reads/min and 60 writes/min per connected account (confirmed in the live integration). Every component below is designed around that ceiling — batched reads, queued writes, and hash-based change detection so unchanged rows never consume a read/write cycle.</p></div>
+    </section>
+
+    <section id="sync-in">
+      <h3 style="margin-top:0;">Sheet → CRM (create / update)</h3>
+      <div class="arch-flow">
+        <div class="arch-node">Apps Script<br>onEdit trigger<small>fires per edit</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">Webhook ping<br>+ 5-min poll fallback<small>covers paste/import edits onEdit misses</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">Ingestion queue<small>rate-limit-safe buffering</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">batchGet changed tab<small>row-hash compare vs sync_state</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">Row mapping<br>(hidden Lead ID column)<small>new row = no ID yet</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">Dedup engine<br>AR-014–016<small>before create</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">Lead created/updated<small>write ID back to sheet</small></div>
+      </div>
+      <p>Every new row without a value in the hidden <code>CRM Lead ID</code> column is treated as a create; every row with an ID and a changed hash is treated as an update. Unchanged rows (identical hash) are skipped — this is what keeps a full-tab weekly re-fetch inside the API rate limit.</p>
+    </section>
+
+    <section id="sync-out">
+      <h3 style="margin-top:0;">CRM → Sheet (write-back)</h3>
+      <div class="arch-flow">
+        <div class="arch-node">Lead field edited in CRM<small>any channel: UI, API, automation</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">Write-back job enqueued<small>debounced 10s per lead to batch rapid edits</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">batchUpdate<br>changed cells only<small>not a full-row rewrite</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">sync_state.row_hash updated<small>prevents false-positive re-ingest</small></div>
+      </div>
+      <p>Writing only the changed cell range (not the full row) minimizes the surface a concurrent human sheet-edit can collide with, and keeps each write inside the 60/min budget even during a burst of CRM activity.</p>
+    </section>
+
+    <section id="sync-conflict">
+      <h3 style="margin-top:0;">Conflict resolution</h3>
+      <p>A conflict exists only when <em>the same field</em> changed in both places since the last successful sync — everything else merges automatically, field by field.</p>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Scenario</th><th>Resolution</th></tr></thead>
+        <tbody>
+          <tr><td>Field changed in Sheet only</td><td>Auto-apply to CRM</td></tr>
+          <tr><td>Field changed in CRM only</td><td>Auto-apply to Sheet</td></tr>
+          <tr><td>Different fields changed in each, same row</td><td>Auto-merge both changes — no conflict</td></tr>
+          <tr><td>Same field changed in both since last sync</td><td>Create <code>sync_conflicts</code> row (AR-052); surface in Sync Monitor; Admin picks Keep Sheet / Keep CRM / Manual entry</td></tr>
+          <tr><td>Row deleted in Sheet, lead has activity in CRM</td><td>Never auto-delete a lead with history — flag for Admin review instead</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>Permanent Lead ID:</strong> assigned at first creation (whichever side creates it first) and never regenerated — the hidden sheet column and the CRM <code>display_id</code> are the same value for the life of the record, including through a merge (the surviving ID wins; the archived one becomes a redirect, not a deletion).</p>
+    </section>
+
+    <section id="sync-offline">
+      <h3 style="margin-top:0;">Offline queue</h3>
+      <p>Mobile/PWA clients write local edits to an IndexedDB-backed outbox when offline. On reconnect, the outbox replays through the identical CRM→Sheet write path and conflict-detection logic above — offline is not a special case, it's a delayed enqueue. Each queued item carries a client-generated idempotency key so a retried replay after a partial failure never double-applies.</p>
+
+      <h3>Sync failure logging &amp; recovery</h3>
+      <p>Every sync job attempt (in either direction) writes a row to a <code>sync_job_log</code> table: job type, target row, attempt number, result, error detail. Exponential backoff (2s, 8s, 32s) on transient errors (429/500); after 3 consecutive failures on the same row, that row's status flips to <code>error</code>, the org-wide sync pauses (not just that row) and AR-053 alerts the Admin — failures are visible and recoverable from the Sync Monitor screen, never silent.</p>
+    </section>
+
+    <section id="sync-cutover">
+      <h3 style="margin-top:0;">Future database cutover — designed in from day one</h3>
+      <div class="arch-flow">
+        <div class="arch-col">
+          <div class="arch-node" style="max-width:220px;">Application code<small>calls LeadRepository interface only</small></div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-col">
+          <div class="arch-node" style="max-width:180px;">Today:<br><code>SheetRepository</code><small>reads/writes via Sheets API</small></div>
+          <div class="arch-node" style="max-width:180px;">Tomorrow:<br><code>SqlRepository</code><small>reads/writes Postgres directly</small></div>
+        </div>
+      </div>
+      <p>The application never queries "the sheet" or "the database" directly — it calls <code>LeadRepository.find()</code>, <code>.save()</code>, <code>.search()</code>. Cutover is: (1) run a one-time migration that walks every <code>sync_state</code> row and inserts the corresponding data into the <code>leads</code> table, preserving <code>display_id</code>; (2) flip a config flag from <code>SheetRepository</code> to <code>SqlRepository</code>; (3) keep the Sheets connector alive in read-only "mirror" mode for one billing cycle as a safety net, then retire it. No screen, API endpoint, or automation rule changes.</p>
+    </section>
+
+    <section id="api-auth">
+      <p class="eyebrow">PRD Part 3 of 4 · API specification</p>
+      <h2>REST API — Authentication</h2>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Method</th><th>Path</th><th>Scope</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/auth/login</td><td>Public</td><td>Email + password → session/JWT</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/auth/logout</td><td>Authenticated</td><td>Invalidate current session</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/auth/refresh</td><td>Authenticated</td><td>Rotate access token from refresh token</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/auth/reset-password</td><td>Public</td><td>Request/confirm password reset token</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/auth/me</td><td>Authenticated</td><td>Current user + role + permissions</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="api-leads">
+      <h3 style="margin-top:0;">Leads</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Method</th><th>Path</th><th>Scope</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/leads</td><td>Coordinator+</td><td>List, filter (stage/location/owner/insurance/etc.), paginate</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/leads</td><td>Coordinator+</td><td>Create lead (structured intake payload)</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/leads/:id</td><td>Owner, Manager+</td><td>Full lead detail incl. relations</td></tr>
+          <tr><td><span class="method m-patch">PATCH</span></td><td class="mono">/api/v1/leads/:id</td><td>Owner, Manager+</td><td>Field updates (not stage — see below)</td></tr>
+          <tr><td><span class="method m-delete">DELETE</span></td><td class="mono">/api/v1/leads/:id</td><td>Manager+</td><td>Archive (soft delete)</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/leads/:id/stage</td><td>Owner, Manager+</td><td>Change pipeline stage; runs stage-exit automation validation</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/leads/:id/assign</td><td>Manager+</td><td>Reassign owner</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/leads/:id/activities</td><td>Owner, Manager+</td><td>Timeline feed</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/leads/:id/activities</td><td>Owner, Manager+</td><td>Log call/email/note</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/leads/:id/attachments</td><td>Owner, Manager+</td><td>Upload file (requires PHI acknowledgment flag)</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/leads/:id/duplicates</td><td>Coordinator+</td><td>Suggested duplicate matches</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/leads/:id/merge</td><td>Manager+</td><td>Commit merge with field-by-field resolution payload</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/leads/search</td><td>All (scoped)</td><td>Global search — boolean query syntax</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="api-tasks">
+      <h3 style="margin-top:0;">Tasks</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Method</th><th>Path</th><th>Scope</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/tasks</td><td>All (scoped)</td><td>List own/team tasks, filter by status/due</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/tasks</td><td>All</td><td>Create manual task/reminder</td></tr>
+          <tr><td><span class="method m-patch">PATCH</span></td><td class="mono">/api/v1/tasks/:id</td><td>Assignee, Manager+</td><td>Edit due date/assignee</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/tasks/:id/complete</td><td>Assignee</td><td>Mark complete (requires outcome note if type=follow_up)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="api-reports">
+      <h3 style="margin-top:0;">Reports &amp; dashboards</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Method</th><th>Path</th><th>Scope</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/reports/templates</td><td>Manager+</td><td>List built-in report templates</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/reports/run</td><td>Manager+</td><td>Execute a report definition, return data + chart spec</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/reports/saved</td><td>Manager+</td><td>List saved report definitions</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/reports/saved</td><td>Manager+</td><td>Save a custom report + optional recurring schedule</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/reports/saved/:id/export</td><td>Manager+</td><td>PDF/CSV export</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/dashboards/executive</td><td>Leadership, Admin</td><td>Executive Dashboard payload</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/dashboards/manager</td><td>Manager+</td><td>Operations Dashboard payload</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/dashboards/intake</td><td>Coordinator+</td><td>Intake Dashboard payload</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/dashboards/me</td><td>All</td><td>Individual dashboard payload</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="api-users">
+      <h3 style="margin-top:0;">Users &amp; notifications</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Method</th><th>Path</th><th>Scope</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/users</td><td>Admin</td><td>List org users</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/users</td><td>Admin</td><td>Invite user</td></tr>
+          <tr><td><span class="method m-patch">PATCH</span></td><td class="mono">/api/v1/users/:id</td><td>Admin</td><td>Edit role/location</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/users/:id/deactivate</td><td>Admin</td><td>Deactivate (forces reassignment prompt, AR-056)</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/notifications</td><td>All (own)</td><td>List notifications</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/notifications/:id/read</td><td>All (own)</td><td>Mark read</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/notifications/settings</td><td>All (own)</td><td>Per-channel toggle state</td></tr>
+          <tr><td><span class="method m-patch">PATCH</span></td><td class="mono">/api/v1/notifications/settings</td><td>All (own)</td><td>Update toggles (mandatory ones rejected)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="api-sync">
+      <h3 style="margin-top:0;">Google Sheets sync &amp; audit logs</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Method</th><th>Path</th><th>Scope</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/integrations/sheets/status</td><td>Admin</td><td>Last sync time, queue depth, failure count</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/integrations/sheets/connect</td><td>Admin</td><td>Authorize + bind a spreadsheet ID</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/integrations/sheets/force-sync</td><td>Admin</td><td>Manual full re-sync trigger</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/integrations/sheets/conflicts</td><td>Admin</td><td>Open sync conflicts</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/integrations/sheets/conflicts/:id/resolve</td><td>Admin</td><td>Resolve with keep_sheet/keep_crm/manual</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/audit-log</td><td>Admin, Manager (scoped)</td><td>Filterable field-change history</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="api-settings">
+      <h3 style="margin-top:0;">Settings &amp; webhooks</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Method</th><th>Path</th><th>Scope</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method m-get">GET</span> / <span class="method m-patch">PATCH</span></td><td class="mono">/api/v1/settings/org</td><td>Admin</td><td>Org profile, locations, business hours</td></tr>
+          <tr><td><span class="method m-get">GET</span> / <span class="method m-post">POST</span></td><td class="mono">/api/v1/settings/pipeline-stages</td><td>Admin</td><td>Custom stage CRUD + reorder</td></tr>
+          <tr><td><span class="method m-get">GET</span> / <span class="method m-post">POST</span></td><td class="mono">/api/v1/settings/referral-sources</td><td>Admin</td><td>Referral taxonomy CRUD</td></tr>
+          <tr><td><span class="method m-get">GET</span> / <span class="method m-post">POST</span></td><td class="mono">/api/v1/settings/insurance-carriers</td><td>Admin</td><td>Carrier list + accepted flag, effective-dated</td></tr>
+          <tr><td><span class="method m-get">GET</span> / <span class="method m-patch">PATCH</span></td><td class="mono">/api/v1/settings/automation-rules</td><td>Admin</td><td>Enable/disable/tune rule thresholds</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/webhooks</td><td>Admin</td><td>List outbound subscriptions</td></tr>
+          <tr><td><span class="method m-post">POST</span></td><td class="mono">/api/v1/webhooks</td><td>Admin</td><td>Create subscription (event + target URL + secret)</td></tr>
+          <tr><td><span class="method m-delete">DELETE</span></td><td class="mono">/api/v1/webhooks/:id</td><td>Admin</td><td>Remove subscription</td></tr>
+          <tr><td><span class="method m-get">GET</span></td><td class="mono">/api/v1/webhooks/:id/deliveries</td><td>Admin</td><td>Delivery attempt log + retry status</td></tr>
+        </tbody>
+      </table></div>
+      <p>All endpoints require a bearer token (session JWT or API key), are scoped to the caller's <code>org_id</code>, and return <code>429</code> with a <code>Retry-After</code> header once the org's rate budget is spent — mirroring the same backpressure discipline the Sheets sync layer applies internally.</p>
+    </section>
+
+    <footer>
+      Wellspring Operations Platform — PRD Part 3 of 4 · Prepared by Damco Digital · 13 Jul 2026 · Continue to Part 4: Design System, Security, Performance, AI &amp; Roadmap.
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+    var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+    if (!sections.length) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          var id = '#' + entry.target.id;
+          links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px' });
+    sections.forEach(function(s){ io.observe(s); });
+  })();
+</script>

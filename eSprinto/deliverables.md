@@ -11,6 +11,7 @@
 | 1 | 2026-04-24 | Instagram Boost Campaign — April 2026 | Completed | ₹499 spend, 39,986 reach, 630 engagements, 3 followers |
 | 2 | 2026-04-24 | Campaign Performance Report — Apr 19–24 | Completed | 3-slide report covering audience funnel, creative analysis |
 | 3 | TBD | Competitor Research Report v4 | Completed | BGauss, Simple Energy, Sokudo — GTM analysis + opportunities |
+| 4 | 2026-07-28 | Meta Ad Copy — B2C Dealership Recruitment (3 creative concepts, EN + HI) | Completed | Delhi NCR, ₹25L investment hook, 3 concepts x 5 primary/headline/description, saved to `02_Copy/` |
 
 ---
 

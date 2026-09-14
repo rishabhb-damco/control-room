@@ -1,0 +1,996 @@
+<title>Wellspring Ops</title>
+<meta name="description" content="High-fidelity interactive prototype of the Wellspring Operations Platform">
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+<symbol id="i-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+<symbol id="i-chevron-right" viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></symbol>
+<symbol id="i-dots-h" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
+<symbol id="i-dots-v" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+<symbol id="i-check-sq" viewBox="0 0 24 24"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/><polyline points="9 11 12 14 22 4"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 0V3s-1 2-4 2-5-2-8-2z"/><line x1="4" y1="22" x2="4" y2="15"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M17 11a4 4 0 1 0 0-8"/><path d="M1 21v-2a4 4 0 0 1 3-3.87"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></symbol>
+<symbol id="i-grip" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.3"/><circle cx="15" cy="6" r="1.3"/><circle cx="9" cy="12" r="1.3"/><circle cx="15" cy="12" r="1.3"/><circle cx="9" cy="18" r="1.3"/><circle cx="15" cy="18" r="1.3"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+<symbol id="i-trend" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+<symbol id="i-dollar" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></symbol>
+<symbol id="i-percent" viewBox="0 0 24 24"><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><line x1="5" y1="19" x2="19" y2="5"/></symbol>
+<symbol id="i-activity" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2l1.8 5.4L19 9l-5.2 1.6L12 16l-1.8-5.4L5 9l5.2-1.6z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9z"/></symbol>
+<symbol id="i-arrow-left" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+<symbol id="i-paperclip" viewBox="0 0 24 24"><path d="M21 11.5 12.5 20a4.5 4.5 0 0 1-6.4-6.4L14.6 5a3 3 0 0 1 4.24 4.24l-8.13 8.13a1.5 1.5 0 0 1-2.12-2.12l7.07-7.07"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><line x1="12" y1="2" x2="12" y2="5.5"/><line x1="12" y1="18.5" x2="12" y2="22"/><line x1="2" y1="12" x2="5.5" y2="12"/><line x1="18.5" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="7.3" y2="7.3"/><line x1="16.7" y1="16.7" x2="19.1" y2="19.1"/><line x1="19.1" y1="4.9" x2="16.7" y2="7.3"/><line x1="7.3" y1="16.7" x2="4.9" y2="19.1"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20"/><line x1="8" y1="6" x2="10" y2="6"/><line x1="14" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="9" y1="22" x2="9" y2="18"/><line x1="15" y1="22" x2="15" y2="18"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.4l2-2a5 5 0 0 0-7-7l-1.2 1.1"/><path d="M14 11a5 5 0 0 0-7.5-.4l-2 2a5 5 0 0 0 7 7l1.1-1.1"/></symbol>
+<symbol id="i-sheet" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></symbol>
+<symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/><polyline points="12 7 12 12 16 14"/></symbol>
+</defs>
+</svg>
+
+<style>
+:root{
+  --bg:#f4f5f7; --surface:#ffffff; --surface-2:#eef0f3; --surface-3:#e7e9ee;
+  --border:#e2e5ea; --border-strong:#d1d6de;
+  --ink:#0f1720; --ink-soft:#5b6472; --ink-faint:#8992a0;
+  --brand:#a9791f; --brand-600:#8a6318; --brand-soft:#f5ecd6;
+  --info:#2563eb; --info-soft:#e6eefd;
+  --success:#16a34a; --success-soft:#e3f6e9;
+  --warning:#d97706; --warning-soft:#fdf1de;
+  --danger:#dc2626; --danger-soft:#fbe6e5;
+  --shadow: 0 1px 2px rgba(15,23,32,.04), 0 1px 6px rgba(15,23,32,.05);
+  --radius:8px;
+  --sans: system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0b0e13; --surface:#12161d; --surface-2:#171c24; --surface-3:#1d232c;
+    --border:#232a35; --border-strong:#2d3542;
+    --ink:#e7eaef; --ink-soft:#9aa4b2; --ink-faint:#6b7483;
+    --brand:#dcb968; --brand-600:#e8c880; --brand-soft:#2c2716;
+    --info:#5b9bff; --info-soft:#122036;
+    --success:#4ade80; --success-soft:#0f2519;
+    --warning:#fbbf24; --warning-soft:#2b2110;
+    --danger:#f87171; --danger-soft:#2c1616;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 2px 10px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b0e13; --surface:#12161d; --surface-2:#171c24; --surface-3:#1d232c;
+  --border:#232a35; --border-strong:#2d3542;
+  --ink:#e7eaef; --ink-soft:#9aa4b2; --ink-faint:#6b7483;
+  --brand:#dcb968; --brand-600:#e8c880; --brand-soft:#2c2716;
+  --info:#5b9bff; --info-soft:#122036;
+  --success:#4ade80; --success-soft:#0f2519;
+  --warning:#fbbf24; --warning-soft:#2b2110;
+  --danger:#f87171; --danger-soft:#2c1616;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 2px 10px rgba(0,0,0,.35);
+}
+:root[data-theme="light"]{
+  --bg:#f4f5f7; --surface:#ffffff; --surface-2:#eef0f3; --surface-3:#e7e9ee;
+  --border:#e2e5ea; --border-strong:#d1d6de;
+  --ink:#0f1720; --ink-soft:#5b6472; --ink-faint:#8992a0;
+  --brand:#a9791f; --brand-600:#8a6318; --brand-soft:#f5ecd6;
+  --info:#2563eb; --info-soft:#e6eefd;
+  --success:#16a34a; --success-soft:#e3f6e9;
+  --warning:#d97706; --warning-soft:#fdf1de;
+  --danger:#dc2626; --danger-soft:#fbe6e5;
+  --shadow: 0 1px 2px rgba(15,23,32,.04), 0 1px 6px rgba(15,23,32,.05);
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit;}
+.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.icon.lg{width:20px;height:20px;}
+.icon.xl{width:28px;height:28px;}
+::-webkit-scrollbar{height:8px;width:8px;}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px;}
+a{color:inherit;text-decoration:none;}
+.tabular{font-variant-numeric:tabular-nums;}
+
+/* ---- app shell ---- */
+.app{display:grid;grid-template-columns:236px 1fr;min-height:100vh;}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+.side-brand{display:flex;align-items:center;gap:.6rem;padding:1.1rem 1.1rem .9rem;}
+.side-mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+.side-brand b{font-size:14.5px;font-weight:700;letter-spacing:-.01em;}
+.side-brand small{display:block;font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;margin-top:1px;}
+.side-nav{flex:1;overflow-y:auto;padding:.5rem .7rem;}
+.side-section{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);padding:.9rem .6rem .35rem;}
+.nav-item{display:flex;align-items:center;gap:.65rem;padding:.5rem .6rem;border-radius:6px;color:var(--ink-soft);cursor:pointer;font-size:13.3px;font-weight:500;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--surface-2);color:var(--ink);}
+.nav-item.active{background:var(--brand-soft);color:var(--brand-600);font-weight:600;}
+.nav-item .icon{color:inherit;}
+.side-foot{padding:.8rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:.6rem;}
+.side-user-name{font-size:12.6px;font-weight:600;}
+.side-user-role{font-size:11px;color:var(--ink-faint);}
+
+.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.avatar.sm{width:22px;height:22px;font-size:9.5px;}
+.avatar.xs{width:18px;height:18px;font-size:8.5px;}
+
+.main{min-width:0;display:flex;flex-direction:column;}
+.topbar{height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;padding:0 1.4rem;background:var(--surface);position:sticky;top:0;z-index:5;}
+.search-box{flex:1;max-width:420px;display:flex;align-items:center;gap:.5rem;background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:.45rem .7rem;color:var(--ink-faint);}
+.search-box input{border:none;background:none;outline:none;flex:1;color:var(--ink);font-size:13px;}
+.kbd{font-family:var(--mono);font-size:10.5px;border:1px solid var(--border-strong);border-radius:4px;padding:.05rem .35rem;color:var(--ink-faint);}
+.topbar-actions{display:flex;align-items:center;gap:.5rem;margin-left:auto;}
+.icon-btn{width:34px;height:34px;border-radius:7px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);cursor:pointer;position:relative;}
+.icon-btn:hover{background:var(--surface-2);}
+.dot-badge{position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--danger);border:1.5px solid var(--surface);}
+
+.content{padding:1.5rem 1.8rem 3rem;flex:1;}
+.page{display:none;}
+.page.active{display:block;}
+
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.3rem;gap:1rem;flex-wrap:wrap;}
+.page-title{font-size:1.35rem;font-weight:700;letter-spacing:-.01em;margin:0;}
+.page-sub{color:var(--ink-faint);font-size:12.6px;margin-top:.2rem;}
+.page-actions{display:flex;gap:.55rem;flex-wrap:wrap;}
+
+.btn{display:inline-flex;align-items:center;gap:.4rem;border-radius:7px;padding:.5rem .85rem;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;white-space:nowrap;}
+.btn-primary{background:var(--brand);color:#fff;}
+.btn-primary:hover{background:var(--brand-600);}
+.btn-secondary{background:var(--surface);border-color:var(--border-strong);color:var(--ink);}
+.btn-secondary:hover{background:var(--surface-2);}
+.btn-ghost{background:none;color:var(--ink-soft);}
+.btn-ghost:hover{background:var(--surface-2);}
+.btn-sm{padding:.32rem .6rem;font-size:12.3px;}
+
+.chip{display:inline-flex;align-items:center;gap:.35rem;padding:.34rem .68rem;border-radius:7px;border:1px solid var(--border-strong);background:var(--surface);font-size:12.6px;font-weight:600;color:var(--ink-soft);cursor:pointer;white-space:nowrap;}
+.chip:hover{background:var(--surface-2);}
+.chip.on{background:var(--brand-soft);border-color:var(--brand);color:var(--brand-600);}
+.filter-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.1rem;align-items:center;}
+
+.badge{display:inline-flex;align-items:center;gap:.3rem;font-size:11.3px;font-weight:700;padding:.16rem .5rem;border-radius:20px;white-space:nowrap;}
+.b-brand{background:var(--brand-soft);color:var(--brand-600);}
+.b-info{background:var(--info-soft);color:var(--info);}
+.b-success{background:var(--success-soft);color:var(--success);}
+.b-warning{background:var(--warning-soft);color:var(--warning);}
+.b-danger{background:var(--danger-soft);color:var(--danger);}
+.b-neutral{background:var(--surface-2);color:var(--ink-soft);}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:.95rem 1.15rem;border-bottom:1px solid var(--border);}
+.panel-title{font-size:13.6px;font-weight:700;margin:0;}
+.panel-sub{font-size:11.5px;color:var(--ink-faint);margin-top:.1rem;}
+.panel-body{padding:1.1rem 1.15rem;}
+.panel-body.tight{padding:0;}
+
+.grid{display:grid;gap:1rem;}
+.g2{grid-template-columns:1fr 1fr;}
+.g3{grid-template-columns:1fr 1fr 1fr;}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g6{grid-template-columns:repeat(6,1fr);}
+.g-2-1{grid-template-columns:2fr 1fr;}
+.g-1-2{grid-template-columns:1fr 2fr;}
+
+.kpi{padding:1rem 1.15rem;}
+.kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
+.kpi-label{font-size:11.6px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.kpi-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.kpi-val{font-size:1.55rem;font-weight:700;letter-spacing:-.02em;}
+.kpi-delta{font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:.2rem;margin-top:.35rem;}
+.up{color:var(--success);} .down{color:var(--danger);}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:700;padding:.6rem .8rem;border-bottom:1px solid var(--border);background:var(--surface-2);white-space:nowrap;position:sticky;top:0;}
+td{padding:.6rem .8rem;border-bottom:1px solid var(--border);vertical-align:middle;}
+tbody tr:hover td{background:var(--surface-2);}
+.table-wrap{overflow-x:auto;border-radius:var(--radius);}
+.name-cell{display:flex;align-items:center;gap:.55rem;font-weight:600;}
+.sub{font-size:11.5px;color:var(--ink-faint);font-weight:400;}
+.row-flag{color:var(--danger);}
+
+.progress{height:6px;border-radius:4px;background:var(--surface-3);overflow:hidden;}
+.progress > div{height:100%;border-radius:4px;background:var(--brand);}
+
+/* pipeline board */
+.board{display:flex;gap:.9rem;overflow-x:auto;padding-bottom:.5rem;align-items:flex-start;}
+.col{min-width:252px;max-width:252px;background:var(--surface-2);border-radius:var(--radius);padding:.7rem;flex-shrink:0;}
+.col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;padding:0 .15rem;}
+.col-title{font-size:12.3px;font-weight:700;}
+.col-count{font-size:11px;color:var(--ink-faint);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.05rem .45rem;}
+.kcard{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.65rem .7rem;margin-bottom:.55rem;cursor:pointer;box-shadow:var(--shadow);}
+.kcard:hover{border-color:var(--border-strong);}
+.kcard-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;}
+.kcard-id{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);}
+.kcard-name{font-weight:700;font-size:13px;margin-bottom:.3rem;}
+.kcard-tags{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.5rem;}
+.kcard-foot{display:flex;align-items:center;justify-content:space-between;}
+.sla-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:.3rem;}
+
+/* tabs */
+.tabs{display:flex;gap:.2rem;border-bottom:1px solid var(--border);margin-bottom:1rem;}
+.tab{padding:.6rem .9rem;font-size:13px;font-weight:600;color:var(--ink-faint);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab.active{color:var(--ink);border-color:var(--brand);}
+
+/* timeline */
+.timeline{position:relative;padding-left:1.5rem;}
+.timeline::before{content:"";position:absolute;left:.4rem;top:.3rem;bottom:.3rem;width:1.5px;background:var(--border-strong);}
+.t-item{position:relative;padding-bottom:1.1rem;}
+.t-dot{position:absolute;left:-1.5rem;top:.15rem;width:16px;height:16px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;}
+.t-dot .icon{width:9px;height:9px;}
+.t-head{font-size:13px;font-weight:600;}
+.t-meta{font-size:11.3px;color:var(--ink-faint);margin-top:.1rem;}
+.t-body{font-size:12.8px;color:var(--ink-soft);margin-top:.3rem;background:var(--surface-2);border-radius:6px;padding:.5rem .65rem;}
+
+/* calendar */
+.cal-grid{display:grid;grid-template-columns:56px repeat(7,1fr);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface);}
+.cal-head{padding:.5rem;text-align:center;font-size:11.5px;font-weight:700;color:var(--ink-soft);background:var(--surface-2);border-bottom:1px solid var(--border);border-left:1px solid var(--border);}
+.cal-time{font-size:10.5px;color:var(--ink-faint);text-align:right;padding:.3rem .4rem;border-top:1px solid var(--border);}
+.cal-cell{border-top:1px solid var(--border);border-left:1px solid var(--border);min-height:52px;padding:.2rem;position:relative;}
+.appt{border-radius:5px;padding:.25rem .4rem;font-size:10.6px;font-weight:600;margin-bottom:.15rem;line-height:1.25;}
+
+/* task list */
+.task-row{display:flex;align-items:center;gap:.7rem;padding:.6rem .3rem;border-bottom:1px solid var(--border);}
+.task-row:last-child{border-bottom:none;}
+.task-check{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--border-strong);flex-shrink:0;}
+.task-check.done{background:var(--success);border-color:var(--success);}
+.task-title{font-weight:600;font-size:13px;}
+.task-sub{font-size:11.4px;color:var(--ink-faint);}
+.group-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin:1.1rem 0 .3rem;}
+.group-label:first-child{margin-top:0;}
+.group-label.od{color:var(--danger);}
+
+/* settings subnav */
+.settings-shell{display:grid;grid-template-columns:200px 1fr;gap:1.3rem;}
+.set-nav{display:flex;flex-direction:column;gap:.15rem;}
+.set-nav .nav-item{width:100%;}
+
+.toggle{width:36px;height:20px;border-radius:12px;background:var(--surface-3);position:relative;cursor:pointer;flex-shrink:0;}
+.toggle.on{background:var(--brand);}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;}
+.toggle.on::after{left:18px;}
+
+.map-panel{position:relative;background:linear-gradient(180deg,var(--surface-2),var(--surface));border-radius:var(--radius);height:280px;overflow:hidden;}
+.bubble{position:absolute;border-radius:50%;background:var(--brand);opacity:.85;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10.5px;font-weight:700;border:2px solid var(--surface);}
+.map-label{position:absolute;font-size:10.5px;color:var(--ink-soft);font-weight:600;white-space:nowrap;}
+
+.lead-back{display:inline-flex;align-items:center;gap:.4rem;color:var(--ink-faint);font-size:12.6px;font-weight:600;cursor:pointer;margin-bottom:.7rem;}
+.lead-back:hover{color:var(--ink);}
+.field-row{display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:12.8px;}
+.field-row:last-child{border-bottom:none;}
+.field-label{color:var(--ink-faint);}
+.field-val{font-weight:600;text-align:right;}
+.doc-row{display:flex;align-items:center;gap:.55rem;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:12.6px;}
+.doc-row:last-child{border-bottom:none;}
+.ai-panel{background:linear-gradient(135deg,var(--brand-soft),var(--surface));border:1px solid var(--brand);border-radius:var(--radius);}
+
+.leader-row{display:flex;align-items:center;gap:.7rem;padding:.55rem 0;border-bottom:1px solid var(--border);}
+.leader-row:last-child{border-bottom:none;}
+.leader-bar{flex:1;height:7px;border-radius:4px;background:var(--surface-3);overflow:hidden;}
+.leader-bar>div{height:100%;background:var(--info);border-radius:4px;}
+
+@media (max-width: 1000px){
+  .g4,.g3,.g2,.g6{grid-template-columns:1fr 1fr;}
+  .g-2-1,.g-1-2{grid-template-columns:1fr;}
+  .settings-shell{grid-template-columns:1fr;}
+}
+
+.hamburger{display:none;}
+.backdrop{display:none;}
+@media (max-width: 780px){
+  .app{grid-template-columns:1fr;}
+  .sidebar{position:fixed;top:0;left:-260px;height:100vh;width:236px;z-index:60;transition:left .2s ease;}
+  .sidebar.open{left:0;box-shadow:0 0 0 2000px rgba(0,0,0,.35);}
+  .hamburger{display:flex;}
+  .search-box{max-width:none;}
+  .kbd{display:none;}
+  .content{padding:1.1rem .9rem 3rem;}
+  .board{padding-bottom:.8rem;}
+  .g4,.g3,.g6{grid-template-columns:1fr 1fr;}
+  .cal-grid{grid-template-columns:44px repeat(7,minmax(90px,1fr));overflow-x:auto;display:grid;}
+}
+@media (max-width: 460px){
+  .g4,.g3,.g2,.g6{grid-template-columns:1fr;}
+  .kpi-val{font-size:1.3rem;}
+  .page-title{font-size:1.15rem;}
+}
+</style>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="side-brand">
+      <div class="side-mark">W</div>
+      <div><b>Wellspring Ops</b><small>Operations Platform</small></div>
+    </div>
+    <nav class="side-nav">
+      <p class="side-section">Workspace</p>
+      <button class="nav-item active" data-page="dashboard"><svg class="icon"><use href="#i-activity"/></svg>Dashboard</button>
+      <button class="nav-item" data-page="pipeline"><svg class="icon"><use href="#i-sheet"/></svg>Pipeline Board</button>
+      <button class="nav-item" data-page="leads"><svg class="icon"><use href="#i-users"/></svg>Leads</button>
+      <button class="nav-item" data-page="calendar"><svg class="icon"><use href="#i-calendar"/></svg>Calendar</button>
+      <button class="nav-item" data-page="tasks"><svg class="icon"><use href="#i-check-sq"/></svg>Tasks</button>
+      <p class="side-section">Insights</p>
+      <button class="nav-item" data-page="reports"><svg class="icon"><use href="#i-trend"/></svg>Reports</button>
+      <button class="nav-item" data-page="executive"><svg class="icon"><use href="#i-dollar"/></svg>Executive</button>
+      <p class="side-section">Admin</p>
+      <button class="nav-item" data-page="settings"><svg class="icon"><use href="#i-gear"/></svg>Settings</button>
+    </nav>
+    <div class="side-foot">
+      <div class="avatar" style="background:#6b46c1;">SJ</div>
+      <div><div class="side-user-name">Sarah Jennings</div><div class="side-user-role">Intake Coordinator</div></div>
+      <svg class="icon" style="margin-left:auto;color:var(--ink-faint);"><use href="#i-dots-v"/></svg>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn hamburger" id="hamburgerBtn" aria-label="Toggle navigation"><svg class="icon"><use href="#i-dots-v" style="display:none"/></svg><svg class="icon" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div class="search-box"><svg class="icon"><use href="#i-search"/></svg><input placeholder="Search leads, tasks, reports…"><span class="kbd">⌘K</span></div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg>New Lead</button>
+        <div class="icon-btn"><svg class="icon"><use href="#i-check-sq"/></svg><span class="dot-badge"></span></div>
+        <div class="icon-btn"><svg class="icon"><use href="#i-bell"/></svg><span class="dot-badge"></span></div>
+        <div class="avatar sm" style="background:#6b46c1;">SJ</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+    <!-- ================= DASHBOARD ================= -->
+    <section class="page active" data-page="dashboard">
+      <div class="page-header">
+        <div><h1 class="page-title">Dashboard</h1><p class="page-sub">Troy &amp; Clinton Township · Jul 7 – Jul 13, 2026</p></div>
+        <div class="page-actions">
+          <button class="chip">This Week <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+          <button class="btn btn-secondary btn-sm"><svg class="icon"><use href="#i-download"/></svg>Export</button>
+        </div>
+      </div>
+
+      <div class="grid g6" style="margin-bottom:1rem;">
+        <div class="panel kpi"><div class="kpi-top"><span class="kpi-label">Total Leads</span><div class="kpi-icon" style="background:var(--info-soft);color:var(--info);"><svg class="icon"><use href="#i-users"/></svg></div></div><div class="kpi-val tabular">142</div><div class="kpi-delta up"><svg class="icon" style="width:12px;height:12px;"><use href="#i-trend"/></svg>+12.4%</div></div>
+        <div class="panel kpi"><div class="kpi-top"><span class="kpi-label">Scheduled</span><div class="kpi-icon" style="background:var(--success-soft);color:var(--success);"><svg class="icon"><use href="#i-calendar"/></svg></div></div><div class="kpi-val tabular">76</div><div class="kpi-delta up">53.5% rate</div></div>
+        <div class="panel kpi"><div class="kpi-top"><span class="kpi-label">No-Show Rate</span><div class="kpi-icon" style="background:var(--warning-soft);color:var(--warning);"><svg class="icon"><use href="#i-alert"/></svg></div></div><div class="kpi-val tabular">8.2%</div><div class="kpi-delta down"><svg class="icon" style="width:12px;height:12px;transform:rotate(180deg);"><use href="#i-trend"/></svg>-1.3pt</div></div>
+        <div class="panel kpi"><div class="kpi-top"><span class="kpi-label">Avg Time to Schedule</span><div class="kpi-icon" style="background:var(--brand-soft);color:var(--brand-600);"><svg class="icon"><use href="#i-clock"/></svg></div></div><div class="kpi-val tabular">2.1d</div><div class="kpi-delta up">-0.4d faster</div></div>
+        <div class="panel kpi"><div class="kpi-top"><span class="kpi-label">Conversion Rate</span><div class="kpi-icon" style="background:var(--info-soft);color:var(--info);"><svg class="icon"><use href="#i-percent"/></svg></div></div><div class="kpi-val tabular">31%</div><div class="kpi-delta up">+2.8pt</div></div>
+        <div class="panel kpi"><div class="kpi-top"><span class="kpi-label">Revenue Impact</span><div class="kpi-icon" style="background:var(--success-soft);color:var(--success);"><svg class="icon"><use href="#i-dollar"/></svg></div></div><div class="kpi-val tabular">$48.2k</div><div class="kpi-delta up">projected mo.</div></div>
+      </div>
+
+      <div class="grid g-2-1" style="margin-bottom:1rem;">
+        <div class="panel">
+          <div class="panel-head"><div><p class="panel-title">Lead &amp; Scheduling Trend</p><p class="panel-sub">Last 12 weeks</p></div><div style="display:flex;gap:.9rem;font-size:11.5px;color:var(--ink-faint);"><span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--info);margin-right:4px;"></span>Leads</span><span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--brand);margin-right:4px;"></span>Scheduled</span></div></div>
+          <div class="panel-body">
+            <svg viewBox="0 0 600 190" style="width:100%;height:190px;">
+              <line x1="0" y1="150" x2="600" y2="150" stroke="var(--border)" stroke-width="1"/>
+              <line x1="0" y1="100" x2="600" y2="100" stroke="var(--border)" stroke-width="1"/>
+              <line x1="0" y1="50" x2="600" y2="50" stroke="var(--border)" stroke-width="1"/>
+              <polygon points="0,150 0,110 55,105 110,95 165,100 220,85 275,90 330,75 385,80 440,65 495,60 550,45 600,40 600,150" fill="var(--info)" opacity=".08"/>
+              <polyline points="0,110 55,105 110,95 165,100 220,85 275,90 330,75 385,80 440,65 495,60 550,45 600,40" fill="none" stroke="var(--info)" stroke-width="2.5"/>
+              <polyline points="0,140 55,138 110,130 165,128 220,120 275,118 330,110 385,105 440,100 495,90 550,80 600,68" fill="none" stroke="var(--brand)" stroke-width="2.5"/>
+              <circle cx="600" cy="40" r="4" fill="var(--info)"/>
+              <circle cx="600" cy="68" r="4" fill="var(--brand)"/>
+            </svg>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Lead Source Mix</p></div>
+          <div class="panel-body" style="display:flex;align-items:center;gap:1rem;">
+            <svg viewBox="0 0 42 42" style="width:110px;height:110px;flex-shrink:0;">
+              <circle r="16" cx="21" cy="21" fill="transparent" stroke="var(--info)" stroke-width="8" stroke-dasharray="34 66" stroke-dashoffset="25"/>
+              <circle r="16" cx="21" cy="21" fill="transparent" stroke="var(--brand)" stroke-width="8" stroke-dasharray="28 72" stroke-dashoffset="91"/>
+              <circle r="16" cx="21" cy="21" fill="transparent" stroke="var(--success)" stroke-width="8" stroke-dasharray="18 82" stroke-dashoffset="63"/>
+              <circle r="16" cx="21" cy="21" fill="transparent" stroke="var(--ink-faint)" stroke-width="8" stroke-dasharray="20 80" stroke-dashoffset="45"/>
+            </svg>
+            <div style="flex:1;display:flex;flex-direction:column;gap:.5rem;font-size:12.4px;">
+              <div style="display:flex;justify-content:space-between;"><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--info);margin-right:6px;"></span>Google Ads</span><b class="tabular">34%</b></div>
+              <div style="display:flex;justify-content:space-between;"><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--brand);margin-right:6px;"></span>Internal</span><b class="tabular">28%</b></div>
+              <div style="display:flex;justify-content:space-between;"><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--success);margin-right:6px;"></span>Referral</span><b class="tabular">18%</b></div>
+              <div style="display:flex;justify-content:space-between;"><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--ink-faint);margin-right:6px;"></span>Psych. Today</span><b class="tabular">20%</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-bottom:1rem;">
+        <div class="panel-head"><p class="panel-title">Conversion Funnel</p><p class="panel-sub">New Lead → Converted</p></div>
+        <div class="panel-body">
+          <div style="display:flex;gap:.4rem;">
+            <div style="flex:1;text-align:center;"><div class="progress" style="height:34px;border-radius:6px;"><div style="width:100%;background:var(--info);"></div></div><div style="margin-top:.4rem;font-size:12px;font-weight:700;">New · 142</div></div>
+            <div style="flex:1;text-align:center;"><div class="progress" style="height:34px;border-radius:6px;"><div style="width:88%;background:var(--info);opacity:.9;"></div></div><div style="margin-top:.4rem;font-size:12px;font-weight:700;">Contacted · 125</div></div>
+            <div style="flex:1;text-align:center;"><div class="progress" style="height:34px;border-radius:6px;"><div style="width:63%;background:var(--brand);"></div></div><div style="margin-top:.4rem;font-size:12px;font-weight:700;">Scheduled · 76</div></div>
+            <div style="flex:1;text-align:center;"><div class="progress" style="height:34px;border-radius:6px;"><div style="width:49%;background:var(--brand);opacity:.85;"></div></div><div style="margin-top:.4rem;font-size:12px;font-weight:700;">Completed · 70</div></div>
+            <div style="flex:1;text-align:center;"><div class="progress" style="height:34px;border-radius:6px;"><div style="width:31%;background:var(--success);"></div></div><div style="margin-top:.4rem;font-size:12px;font-weight:700;">Converted · 44</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid g3">
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Today's Tasks</p><span class="badge b-brand">8</span></div>
+          <div class="panel-body">
+            <div class="task-row"><div class="task-check"></div><div><div class="task-title">Call Marcus Webb — insurance follow-up</div><div class="task-sub">Due 2:00 PM · #WS-10412</div></div></div>
+            <div class="task-row"><div class="task-check done"></div><div><div class="task-title" style="text-decoration:line-through;color:var(--ink-faint);">Confirm consult — Ava Thompson</div><div class="task-sub">Completed 10:14 AM</div></div></div>
+            <div class="task-row"><div class="task-check"></div><div><div class="task-title">Send paperwork reminder — Liam Carter</div><div class="task-sub">Due 4:30 PM · #WS-10388</div></div></div>
+            <div class="task-row"><div class="task-check"></div><div><div class="task-title">Review ADHD waitlist capacity</div><div class="task-sub">Ops task · Due EOD</div></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Recent Activity</p></div>
+          <div class="panel-body">
+            <div class="timeline">
+              <div class="t-item"><div class="t-dot"><svg class="icon"><use href="#i-check"/></svg></div><div class="t-head">Stage changed to Scheduled</div><div class="t-meta">Priya Nair · 12 min ago</div></div>
+              <div class="t-item"><div class="t-dot"><svg class="icon"><use href="#i-phone"/></svg></div><div class="t-head">Call logged — no answer</div><div class="t-meta">Marcus Cole · 34 min ago</div></div>
+              <div class="t-item"><div class="t-dot"><svg class="icon"><use href="#i-mail"/></svg></div><div class="t-head">Eligibility email sent</div><div class="t-meta">Devon Brooks · 1h ago</div></div>
+              <div class="t-item"><div class="t-dot"><svg class="icon"><use href="#i-plus"/></svg></div><div class="t-head">New lead created — Emma Sullivan</div><div class="t-meta">Google Ads · 2h ago</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Alerts</p><span class="badge b-danger">3</span></div>
+          <div class="panel-body">
+            <div style="display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid var(--border);"><svg class="icon" style="color:var(--danger);flex-shrink:0;margin-top:2px;"><use href="#i-alert"/></svg><div><div style="font-size:12.6px;font-weight:600;">SLA breach — #WS-10377</div><div class="sub">No contact in 26 hours</div></div></div>
+            <div style="display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid var(--border);"><svg class="icon" style="color:var(--warning);flex-shrink:0;margin-top:2px;"><use href="#i-alert"/></svg><div><div style="font-size:12.6px;font-weight:600;">Possible duplicate detected</div><div class="sub">#WS-10402 ↔ #WS-9981</div></div></div>
+            <div style="display:flex;gap:.6rem;padding:.5rem 0;"><svg class="icon" style="color:var(--danger);flex-shrink:0;margin-top:2px;"><use href="#i-alert"/></svg><div><div style="font-size:12.6px;font-weight:600;">Sync conflict — Google Sheets</div><div class="sub">Field "Insurance" edited in both places</div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PIPELINE ================= -->
+    <section class="page" data-page="pipeline">
+      <div class="page-header">
+        <div><h1 class="page-title">Pipeline Board</h1><p class="page-sub">67 active leads across 8 stages</p></div>
+        <div class="page-actions"><button class="btn btn-secondary btn-sm">Table View</button><button class="btn btn-secondary btn-sm">Calendar View</button><button class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg>New Lead</button></div>
+      </div>
+      <div class="filter-row">
+        <button class="chip on">All Locations <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+        <button class="chip">Provider <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+        <button class="chip">Insurance <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+        <button class="chip">Owner <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+        <button class="chip"><svg class="icon"><use href="#i-filter"/></svg>More filters</button>
+      </div>
+
+      <div class="board">
+        <div class="col">
+          <div class="col-head"><span class="col-title">New Lead</span><span class="col-count">14</span></div>
+          <div class="kcard" onclick="showPage('lead-detail')"><div class="kcard-top"><span class="kcard-id">#WS-10441</span><svg class="icon" style="color:var(--ink-faint);"><use href="#i-grip"/></svg></div><div class="kcard-name">Jordan Michaels</div><div class="kcard-tags"><span class="badge b-info">Psychotherapy</span><span class="badge b-success">BCBS</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#0d9488;">SJ</span><span style="font-size:11px;color:var(--ink-faint);"><span class="sla-dot" style="background:var(--success);"></span>New</span></div></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10440</span><svg class="icon" style="color:var(--ink-faint);"><use href="#i-grip"/></svg></div><div class="kcard-name">Sofia Ramirez</div><div class="kcard-tags"><span class="badge b-info">Med Mgmt</span><span class="badge b-danger">Medicaid</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#6b46c1;">MC</span><span style="font-size:11px;color:var(--ink-faint);"><span class="sla-dot" style="background:var(--success);"></span>New</span></div></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10438</span><svg class="icon" style="color:var(--ink-faint);"><use href="#i-grip"/></svg></div><div class="kcard-name">Noah Bennett</div><div class="kcard-tags"><span class="badge b-info">ADHD Testing</span><span class="badge b-success">Aetna</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#0d9488;">SJ</span><span style="font-size:11px;color:var(--ink-faint);"><span class="sla-dot" style="background:var(--warning);"></span>1d</span></div></div>
+        </div>
+        <div class="col">
+          <div class="col-head"><span class="col-title">Attempted Contact</span><span class="col-count">9</span></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10377</span><span class="badge b-danger" style="font-size:9.5px;">⚑ URGENT</span></div><div class="kcard-name">Ethan Brooks</div><div class="kcard-tags"><span class="badge b-info">Psychotherapy</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#c2410c;">DB</span><span style="font-size:11px;color:var(--danger);font-weight:700;"><span class="sla-dot" style="background:var(--danger);"></span>26h — SLA</span></div></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10399</span></div><div class="kcard-name">Grace Kim</div><div class="kcard-tags"><span class="badge b-info">Med Mgmt</span><span class="badge b-success">Priority Health</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#6b46c1;">MC</span><span style="font-size:11px;color:var(--ink-faint);"><span class="sla-dot" style="background:var(--success);"></span>6h</span></div></div>
+        </div>
+        <div class="col">
+          <div class="col-head"><span class="col-title">Contacted</span><span class="col-count">12</span></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10402</span><span class="badge b-warning" style="font-size:9.5px;">DUP?</span></div><div class="kcard-name">Isabella Cruz</div><div class="kcard-tags"><span class="badge b-info">Psychotherapy</span><span class="badge b-success">UHC</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#0d9488;">SJ</span><span style="font-size:11px;color:var(--ink-faint);"><span class="sla-dot" style="background:var(--success);"></span>3h</span></div></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10366</span></div><div class="kcard-name">Mason Reed</div><div class="kcard-tags"><span class="badge b-info">ADHD Testing</span><span class="badge b-success">McLaren</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#c2410c;">DB</span><span style="font-size:11px;color:var(--ink-faint);"><span class="sla-dot" style="background:var(--success);"></span>1d</span></div></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10350</span></div><div class="kcard-name">Chloe Foster</div><div class="kcard-tags"><span class="badge b-info">Psychotherapy</span><span class="badge b-success">Tricare</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#6b46c1;">MC</span><span style="font-size:11px;color:var(--ink-faint);"><span class="sla-dot" style="background:var(--warning);"></span>2d</span></div></div>
+        </div>
+        <div class="col">
+          <div class="col-head"><span class="col-title">Consult Scheduled</span><span class="col-count">8</span></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10298</span></div><div class="kcard-name">Elijah Park</div><div class="kcard-tags"><span class="badge b-info">Med Mgmt</span><span class="badge b-neutral">Jul 15, 2pm</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#0d9488;">SJ</span><span style="font-size:11px;color:var(--ink-faint);">Dr. Ahuja NP</span></div></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10301</span></div><div class="kcard-name">Zoe Bennett</div><div class="kcard-tags"><span class="badge b-info">Psychotherapy</span><span class="badge b-neutral">Jul 16, 10am</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#c2410c;">DB</span><span style="font-size:11px;color:var(--ink-faint);">K. Simmons LMFT</span></div></div>
+        </div>
+        <div class="col">
+          <div class="col-head"><span class="col-title">Consult Completed</span><span class="col-count">6</span></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10201</span></div><div class="kcard-name">Lucas Grant</div><div class="kcard-tags"><span class="badge b-info">Psychotherapy</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#0d9488;">SJ</span><span style="font-size:11px;color:var(--ink-faint);">Awaiting fit review</span></div></div>
+        </div>
+        <div class="col">
+          <div class="col-head"><span class="col-title">Qualified</span><span class="col-count">5</span></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-10156</span></div><div class="kcard-name">Maya Patel</div><div class="kcard-tags"><span class="badge b-success">Ready to convert</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#6b46c1;">MC</span><span style="font-size:11px;color:var(--ink-faint);">Paperwork sent</span></div></div>
+        </div>
+        <div class="col">
+          <div class="col-head"><span class="col-title">Converted</span><span class="col-count">44</span></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-9981</span></div><div class="kcard-name">Owen Hayes</div><div class="kcard-tags"><span class="badge b-success">Active patient</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#0d9488;">SJ</span><span style="font-size:11px;color:var(--ink-faint);">Converted Jul 9</span></div></div>
+        </div>
+        <div class="col">
+          <div class="col-head"><span class="col-title">Lost</span><span class="col-count">18</span></div>
+          <div class="kcard"><div class="kcard-top"><span class="kcard-id">#WS-9902</span></div><div class="kcard-name">Layla Morgan</div><div class="kcard-tags"><span class="badge b-danger">Medicaid</span></div><div class="kcard-foot"><span class="avatar xs" style="background:#c2410c;">DB</span><span style="font-size:11px;color:var(--ink-faint);">Insurance</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LEADS TABLE ================= -->
+    <section class="page" data-page="leads">
+      <div class="page-header">
+        <div><h1 class="page-title">Leads</h1><p class="page-sub">142 total · 67 active</p></div>
+        <div class="page-actions"><button class="btn btn-secondary btn-sm"><svg class="icon"><use href="#i-download"/></svg>Export</button><button class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg>New Lead</button></div>
+      </div>
+      <div class="filter-row">
+        <div class="search-box" style="max-width:260px;padding:.4rem .6rem;"><svg class="icon"><use href="#i-search"/></svg><input placeholder="Search leads…"></div>
+        <button class="chip">Stage <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+        <button class="chip">Insurance <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+        <button class="chip">Source <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+        <button class="chip">Date Range <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+        <span style="margin-left:auto;font-size:12px;color:var(--ink-faint);">3 selected</span>
+        <button class="btn btn-secondary btn-sm">Reassign</button>
+        <button class="btn btn-secondary btn-sm">Archive</button>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th style="width:30px;"><input type="checkbox"></th><th>Lead</th><th>Stage</th><th>Source</th><th>Insurance</th><th>Owner</th><th>Created</th><th>Days in Stage</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><input type="checkbox" checked></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#0d9488;">JM</span><div>Jordan Michaels<div class="sub">#WS-10441 · Troy</div></div></div></td><td><span class="badge b-info">New Lead</span></td><td>Google Ads</td><td><span class="badge b-success">BCBS</span></td><td><span class="avatar xs" style="background:#0d9488;">SJ</span></td><td class="tabular">Jul 13</td><td class="tabular">4h</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+            <tr><td><input type="checkbox" checked></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#be185d;">SR</span><div>Sofia Ramirez<div class="sub">#WS-10440 · Clinton Twp</div></div></div></td><td><span class="badge b-info">New Lead</span></td><td>Internal</td><td><span class="badge b-danger">Medicaid</span></td><td><span class="avatar xs" style="background:#6b46c1;">MC</span></td><td class="tabular">Jul 13</td><td class="tabular">5h</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+            <tr><td><input type="checkbox" checked></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#0369a1;">EB</span><div>Ethan Brooks<div class="sub">#WS-10377 · Troy</div></div></div></td><td><span class="badge b-warning">Attempted Contact</span></td><td>Google Ads</td><td><span class="badge b-success">Aetna</span></td><td><span class="avatar xs" style="background:#c2410c;">DB</span></td><td class="tabular">Jul 11</td><td class="row-flag tabular" style="font-weight:700;">26h ⚑</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+            <tr><td><input type="checkbox"></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#65a30d;">GK</span><div>Grace Kim<div class="sub">#WS-10399 · Troy</div></div></div></td><td><span class="badge b-warning">Attempted Contact</span></td><td>Referral — Dr. Alvarez</td><td><span class="badge b-success">Priority Health</span></td><td><span class="avatar xs" style="background:#6b46c1;">MC</span></td><td class="tabular">Jul 12</td><td class="tabular">6h</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+            <tr><td><input type="checkbox"></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#7c3aed;">IC</span><div>Isabella Cruz<div class="sub">#WS-10402 · Clinton Twp</div></div></div></td><td><span class="badge b-brand">Contacted</span></td><td>Psychology Today</td><td><span class="badge b-success">UHC</span></td><td><span class="avatar xs" style="background:#0d9488;">SJ</span></td><td class="tabular">Jul 12</td><td class="tabular">3h</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+            <tr><td><input type="checkbox"></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#0891b2;">MR</span><div>Mason Reed<div class="sub">#WS-10366 · Troy</div></div></div></td><td><span class="badge b-brand">Contacted</span></td><td>Google Ads</td><td><span class="badge b-success">McLaren</span></td><td><span class="avatar xs" style="background:#c2410c;">DB</span></td><td class="tabular">Jul 10</td><td class="tabular">1d</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+            <tr><td><input type="checkbox"></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#ca8a04;">CF</span><div>Chloe Foster<div class="sub">#WS-10350 · Troy</div></div></div></td><td><span class="badge b-brand">Contacted</span></td><td>Internal</td><td><span class="badge b-success">Tricare</span></td><td><span class="avatar xs" style="background:#6b46c1;">MC</span></td><td class="tabular">Jul 9</td><td class="tabular">2d</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+            <tr><td><input type="checkbox"></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#dc2626;">EP</span><div>Elijah Park<div class="sub">#WS-10298 · Clinton Twp</div></div></div></td><td><span class="badge" style="background:#ede9fe;color:#6b46c1;">Consult Scheduled</span></td><td>Google Ads</td><td><span class="badge b-success">BCN</span></td><td><span class="avatar xs" style="background:#0d9488;">SJ</span></td><td class="tabular">Jul 6</td><td class="tabular">5d</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+            <tr><td><input type="checkbox"></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#4338ca;">ZB</span><div>Zoe Bennett<div class="sub">#WS-10301 · Troy</div></div></div></td><td><span class="badge" style="background:#ede9fe;color:#6b46c1;">Consult Scheduled</span></td><td>Referral — Friend</td><td><span class="badge b-success">Aetna</span></td><td><span class="avatar xs" style="background:#c2410c;">DB</span></td><td class="tabular">Jul 7</td><td class="tabular">4d</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+            <tr><td><input type="checkbox"></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#059669;">MP</span><div>Maya Patel<div class="sub">#WS-10156 · Troy</div></div></div></td><td><span class="badge b-success">Qualified</span></td><td>Google Ads</td><td><span class="badge b-success">UHC</span></td><td><span class="avatar xs" style="background:#6b46c1;">MC</span></td><td class="tabular">Jun 30</td><td class="tabular">2d</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+            <tr><td><input type="checkbox"></td><td onclick="showPage('lead-detail')" style="cursor:pointer;"><div class="name-cell"><span class="avatar sm" style="background:#9d174d;">LM</span><div>Layla Morgan<div class="sub">#WS-9902 · Clinton Twp</div></div></div></td><td><span class="badge b-danger">Lost</span></td><td>Google Ads</td><td><span class="badge b-danger">Medicaid</span></td><td><span class="avatar xs" style="background:#c2410c;">DB</span></td><td class="tabular">Jun 20</td><td class="tabular">—</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.9rem;font-size:12.6px;color:var(--ink-faint);">
+        <span>Showing 1–12 of 142</span>
+        <div style="display:flex;gap:.3rem;"><button class="btn btn-secondary btn-sm">Prev</button><button class="btn btn-secondary btn-sm" style="background:var(--brand-soft);color:var(--brand-600);border-color:var(--brand);">1</button><button class="btn btn-secondary btn-sm">2</button><button class="btn btn-secondary btn-sm">3</button><button class="btn btn-secondary btn-sm">Next</button></div>
+      </div>
+    </section>
+
+    <!-- ================= LEAD DETAIL ================= -->
+    <section class="page" data-page="lead-detail">
+      <div class="lead-back" onclick="showPage('leads')"><svg class="icon"><use href="#i-arrow-left"/></svg>Back to Leads</div>
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Jordan Michaels <span style="font-weight:400;color:var(--ink-faint);font-size:1rem;">#WS-10441</span></h1>
+          <div style="display:flex;gap:.4rem;margin-top:.4rem;"><span class="badge b-info">New Lead</span><span class="badge b-danger">⚑ Urgent</span><span class="badge b-neutral">Troy, MI</span></div>
+        </div>
+        <div class="page-actions"><button class="btn btn-secondary btn-sm">Merge</button><button class="btn btn-secondary btn-sm">Change Stage <svg class="icon"><use href="#i-chevron-down"/></svg></button><button class="icon-btn"><svg class="icon"><use href="#i-dots-h"/></svg></button></div>
+      </div>
+
+      <div class="grid g-1-2">
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="panel">
+            <div class="panel-head"><p class="panel-title">Profile</p></div>
+            <div class="panel-body">
+              <div class="field-row"><span class="field-label">Age</span><span class="field-val">27</span></div>
+              <div class="field-row"><span class="field-label">Zip Code</span><span class="field-val">48083</span></div>
+              <div class="field-row"><span class="field-label">Referral Source</span><span class="field-val">Google Ads</span></div>
+              <div class="field-row"><span class="field-label">Service Requested</span><span class="field-val">Psychotherapy</span></div>
+              <div class="field-row"><span class="field-label">Appointment Type</span><span class="field-val">Virtual</span></div>
+              <div class="field-row"><span class="field-label">Reason</span><span class="field-val">Anxiety, work stress</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><p class="panel-title">Insurance</p><span class="badge b-success">Eligible</span></div>
+            <div class="panel-body">
+              <div class="field-row"><span class="field-label">Carrier</span><span class="field-val">BCBS PPO</span></div>
+              <div class="field-row"><span class="field-label">Verified</span><span class="field-val">Jul 13, 9:02 AM</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><p class="panel-title">Upcoming Appointment</p></div>
+            <div class="panel-body">
+              <div style="display:flex;align-items:center;gap:.6rem;"><svg class="icon lg" style="color:var(--brand);"><use href="#i-calendar"/></svg><div><div style="font-weight:700;font-size:13px;">Not yet scheduled</div><div class="sub">Awaiting first contact</div></div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><p class="panel-title">Documents</p></div>
+            <div class="panel-body">
+              <div class="doc-row"><svg class="icon" style="color:var(--ink-faint);"><use href="#i-file"/></svg>Intake_Form.pdf</div>
+              <div class="doc-row"><svg class="icon" style="color:var(--ink-faint);"><use href="#i-file"/></svg>Insurance_Card.jpg</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="panel ai-panel">
+            <div class="panel-head" style="border-color:rgba(169,121,31,.25);"><p class="panel-title"><svg class="icon" style="color:var(--brand-600);vertical-align:-3px;"><use href="#i-spark"/></svg> AI Insights</p></div>
+            <div class="panel-body">
+              <div style="display:flex;justify-content:space-between;font-size:12.6px;margin-bottom:.3rem;"><span>Likely to convert</span><b>78%</b></div>
+              <div class="progress" style="margin-bottom:.9rem;"><div style="width:78%;"></div></div>
+              <p style="font-size:12.8px;margin:.2rem 0;"><b>Suggested next action:</b> Call before 5 PM — highest historical response window for Google Ads leads.</p>
+              <p style="font-size:12.8px;margin:.2rem 0;color:var(--ink-soft);">Similar leads converted after the 2nd follow-up attempt within 48 hours.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="tabs" style="padding:0 1.1rem;margin:0;">
+              <div class="tab active" data-tab="timeline" onclick="setTab(this)">Timeline</div>
+              <div class="tab" data-tab="notes" onclick="setTab(this)">Notes</div>
+              <div class="tab" data-tab="ld-tasks" onclick="setTab(this)">Tasks</div>
+              <div class="tab" data-tab="appts" onclick="setTab(this)">Appointments</div>
+              <div class="tab" data-tab="audit" onclick="setTab(this)">Activity Log</div>
+            </div>
+            <div class="panel-body">
+              <div class="tabpane active" data-pane="timeline">
+                <div class="timeline">
+                  <div class="t-item"><div class="t-dot"><svg class="icon"><use href="#i-plus"/></svg></div><div class="t-head">Lead created</div><div class="t-meta">Google Ads · Jul 13, 9:00 AM</div></div>
+                  <div class="t-item"><div class="t-dot"><svg class="icon"><use href="#i-check"/></svg></div><div class="t-head">Insurance eligibility confirmed</div><div class="t-meta">System · Jul 13, 9:02 AM</div><div class="t-body">BCBS PPO — accepted plan. No action needed.</div></div>
+                  <div class="t-item"><div class="t-dot"><svg class="icon"><use href="#i-flag"/></svg></div><div class="t-head">Priority set to Urgent</div><div class="t-meta">Automation AR-041 · Jul 13, 9:03 AM</div><div class="t-body">Clinical risk keyword detected in intake notes — routed for immediate outreach.</div></div>
+                  <div class="t-item"><div class="t-dot"><svg class="icon"><use href="#i-clock"/></svg></div><div class="t-head">Follow-up task created</div><div class="t-meta">Automation AR-002 · Jul 13, 9:05 AM</div></div>
+                </div>
+              </div>
+              <div class="tabpane" data-pane="notes" style="display:none;">
+                <div style="font-size:12.8px;color:var(--ink-soft);background:var(--surface-2);padding:.7rem;border-radius:6px;">"Client mentioned difficulty sleeping and elevated anxiety related to a recent job change. Prefers evening appointments." — Sarah Jennings, Jul 13</div>
+              </div>
+              <div class="tabpane" data-pane="ld-tasks" style="display:none;">
+                <div class="task-row"><div class="task-check"></div><div><div class="task-title">First contact call</div><div class="task-sub">Due today, 5:00 PM · Sarah Jennings</div></div></div>
+              </div>
+              <div class="tabpane" data-pane="appts" style="display:none;">
+                <p style="font-size:12.8px;color:var(--ink-faint);">No appointments booked yet.</p>
+              </div>
+              <div class="tabpane" data-pane="audit" style="display:none;">
+                <div class="table-wrap"><table><thead><tr><th>Time</th><th>User</th><th>Field</th><th>Change</th></tr></thead><tbody>
+                <tr><td class="tabular">9:03 AM</td><td>System</td><td>priority</td><td>standard → urgent</td></tr>
+                <tr><td class="tabular">9:00 AM</td><td>Sheets Sync</td><td>created</td><td>—</td></tr>
+                </tbody></table></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CALENDAR ================= -->
+    <section class="page" data-page="calendar">
+      <div class="page-header">
+        <div><h1 class="page-title">Calendar</h1><p class="page-sub">Week of Jul 13 – Jul 19, 2026</p></div>
+        <div class="page-actions"><button class="chip on">Week</button><button class="chip">Day</button><button class="chip">Month</button><button class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg>New Appointment</button></div>
+      </div>
+      <div class="filter-row">
+        <button class="chip on">All Providers</button>
+        <button class="chip">Dr. Ahuja NP</button>
+        <button class="chip">Dr. Reyes NP</button>
+        <button class="chip">K. Simmons LMFT</button>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-head"></div>
+        <div class="cal-head">Mon 13</div><div class="cal-head">Tue 14</div><div class="cal-head">Wed 15</div><div class="cal-head">Thu 16</div><div class="cal-head">Fri 17</div><div class="cal-head">Sat 18</div><div class="cal-head">Sun 19</div>
+
+        <div class="cal-time">9 AM</div>
+        <div class="cal-cell"><div class="appt" style="background:var(--info-soft);color:var(--info);">Grant · Therapy</div></div>
+        <div class="cal-cell"></div>
+        <div class="cal-cell"><div class="appt" style="background:var(--brand-soft);color:var(--brand-600);">Kim · Med Mgmt</div></div>
+        <div class="cal-cell"></div>
+        <div class="cal-cell"><div class="appt" style="background:var(--info-soft);color:var(--info);">Reed · Testing</div></div>
+        <div class="cal-cell"></div><div class="cal-cell"></div>
+
+        <div class="cal-time">10 AM</div>
+        <div class="cal-cell"></div>
+        <div class="cal-cell"><div class="appt" style="background:var(--success-soft);color:var(--success);">Bennett · Therapy</div></div>
+        <div class="cal-cell"></div>
+        <div class="cal-cell"><div class="appt" style="background:var(--info-soft);color:var(--info);">Park · Med Mgmt</div></div>
+        <div class="cal-cell"></div>
+        <div class="cal-cell"></div><div class="cal-cell"></div>
+
+        <div class="cal-time">11 AM</div>
+        <div class="cal-cell"></div><div class="cal-cell"></div>
+        <div class="cal-cell"><div class="appt" style="background:var(--success-soft);color:var(--success);">Foster · Therapy</div></div>
+        <div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
+
+        <div class="cal-time">1 PM</div>
+        <div class="cal-cell"><div class="appt" style="background:var(--brand-soft);color:var(--brand-600);">Patel · Med Mgmt</div></div>
+        <div class="cal-cell"></div><div class="cal-cell"></div>
+        <div class="cal-cell"><div class="appt" style="background:var(--success-soft);color:var(--success);">Webb · Therapy</div></div>
+        <div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
+
+        <div class="cal-time">2 PM</div>
+        <div class="cal-cell"></div>
+        <div class="cal-cell"><div class="appt" style="background:var(--info-soft);color:var(--info);">Cruz · Testing</div></div>
+        <div class="cal-cell"><div class="appt" style="background:var(--brand-soft);color:var(--brand-600);">Sullivan · Med Mgmt</div></div>
+        <div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
+
+        <div class="cal-time">3 PM</div>
+        <div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
+        <div class="cal-cell"><div class="appt" style="background:var(--success-soft);color:var(--success);">Wells · Therapy</div></div>
+        <div class="cal-cell"></div><div class="cal-cell"></div>
+      </div>
+    </section>
+
+    <!-- ================= TASKS ================= -->
+    <section class="page" data-page="tasks">
+      <div class="page-header">
+        <div><h1 class="page-title">Tasks</h1><p class="page-sub">27 open across the team</p></div>
+        <div class="page-actions"><button class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg>New Task</button></div>
+      </div>
+      <div class="grid g4" style="margin-bottom:1rem;">
+        <div class="panel kpi"><div class="kpi-label">Today</div><div class="kpi-val tabular">8</div></div>
+        <div class="panel kpi"><div class="kpi-label" style="color:var(--danger);">Overdue</div><div class="kpi-val tabular" style="color:var(--danger);">3</div></div>
+        <div class="panel kpi"><div class="kpi-label">Upcoming</div><div class="kpi-val tabular">14</div></div>
+        <div class="panel kpi"><div class="kpi-label">Completed (wk)</div><div class="kpi-val tabular">22</div></div>
+      </div>
+      <div class="grid g-2-1">
+        <div class="panel">
+          <div class="tabs" style="padding:0 1.1rem;margin:0;"><div class="tab active">My Tasks</div><div class="tab">Team Tasks</div></div>
+          <div class="panel-body">
+            <p class="group-label od">Overdue</p>
+            <div class="task-row"><div class="task-check" style="border-color:var(--danger);"></div><div><div class="task-title">Follow up — Ethan Brooks</div><div class="task-sub">Overdue 26h · #WS-10377</div></div><span class="badge b-danger" style="margin-left:auto;">Follow-up</span></div>
+            <div class="task-row"><div class="task-check" style="border-color:var(--danger);"></div><div><div class="task-title">Confirm HAP status w/ Wellspring team</div><div class="task-sub">Overdue 3d · Ops</div></div><span class="badge b-danger" style="margin-left:auto;">Ops</span></div>
+            <p class="group-label">Today</p>
+            <div class="task-row"><div class="task-check"></div><div><div class="task-title">Call Marcus Webb — insurance follow-up</div><div class="task-sub">2:00 PM · #WS-10412</div></div><span class="badge b-warning" style="margin-left:auto;">Follow-up</span></div>
+            <div class="task-row"><div class="task-check"></div><div><div class="task-title">Send paperwork reminder — Liam Carter</div><div class="task-sub">4:30 PM · #WS-10388</div></div><span class="badge b-brand" style="margin-left:auto;">Reminder</span></div>
+            <div class="task-row"><div class="task-check"></div><div><div class="task-title">Review ADHD testing waitlist capacity</div><div class="task-sub">EOD · Ops</div></div><span class="badge b-neutral" style="margin-left:auto;">Ops</span></div>
+            <p class="group-label">Tomorrow</p>
+            <div class="task-row"><div class="task-check"></div><div><div class="task-title">Confirm consult reminder — Elijah Park</div><div class="task-sub">9:00 AM · #WS-10298</div></div><span class="badge b-brand" style="margin-left:auto;">Reminder</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Team Workload</p></div>
+          <div class="panel-body">
+            <div class="leader-row"><span class="avatar xs" style="background:#0d9488;">SJ</span><span style="width:80px;font-size:12.4px;">S. Jennings</span><div class="leader-bar"><div style="width:82%;"></div></div><b class="tabular" style="font-size:12px;">9</b></div>
+            <div class="leader-row"><span class="avatar xs" style="background:#6b46c1;">MC</span><span style="width:80px;font-size:12.4px;">M. Cole</span><div class="leader-bar"><div style="width:64%;"></div></div><b class="tabular" style="font-size:12px;">7</b></div>
+            <div class="leader-row"><span class="avatar xs" style="background:#c2410c;">DB</span><span style="width:80px;font-size:12.4px;">D. Brooks</span><div class="leader-bar"><div style="width:45%;"></div></div><b class="tabular" style="font-size:12px;">5</b></div>
+            <div class="leader-row"><span class="avatar xs" style="background:#0369a1;">PA</span><span style="width:80px;font-size:12.4px;">P. Anand</span><div class="leader-bar"><div style="width:55%;"></div></div><b class="tabular" style="font-size:12px;">6</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REPORTS ================= -->
+    <section class="page" data-page="reports">
+      <div class="page-header">
+        <div><h1 class="page-title">Reports</h1><p class="page-sub">Jun 14 – Jul 13, 2026</p></div>
+        <div class="page-actions"><button class="chip">Last 30 days <svg class="icon"><use href="#i-chevron-down"/></svg></button><button class="btn btn-secondary btn-sm"><svg class="icon"><use href="#i-download"/></svg>Export PDF</button></div>
+      </div>
+      <div class="filter-row">
+        <button class="chip on">Conversion</button>
+        <button class="chip">Referral Sources</button>
+        <button class="chip">Insurance</button>
+        <button class="chip">Provider Performance</button>
+        <button class="chip">Weekly Trends</button>
+      </div>
+
+      <div class="grid g2" style="margin-bottom:1rem;">
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Conversion Funnel</p></div>
+          <div class="panel-body">
+            <div style="display:flex;flex-direction:column;gap:.5rem;">
+              <div style="display:flex;align-items:center;gap:.6rem;"><span style="width:110px;font-size:12px;">New</span><div class="progress" style="flex:1;height:16px;"><div style="width:100%;"></div></div><b class="tabular" style="width:36px;text-align:right;">612</b></div>
+              <div style="display:flex;align-items:center;gap:.6rem;"><span style="width:110px;font-size:12px;">Contacted</span><div class="progress" style="flex:1;height:16px;"><div style="width:81%;"></div></div><b class="tabular" style="width:36px;text-align:right;">496</b></div>
+              <div style="display:flex;align-items:center;gap:.6rem;"><span style="width:110px;font-size:12px;">Scheduled</span><div class="progress" style="flex:1;height:16px;"><div style="width:54%;"></div></div><b class="tabular" style="width:36px;text-align:right;">330</b></div>
+              <div style="display:flex;align-items:center;gap:.6rem;"><span style="width:110px;font-size:12px;">Completed</span><div class="progress" style="flex:1;height:16px;"><div style="width:46%;"></div></div><b class="tabular" style="width:36px;text-align:right;">280</b></div>
+              <div style="display:flex;align-items:center;gap:.6rem;"><span style="width:110px;font-size:12px;">Converted</span><div class="progress" style="flex:1;height:16px;"><div style="width:31%;background:var(--success);"></div></div><b class="tabular" style="width:36px;text-align:right;">190</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Referral Source Performance</p></div>
+          <div class="panel-body">
+            <div class="leader-row"><span style="width:110px;font-size:12.4px;">Internal</span><div class="leader-bar"><div style="width:88%;background:var(--success);"></div></div><b class="tabular" style="font-size:12px;">71%</b></div>
+            <div class="leader-row"><span style="width:110px;font-size:12.4px;">Referral</span><div class="leader-bar"><div style="width:82%;background:var(--success);"></div></div><b class="tabular" style="font-size:12px;">64%</b></div>
+            <div class="leader-row"><span style="width:110px;font-size:12.4px;">Google Ads</span><div class="leader-bar"><div style="width:48%;"></div></div><b class="tabular" style="font-size:12px;">38%</b></div>
+            <div class="leader-row"><span style="width:110px;font-size:12.4px;">Psych. Today</span><div class="leader-bar"><div style="width:40%;"></div></div><b class="tabular" style="font-size:12px;">32%</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid g2" style="margin-bottom:1rem;">
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Insurance Mix</p></div>
+          <div class="panel-body" style="display:flex;align-items:center;gap:1rem;">
+            <svg viewBox="0 0 42 42" style="width:100px;height:100px;flex-shrink:0;">
+              <circle r="16" cx="21" cy="21" fill="transparent" stroke="var(--success)" stroke-width="8" stroke-dasharray="62 38" stroke-dashoffset="25"/>
+              <circle r="16" cx="21" cy="21" fill="transparent" stroke="var(--danger)" stroke-width="8" stroke-dasharray="27 73" stroke-dashoffset="63"/>
+              <circle r="16" cx="21" cy="21" fill="transparent" stroke="var(--ink-faint)" stroke-width="8" stroke-dasharray="11 89" stroke-dashoffset="90"/>
+            </svg>
+            <div style="font-size:12.4px;display:flex;flex-direction:column;gap:.5rem;">
+              <div><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--success);margin-right:6px;"></span>Accepted carriers — 62%</div>
+              <div><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--danger);margin-right:6px;"></span>Medicaid / HAP — 27%</div>
+              <div><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--ink-faint);margin-right:6px;"></span>Self-pay / Other — 11%</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Provider Performance</p></div>
+          <div class="panel-body">
+            <div class="leader-row"><span class="avatar xs" style="background:#0d9488;">LA</span><span style="width:120px;font-size:12.4px;">Dr. Ahuja NP</span><div class="leader-bar"><div style="width:74%;background:var(--success);"></div></div><b class="tabular" style="font-size:12px;">96 pts</b></div>
+            <div class="leader-row"><span class="avatar xs" style="background:#6b46c1;">MR</span><span style="width:120px;font-size:12.4px;">Dr. Reyes NP</span><div class="leader-bar"><div style="width:60%;background:var(--success);"></div></div><b class="tabular" style="font-size:12px;">78 pts</b></div>
+            <div class="leader-row"><span class="avatar xs" style="background:#c2410c;">KS</span><span style="width:120px;font-size:12.4px;">K. Simmons LMFT</span><div class="leader-bar"><div style="width:52%;"></div></div><b class="tabular" style="font-size:12px;">68 pts</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><p class="panel-title">Weekly Trend — Leads vs. Scheduling Rate</p></div>
+        <div class="panel-body">
+          <svg viewBox="0 0 600 160" style="width:100%;height:160px;">
+            <line x1="0" y1="130" x2="600" y2="130" stroke="var(--border)"/>
+            <polyline points="0,100 85,95 170,80 255,88 340,60 425,55 510,40 600,35" fill="none" stroke="var(--info)" stroke-width="2.5"/>
+            <polyline points="0,120 85,110 170,105 255,100 340,90 425,80 510,70 600,60" fill="none" stroke="var(--brand)" stroke-width="2.5"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= EXECUTIVE ================= -->
+    <section class="page" data-page="executive">
+      <div class="page-header">
+        <div><h1 class="page-title">Executive Overview</h1><p class="page-sub">Q2 2026 · Troy &amp; Clinton Township</p></div>
+        <div class="page-actions"><button class="chip">Quarter to Date <svg class="icon"><use href="#i-chevron-down"/></svg></button><button class="btn btn-secondary btn-sm"><svg class="icon"><use href="#i-download"/></svg>Board Export</button></div>
+      </div>
+      <div class="grid g4" style="margin-bottom:1rem;">
+        <div class="panel kpi"><div class="kpi-label">Pipeline Value</div><div class="kpi-val tabular">$186k</div><div class="kpi-delta up">+9.1% QoQ</div></div>
+        <div class="panel kpi"><div class="kpi-label">Overall Conversion</div><div class="kpi-val tabular">31%</div><div class="kpi-delta up">+2.8pt</div></div>
+        <div class="panel kpi"><div class="kpi-label">Team Scheduling Rate</div><div class="kpi-val tabular">63.2%</div><div class="kpi-delta up">Best in 6mo</div></div>
+        <div class="panel kpi"><div class="kpi-label">Active Patients</div><div class="kpi-val tabular">312</div><div class="kpi-delta up">+18 this month</div></div>
+      </div>
+      <div class="grid g-2-1" style="margin-bottom:1rem;">
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Team Performance</p></div>
+          <div class="panel-body">
+            <div class="leader-row"><span style="width:20px;font-weight:700;color:var(--ink-faint);">1</span><span class="avatar xs" style="background:#0d9488;">SJ</span><span style="width:110px;font-size:12.4px;">Sarah Jennings</span><div class="leader-bar"><div style="width:88%;background:var(--success);"></div></div><b class="tabular" style="font-size:12px;">71% sched.</b></div>
+            <div class="leader-row"><span style="width:20px;font-weight:700;color:var(--ink-faint);">2</span><span class="avatar xs" style="background:#0369a1;">PA</span><span style="width:110px;font-size:12.4px;">Priya Anand</span><div class="leader-bar"><div style="width:72%;background:var(--success);"></div></div><b class="tabular" style="font-size:12px;">58% sched.</b></div>
+            <div class="leader-row"><span style="width:20px;font-weight:700;color:var(--ink-faint);">3</span><span class="avatar xs" style="background:#6b46c1;">MC</span><span style="width:110px;font-size:12.4px;">Marcus Cole</span><div class="leader-bar"><div style="width:60%;"></div></div><b class="tabular" style="font-size:12px;">49% sched.</b></div>
+            <div class="leader-row"><span style="width:20px;font-weight:700;color:var(--ink-faint);">4</span><span class="avatar xs" style="background:#c2410c;">DB</span><span style="width:110px;font-size:12.4px;">Devon Brooks</span><div class="leader-bar"><div style="width:44%;"></div></div><b class="tabular" style="font-size:12px;">37% sched.</b></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Forecast — Next Quarter</p></div>
+          <div class="panel-body">
+            <svg viewBox="0 0 260 130" style="width:100%;height:130px;">
+              <polyline points="0,90 40,80 80,65 120,55" fill="none" stroke="var(--info)" stroke-width="2.5"/>
+              <polyline points="120,55 160,45 200,35 260,20" fill="none" stroke="var(--info)" stroke-width="2.5" stroke-dasharray="4 4"/>
+              <circle cx="120" cy="55" r="3.5" fill="var(--info)"/>
+            </svg>
+            <p style="font-size:11.6px;color:var(--ink-faint);margin-top:.4rem;">Projected 218 leads / 138 scheduled in Q3, based on DSA + Regional Search trajectory.</p>
+          </div>
+        </div>
+      </div>
+      <div class="grid g-2-1">
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Service Area Performance</p></div>
+          <div class="panel-body">
+            <div class="map-panel">
+              <div class="bubble" style="width:70px;height:70px;top:70px;left:110px;">54</div>
+              <div class="map-label" style="top:145px;left:100px;">Troy</div>
+              <div class="bubble" style="width:52px;height:52px;top:150px;left:210px;">31</div>
+              <div class="map-label" style="top:205px;left:205px;">Clinton Twp</div>
+              <div class="bubble" style="width:32px;height:32px;top:50px;left:280px;background:var(--info);">14</div>
+              <div class="map-label" style="top:20px;left:270px;">Rochester</div>
+              <div class="bubble" style="width:26px;height:26px;top:190px;left:60px;background:var(--info);">9</div>
+              <div class="map-label" style="top:220px;left:40px;">Sterling Hts</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><p class="panel-title">Operational Bottlenecks</p></div>
+          <div class="panel-body">
+            <div style="display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid var(--border);"><svg class="icon" style="color:var(--danger);margin-top:2px;"><use href="#i-alert"/></svg><div><div style="font-size:12.6px;font-weight:600;">Consult Scheduled wait time up</div><div class="sub">4.2 days avg, from 2.1 days last month</div></div></div>
+            <div style="display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid var(--border);"><svg class="icon" style="color:var(--warning);margin-top:2px;"><use href="#i-alert"/></svg><div><div style="font-size:12.6px;font-weight:600;">ADHD Testing waitlist at capacity</div><div class="sub">4 qualified leads waiting &gt; 2 weeks</div></div></div>
+            <div style="display:flex;gap:.6rem;padding:.5rem 0;"><svg class="icon" style="color:var(--warning);margin-top:2px;"><use href="#i-alert"/></svg><div><div style="font-size:12.6px;font-weight:600;">HAP insurance status unresolved</div><div class="sub">Affecting ~26% of lost leads · 3 weeks open</div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SETTINGS ================= -->
+    <section class="page" data-page="settings">
+      <div class="page-header"><div><h1 class="page-title">Settings</h1><p class="page-sub">Organization configuration</p></div></div>
+      <div class="settings-shell">
+        <div class="set-nav">
+          <button class="nav-item active" data-set="users"><svg class="icon"><use href="#i-users"/></svg>Users</button>
+          <button class="nav-item" data-set="perms"><svg class="icon"><use href="#i-shield"/></svg>Permissions</button>
+          <button class="nav-item" data-set="integrations"><svg class="icon"><use href="#i-link"/></svg>Integrations</button>
+          <button class="nav-item" data-set="sync"><svg class="icon"><use href="#i-sheet"/></svg>Google Sheets Sync</button>
+          <button class="nav-item" data-set="notifs"><svg class="icon"><use href="#i-bell"/></svg>Notifications</button>
+          <button class="nav-item" data-set="audit"><svg class="icon"><use href="#i-history"/></svg>Audit Logs</button>
+        </div>
+        <div>
+          <div class="setpane active" data-setpane="users">
+            <div class="panel">
+              <div class="panel-head"><p class="panel-title">Team Members</p><button class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg>Invite</button></div>
+              <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Location</th><th>Status</th><th>Last Active</th><th></th></tr></thead><tbody>
+                <tr><td><div class="name-cell"><span class="avatar sm" style="background:#0d9488;">SJ</span>Sarah Jennings</div></td><td>Intake Coordinator</td><td>Troy</td><td><span class="badge b-success">Active</span></td><td>2 min ago</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+                <tr><td><div class="name-cell"><span class="avatar sm" style="background:#6b46c1;">MC</span>Marcus Cole</div></td><td>Intake Coordinator</td><td>Clinton Twp</td><td><span class="badge b-success">Active</span></td><td>18 min ago</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+                <tr><td><div class="name-cell"><span class="avatar sm" style="background:#c2410c;">DB</span>Devon Brooks</div></td><td>Manager</td><td>Both</td><td><span class="badge b-success">Active</span></td><td>1h ago</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+                <tr><td><div class="name-cell"><span class="avatar sm" style="background:#0369a1;">LA</span>Dr. Lena Ahuja</div></td><td>Provider</td><td>Troy</td><td><span class="badge b-success">Active</span></td><td>3h ago</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+                <tr><td><div class="name-cell"><span class="avatar sm" style="background:#9d174d;">RB</span>Rishabh B.</div></td><td>Admin</td><td>—</td><td><span class="badge b-success">Active</span></td><td>Just now</td><td><svg class="icon"><use href="#i-dots-h"/></svg></td></tr>
+              </tbody></table></div>
+            </div>
+          </div>
+          <div class="setpane" data-setpane="perms" style="display:none;">
+            <div class="panel"><div class="panel-head"><p class="panel-title">Role Permissions</p></div>
+              <div class="table-wrap"><table><thead><tr><th>Permission</th><th>Admin</th><th>Manager</th><th>Coordinator</th><th>Provider</th></tr></thead><tbody>
+                <tr><td>View all leads</td><td><span class="badge b-success">●</span></td><td><span class="badge b-success">●</span></td><td><span class="badge b-neutral">—</span></td><td><span class="badge b-warning">◐</span></td></tr>
+                <tr><td>Reassign leads</td><td><span class="badge b-success">●</span></td><td><span class="badge b-success">●</span></td><td><span class="badge b-neutral">—</span></td><td><span class="badge b-neutral">—</span></td></tr>
+                <tr><td>Manage users</td><td><span class="badge b-success">●</span></td><td><span class="badge b-neutral">—</span></td><td><span class="badge b-neutral">—</span></td><td><span class="badge b-neutral">—</span></td></tr>
+                <tr><td>Edit automation rules</td><td><span class="badge b-success">●</span></td><td><span class="badge b-neutral">—</span></td><td><span class="badge b-neutral">—</span></td><td><span class="badge b-neutral">—</span></td></tr>
+              </tbody></table></div>
+            </div>
+          </div>
+          <div class="setpane" data-setpane="integrations" style="display:none;">
+            <div class="grid g2">
+              <div class="panel panel-body" style="display:flex;align-items:center;gap:.8rem;"><svg class="icon xl" style="color:var(--success);"><use href="#i-sheet"/></svg><div><div style="font-weight:700;font-size:13px;">Google Sheets</div><div class="sub">Connected · Consultation Sheet</div></div><span class="badge b-success" style="margin-left:auto;">Connected</span></div>
+              <div class="panel panel-body" style="display:flex;align-items:center;gap:.8rem;"><svg class="icon xl" style="color:var(--danger);"><use href="#i-mail"/></svg><div><div style="font-weight:700;font-size:13px;">Gmail</div><div class="sub">Notification delivery</div></div><span class="badge b-success" style="margin-left:auto;">Connected</span></div>
+            </div>
+          </div>
+          <div class="setpane" data-setpane="sync" style="display:none;">
+            <div class="panel" style="margin-bottom:1rem;">
+              <div class="panel-head"><p class="panel-title">Sync Health</p><span class="badge b-success">● Synced</span></div>
+              <div class="panel-body">
+                <div class="field-row"><span class="field-label">Last synced</span><span class="field-val">2 minutes ago</span></div>
+                <div class="field-row"><span class="field-label">Queue</span><span class="field-val">0 pending</span></div>
+                <div class="field-row"><span class="field-label">Failures (24h)</span><span class="field-val">1</span></div>
+                <div style="margin-top:.8rem;"><button class="btn btn-secondary btn-sm">Force Sync Now</button></div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><p class="panel-title">Conflict Queue</p><span class="badge b-warning">1 open</span></div>
+              <div class="panel-body">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <div><div style="font-weight:600;font-size:12.8px;">#WS-10402 · Insurance field</div><div class="sub">Sheet: "HAP" &nbsp;·&nbsp; CRM: "Medicaid"</div></div>
+                  <div style="display:flex;gap:.4rem;"><button class="btn btn-secondary btn-sm">Keep Sheet</button><button class="btn btn-secondary btn-sm">Keep CRM</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="setpane" data-setpane="notifs" style="display:none;">
+            <div class="panel"><div class="panel-head"><p class="panel-title">Notification Preferences</p></div>
+              <div class="panel-body">
+                <div class="field-row"><span class="field-label">SLA breach alerts</span><div class="toggle on"></div></div>
+                <div class="field-row"><span class="field-label">Daily summary email</span><div class="toggle on"></div></div>
+                <div class="field-row"><span class="field-label">Weekly KPI snapshot</span><div class="toggle on"></div></div>
+                <div class="field-row"><span class="field-label">Duplicate detection alerts</span><div class="toggle"></div></div>
+                <div class="field-row"><span class="field-label">Sync failure alerts</span><div class="toggle on"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="setpane" data-setpane="audit" style="display:none;">
+            <div class="panel"><div class="panel-head"><p class="panel-title">Audit Log</p></div>
+              <div class="table-wrap"><table><thead><tr><th>Time</th><th>User</th><th>Entity</th><th>Field</th><th>Change</th></tr></thead><tbody>
+                <tr><td class="tabular">9:03 AM</td><td>System</td><td>Lead #10441</td><td>priority</td><td>standard → urgent</td></tr>
+                <tr><td class="tabular">8:47 AM</td><td>Sarah Jennings</td><td>Lead #10399</td><td>stage</td><td>New → Attempted Contact</td></tr>
+                <tr><td class="tabular">8:20 AM</td><td>Marcus Cole</td><td>Lead #10366</td><td>owner</td><td>Devon Brooks → Marcus Cole</td></tr>
+              </tbody></table></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function showPage(name){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.toggle('active', p.dataset.page===name); });
+  document.querySelectorAll('.nav-item[data-page]').forEach(function(n){ n.classList.toggle('active', n.dataset.page===name); });
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.nav-item[data-page]').forEach(function(btn){
+  btn.addEventListener('click', function(){ showPage(btn.dataset.page); document.querySelector('.sidebar').classList.remove('open'); });
+});
+var hamburgerBtn = document.getElementById('hamburgerBtn');
+if(hamburgerBtn){
+  hamburgerBtn.addEventListener('click', function(){ document.querySelector('.sidebar').classList.toggle('open'); });
+}
+document.addEventListener('click', function(e){
+  var sb = document.querySelector('.sidebar');
+  if(sb.classList.contains('open') && !sb.contains(e.target) && e.target !== hamburgerBtn && !hamburgerBtn.contains(e.target)){
+    sb.classList.remove('open');
+  }
+});
+function setTab(el){
+  var group = el.parentElement;
+  group.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  var panes = group.parentElement.querySelectorAll('.tabpane');
+  panes.forEach(function(p){ p.style.display = (p.dataset.pane===el.dataset.tab) ? 'block':'none'; });
+}
+document.querySelectorAll('.set-nav .nav-item').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.set-nav .nav-item').forEach(function(n){ n.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.setpane').forEach(function(p){ p.style.display = (p.dataset.setpane===btn.dataset.set) ? 'block':'none'; });
+  });
+});
+document.querySelectorAll('.chip').forEach(function(c){
+  c.addEventListener('click', function(){
+    if(c.parentElement.classList.contains('filter-row')){
+      var siblings = c.parentElement.querySelectorAll('.chip');
+      // only toggle exclusive groups where relevant; harmless no-op otherwise
+    }
+  });
+});
+</script>

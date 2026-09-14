@@ -11,6 +11,7 @@
 | 1 | TBD | Strategic Proposal — P2P Airport Car Sharing (KC_P2P_Final) | Completed | Project Velocity/LincUp; fundraising deck |
 | 2 | TBD | LinkedIn Awareness Campaign Proposal | Completed | $1,200/30 days recommended; hospitality decision-makers |
 | 3 | TBD | Marketing Strategy Deck (LinkedIn_Merged) | Completed | Competitive landscape, content pillars, SEO/AEO roadmap |
+| 4 | 2026-09-08 | Lot Owner Ad Platform Feasibility Research (X, YouTube, LinkedIn, Meta) | Completed | Saved to 03_Research/; recommends LinkedIn primary + Meta secondary + small Google Search test; X not recommended |
 
 ---
 

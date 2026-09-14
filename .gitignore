@@ -4,6 +4,14 @@ venv/
 __pycache__/
 *.pyc
 
+# Node dependencies (rebuild fresh per machine — never portable)
+node_modules/
+.next/
+
+# Nested git repos — already independently versioned, never embed as gitlinks
+Wellspring/wellspring-ops-app/
+Wellspring/wellspring-ops-web/
+
 # OS cruft
 .DS_Store
 Thumbs.db

@@ -177,6 +177,18 @@ Followers: 3 (0.54% FCR)
 
 ---
 
+## B2B Dealership Recruitment Campaign (Meta Lead Gen) — separate workstream
+
+> Started August 2026. This is distinct from the B2C Bangalore scooter-sales work above — different objective (dealer recruitment, not scooter sales), different geography (Delhi NCR, not Bangalore), different audience (entrepreneurs/franchise investors, not commuters).
+
+- **Objective:** Meta lead-gen campaign (Instant Form) recruiting EV dealers in Delhi NCR.
+- **Live creatives:** Concept 1 (English, direct-offer/high-margins angle, no rupee figure disclosed), Concept 2 (B2B EV leadership positioning, "#1 player in B2B EV" on the creative image only, copy text hedges to "a leading B2B EV brand"), and a Hindi variant of Concept 1. Full 5-concept copy deck at `02_Copy/eSprinto_Dealership_Meta_Ad_Copy_28Jul2026.xlsx`.
+- **Structure:** 2 ABO ad sets split by audience (EV-interested vs. investment/franchise-interested), each running all 3 live creatives as separate ads.
+- **Compliance:** Account is declared NOT SEBI/AMFI-registered (correct, since dealership recruitment isn't a securities offering) — this shows publicly in Meta's Ad Library. Copy avoids "invest/ROI/returns" framing in favor of "business/margins" framing partly because of this.
+- **Ongoing engagement:** User has set up a standing Meta Ads Performance Consultant mode, daily campaign data gets analyzed and logged at `04_Data/meta_dealership_ads_performance_log.md` so recommendations build on historical trends rather than resetting each day.
+
+---
+
 ## Strategic Direction
 
 **Brand positioning:** Real commuter savings, real Indian cities. Not aspirational — practical. While BGauss says "It's not a scooter" and Simple says "248 km IDC range," e-Sprinto says "Here's what you actually save every month."

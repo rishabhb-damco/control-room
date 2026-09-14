@@ -1,0 +1,470 @@
+<title>Wellspring Ops Platform — PRD Part 4: Design System, Security &amp; Roadmap</title>
+<meta name="description" content="UI component library, security, performance, AI roadmap, sprint plan, risk assessment, testing strategy, and acceptance criteria.">
+<style>
+  :root{
+    --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da;
+    --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3;
+    --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0;
+    --warning:#b06a1f; --warning-soft:#f3e3cd;
+    --danger:#a1402f; --danger-soft:#f3ddd6;
+    --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans: "Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733; --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+      --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122; --line:#2c4440; --line-strong:#3c5852;
+      --success:#6fae82; --success-soft:#1d332590; --warning:#dba053; --warning-soft:#3a2d1690; --danger:#d67468; --danger-soft:#3a201b90; }
+  }
+  :root[data-theme="dark"]{ --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733; --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+    --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122; --line:#2c4440; --line-strong:#3c5852;
+    --success:#6fae82; --success-soft:#1d332590; --warning:#dba053; --warning-soft:#3a2d1690; --danger:#d67468; --danger-soft:#3a201b90; }
+  :root[data-theme="light"]{ --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da; --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3; --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0; --warning:#b06a1f; --warning-soft:#f3e3cd; --danger:#a1402f; --danger-soft:#f3ddd6; }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.6; font-size:16px; -webkit-font-smoothing:antialiased; }
+  ::selection{ background:var(--accent-soft); color:var(--ink); }
+  h1,h2,h3,h4{ font-family:var(--serif); font-weight:600; color:var(--ink); text-wrap:balance; }
+  p{ max-width:68ch; }
+  a{ color:var(--accent-deep); }
+  code, .mono{ font-family:var(--mono); }
+  table{ border-collapse:collapse; width:100%; font-size:.86rem; }
+  th{ text-align:left; font-weight:600; color:var(--ink-soft); text-transform:uppercase; font-size:.62rem; letter-spacing:.06em; padding:.5rem .65rem; border-bottom:1px solid var(--line-strong); white-space:nowrap; }
+  td{ padding:.5rem .65rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:hover td{ background:var(--surface-2); }
+  .num{ font-variant-numeric: tabular-nums; }
+
+  .suite-nav{ background:var(--ink); color:var(--paper); font-size:.78rem; padding:.6rem 1.4rem; display:flex; gap:1.3rem; flex-wrap:wrap; align-items:center; }
+  .suite-nav b{ color:var(--accent); font-weight:700; margin-right:.3rem; }
+  .suite-nav a{ color:var(--paper); opacity:.75; text-decoration:none; }
+  .suite-nav a.current{ opacity:1; text-decoration:underline; text-decoration-color:var(--accent); text-underline-offset:3px; }
+  .suite-nav a:hover{ opacity:1; }
+
+  .shell{ display:grid; grid-template-columns: 250px minmax(0,1fr); max-width:1360px; margin:0 auto; }
+  .rail{ position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto; padding:1.6rem 1.3rem 2rem 2rem; border-right:1px solid var(--line); }
+  .rail-brand{ font-family:var(--serif); font-size:1.05rem; margin:0 0 .15rem; }
+  .rail-brand small{ display:block; font-family:var(--sans); font-size:.65rem; letter-spacing:.09em; text-transform:uppercase; color:var(--accent-deep); margin-top:.35rem; }
+  .rail nav{ margin-top:1.6rem; }
+  .rail-group{ margin-bottom:1.3rem; }
+  .rail-group-title{ font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); margin:0 0 .45rem; }
+  .rail a{ display:block; color:var(--ink-soft); text-decoration:none; font-size:.83rem; padding:.28rem 0; border-left:2px solid transparent; padding-left:.7rem; margin-left:-.72rem; }
+  .rail a:hover{ color:var(--ink); border-left-color:var(--line-strong); }
+  .rail a.active{ color:var(--ink); border-left-color:var(--accent); font-weight:600; }
+  .main{ min-width:0; padding:2.6rem 3.2rem 6rem; }
+  @media (max-width: 980px){ .shell{ grid-template-columns:1fr; } .rail{ position:relative; height:auto; border-right:none; border-bottom:1px solid var(--line); } .main{ padding:2rem 1.2rem 4rem; } }
+
+  section{ margin-bottom:4.2rem; scroll-margin-top:1.5rem; }
+  .eyebrow{ text-transform:uppercase; letter-spacing:.12em; font-size:.7rem; color:var(--accent-deep); font-weight:700; margin:0 0 .5rem; }
+  section > h2{ font-size:1.8rem; margin:0 0 .3rem; }
+  section > h3{ font-size:1.15rem; margin:2rem 0 .5rem; }
+  .lede{ color:var(--ink-soft); font-size:1.02rem; max-width:64ch; margin:0 0 1.4rem; }
+
+  .grid{ display:grid; gap:1rem; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1rem 1.2rem; }
+  .breakout{ width:100%; overflow-x:auto; }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface); margin-bottom:1.4rem; }
+  .table-wrap table{ min-width:600px; }
+
+  .tag{ display:inline-block; font-size:.64rem; text-transform:uppercase; letter-spacing:.05em; font-weight:700; padding:.15rem .42rem; border-radius:3px; }
+  .tag-crit{ background:var(--danger-soft); color:var(--danger); }
+  .tag-high{ background:var(--warning-soft); color:var(--warning); }
+  .tag-low{ background:var(--success-soft); color:var(--success); }
+
+  .callout{ border-left:3px solid var(--accent); background:var(--surface); border-radius:0 6px 6px 0; padding:.9rem 1.2rem; margin:1.3rem 0; }
+  .callout p{ margin:.2rem 0; }
+  .callout.danger{ border-left-color:var(--danger); }
+
+  /* component swatches */
+  .swatch-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:.7rem; margin:1rem 0 1.6rem; }
+  .swatch{ border-radius:6px; overflow:hidden; border:1px solid var(--line); }
+  .swatch .fill{ height:44px; }
+  .swatch .lbl{ font-size:.68rem; padding:.35rem .5rem; background:var(--surface); font-family:var(--mono); }
+
+  .comp-demo{ display:flex; flex-wrap:wrap; gap:.7rem; align-items:center; margin:.8rem 0 1.3rem; padding:1rem; background:var(--surface); border:1px solid var(--line); border-radius:6px; }
+  .btn{ font-family:var(--sans); font-size:.85rem; font-weight:600; padding:.5rem 1rem; border-radius:5px; border:1px solid transparent; cursor:pointer; }
+  .btn-primary{ background:var(--ink); color:var(--paper); }
+  .btn-secondary{ background:transparent; color:var(--ink); border-color:var(--line-strong); }
+  .btn-danger{ background:var(--danger); color:#fff; }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .chip{ display:inline-flex; align-items:center; font-size:.78rem; padding:.28rem .7rem; border-radius:14px; background:var(--surface-2); border:1px solid var(--line); }
+  .badge{ font-size:.66rem; font-weight:700; text-transform:uppercase; padding:.15rem .5rem; border-radius:3px; }
+  .badge-success{ background:var(--success-soft); color:var(--success); }
+  .badge-warn{ background:var(--warning-soft); color:var(--warning); }
+  .badge-danger{ background:var(--danger-soft); color:var(--danger); }
+  .in{ font-family:var(--sans); font-size:.85rem; padding:.5rem .7rem; border:1px solid var(--line-strong); border-radius:5px; background:var(--surface); color:var(--ink); }
+  .tab-demo{ display:flex; gap:1.2rem; border-bottom:1px solid var(--line); padding-bottom:.5rem; }
+  .tab-demo span{ font-size:.85rem; color:var(--ink-faint); padding-bottom:.5rem; }
+  .tab-demo span.active{ color:var(--ink); border-bottom:2px solid var(--accent); font-weight:600; }
+  .loader{ width:16px; height:16px; border:2px solid var(--line-strong); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .loader{ animation:none; } }
+
+  .road{ display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.4rem 0; }
+  .road-phase{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1.1rem 1.2rem; }
+  .road-phase .ph-eyebrow{ font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; color:var(--accent-deep); font-weight:700; }
+  .road-phase h4{ margin:.3rem 0 .2rem; font-size:1.1rem; }
+  .road-phase ul{ margin:.4rem 0 0; padding-left:1.1rem; color:var(--ink-soft); font-size:.85rem; }
+  .road-phase li{ margin-bottom:.35rem; }
+  @media (max-width:900px){ .road{ grid-template-columns:1fr; } }
+
+  .sprint{ display:grid; grid-template-columns:5rem 1fr; gap:1rem; padding:.85rem 0; border-top:1px solid var(--line); }
+  .sprint:first-of-type{ border-top:none; }
+  .sprint .wk{ font-family:var(--mono); font-size:.78rem; color:var(--ink-faint); padding-top:.15rem; }
+  .sprint h5{ margin:0 0 .3rem; font-size:.95rem; }
+  .sprint p{ margin:0; font-size:.85rem; color:var(--ink-soft); }
+
+  .gwt{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1rem 1.2rem; margin-bottom:1rem; }
+  .gwt h5{ margin:0 0 .5rem; font-size:.95rem; }
+  .gwt .line{ font-size:.85rem; margin:.15rem 0; }
+  .gwt .line b{ color:var(--accent-deep); font-family:var(--mono); font-size:.72rem; text-transform:uppercase; margin-right:.4rem; }
+
+  footer{ border-top:1px solid var(--line); padding-top:1.4rem; color:var(--ink-faint); font-size:.8rem; }
+</style>
+
+<div class="suite-nav">
+  <span><b>PRD Suite</b> Wellspring Operations Platform</span>
+  <a href="https://claude.ai/code/artifact/36733824-3a8f-4fe8-8a5b-9c0237628a7b">1 · Product &amp; UX Spec</a>
+  <a href="https://claude.ai/code/artifact/f82028ce-5a81-42aa-b9ed-e3e4b18b2080">2 · Automation Engine</a>
+  <a href="https://claude.ai/code/artifact/22ae8bf9-df29-40e9-bb1d-1d0db11aa03f">3 · Data, Sync &amp; API</a>
+  <a href="https://claude.ai/code/artifact/83916532-7bff-4a3c-be7b-e6a819446f20" class="current">4 · Design System, Security &amp; Roadmap</a>
+  <span style="opacity:.35;">|</span>
+  <a href="https://claude.ai/code/artifact/27964285-c8eb-42e4-9efa-ac8dbcf1aa8f">FE 1 · Frontend Architecture</a>
+  <a href="https://claude.ai/code/artifact/e3558904-df3e-48d0-8d0f-b0fa9a347f3e">FE 2 · Frontend Patterns</a>
+</div>
+
+<div class="shell">
+  <aside class="rail">
+    <p class="rail-brand">System &amp; Roadmap<small>PRD Part 4 of 4</small></p>
+    <nav id="toc">
+      <div class="rail-group">
+        <p class="rail-group-title">Design system</p>
+        <a href="#tokens">Color, type, spacing, icons</a>
+        <a href="#components">Component library</a>
+        <a href="#accessibility">Accessibility</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Platform</p>
+        <a href="#security">Security &amp; HIPAA</a>
+        <a href="#performance">Performance</a>
+        <a href="#ai">Future AI features</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Delivery</p>
+        <a href="#roadmap">Roadmap (MVP → Phase 3)</a>
+        <a href="#sprints">Sprint breakdown</a>
+        <a href="#risk">Risk assessment</a>
+        <a href="#testing">Testing strategy</a>
+        <a href="#acceptance">Acceptance criteria</a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <section id="tokens">
+      <p class="eyebrow">PRD Part 4 of 4 · Design system</p>
+      <h2>Color, type, spacing, icons</h2>
+      <p class="lede">Same visual language established across all four PRD documents — dark teal, warm gold, parchment neutrals — carried into the product itself so the tool Wellspring's team uses daily feels like one continuous brand, not a bolted-on vendor app.</p>
+
+      <h3>Color system</h3>
+      <div class="swatch-row">
+        <div class="swatch"><div class="fill" style="background:#17302e"></div><div class="lbl">ink #17302e</div></div>
+        <div class="swatch"><div class="fill" style="background:#b3903f"></div><div class="lbl">accent #b3903f</div></div>
+        <div class="swatch"><div class="fill" style="background:#f5f0e8"></div><div class="lbl">paper #f5f0e8</div></div>
+        <div class="swatch"><div class="fill" style="background:#3f7a56"></div><div class="lbl">success #3f7a56</div></div>
+        <div class="swatch"><div class="fill" style="background:#b06a1f"></div><div class="lbl">warning #b06a1f</div></div>
+        <div class="swatch"><div class="fill" style="background:#a1402f"></div><div class="lbl">danger #a1402f</div></div>
+      </div>
+      <p>Semantic color (success/warning/danger) is separate from the brand accent (gold) and is reserved exclusively for state — SLA breach, eligible/ineligible insurance, stage health. Gold marks emphasis and navigation state only, never status, so the two systems never collide on the same element.</p>
+
+      <h3>Typography</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Role</th><th>Face</th><th>Sizes</th></tr></thead>
+        <tbody>
+          <tr><td>Display / headings</td><td>Serif — Iowan Old Style / Palatino / Georgia stack</td><td>2rem, 1.5rem, 1.2rem, 1rem</td></tr>
+          <tr><td>Body &amp; UI</td><td>Sans — Segoe UI / system-ui stack</td><td>1rem body, 0.85rem dense-UI, 0.68rem uppercase labels</td></tr>
+          <tr><td>Data / code / IDs</td><td>Monospace — SFMono / Consolas stack</td><td>0.78–0.85rem, always with <code>font-variant-numeric: tabular-nums</code> in tables</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Spacing &amp; icons</h3>
+      <p>4px base unit; component padding steps at 8/12/16/24/32px. Icon set: a single consistent line-icon family at 20px/16px sizes, never mixed with a second icon style — used sparingly (nav, KPI context, status) rather than as decoration.</p>
+    </section>
+
+    <section id="components">
+      <h3 style="margin-top:0;">Component library</h3>
+
+      <p><strong>Buttons</strong> — primary (solid ink), secondary (outline), danger (solid, reserved for destructive confirms). States: default, hover (8% darken), focus (2px accent outline, keyboard-visible), disabled (40% opacity, no pointer).</p>
+      <div class="comp-demo">
+        <button class="btn btn-primary">Save changes</button>
+        <button class="btn btn-secondary">Cancel</button>
+        <button class="btn btn-danger">Archive lead</button>
+        <button class="btn btn-primary" disabled>Saving…</button>
+      </div>
+
+      <p><strong>Inputs &amp; dropdowns</strong> — consistent 1px border, 5px radius, label above (never placeholder-only, per accessibility rule below), inline validation message beneath in danger color.</p>
+      <div class="comp-demo">
+        <input class="in" placeholder="Search leads, Client ID, phone…" style="min-width:220px;">
+        <select class="in"><option>Referral Source ▾</option></select>
+      </div>
+
+      <p><strong>Badges, pills &amp; tags</strong> — badges = system state (read-only, semantic color). Pills/chips = user-manageable (removable, neutral color unless a tag is itself semantic e.g. "Urgent").</p>
+      <div class="comp-demo">
+        <span class="badge badge-success">Eligible</span>
+        <span class="badge badge-warn">Pending review</span>
+        <span class="badge badge-danger">SLA breach</span>
+        <span class="chip">adhd-waitlist ✕</span>
+        <span class="chip">returning-patient ✕</span>
+      </div>
+
+      <p><strong>Tabs</strong> — underline style, active tab in ink with gold underline, never more than 6 tabs before collapsing into an overflow menu.</p>
+      <div class="comp-demo"><div class="tab-demo"><span class="active">Details</span><span>Timeline</span><span>Tasks</span><span>Notes</span><span>Attachments</span></div></div>
+
+      <p><strong>Loaders, empty states, error states</strong> — inline spinner for sub-second waits; skeleton blocks for list/table loads &gt;300ms; empty states always include a next action ("No leads match these filters — Clear filters"), never a bare "No data."; error states name what failed and offer Retry, never a generic "Something went wrong."</p>
+      <div class="comp-demo"><div class="loader"></div><span style="font-size:.82rem;color:var(--ink-soft);">Loading pipeline board…</span></div>
+
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Component</th><th>Key states</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Table</td><td>default, hover-row, selected-row, sortable header, sticky header on scroll</td><td>Dense rows (36px) for Pipeline Table View; comfortable rows (48px) elsewhere</td></tr>
+          <tr><td>Cards (Kanban)</td><td>default, dragging, drop-target highlight, SLA-breach red left-edge</td><td>Drag handle only on desktop; tap-to-open on touch</td></tr>
+          <tr><td>Accordion</td><td>collapsed, expanded, disabled</td><td>Used in Settings for stage/rule groups</td></tr>
+          <tr><td>Pagination</td><td>default, active page, disabled prev/next</td><td>Cursor-based under the hood; page numbers are cosmetic only for tables under 1,000 rows</td></tr>
+          <tr><td>Toast</td><td>success, error, info — auto-dismiss 4s, error persists until dismissed</td><td>Bottom-right stack, max 3 visible</td></tr>
+          <tr><td>Drawer</td><td>open, closing (animated slide), focus-trapped</td><td>Escape and outside-click both close</td></tr>
+          <tr><td>Modal</td><td>open, closing, blocking (destructive confirm requires typed confirmation)</td><td>Never stack a second modal over a modal</td></tr>
+          <tr><td>Charts</td><td>default, hover-tooltip, empty (no data in range), loading</td><td>Every chart gets a faint gridline, an emphasized endpoint/current value, and an accessible data-table fallback</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="accessibility">
+      <h3 style="margin-top:0;">Accessibility</h3>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr));">
+        <div class="card">All interactive elements reachable and operable by keyboard alone; visible focus ring on every focusable element, never <code>outline:none</code> without a replacement.</div>
+        <div class="card">Color is never the only signal — every badge/status pairs a color with a label or icon (e.g. "Eligible" text, not just green).</div>
+        <div class="card">Contrast ratio ≥ 4.5:1 for body text in both themes, verified against both the parchment-light and teal-dark palettes above.</div>
+        <div class="card">Forms: every input has a real <code>&lt;label&gt;</code>, errors are announced via <code>aria-live</code>, required fields marked both visually and in markup.</div>
+      </div>
+    </section>
+
+    <section id="security">
+      <p class="eyebrow">PRD Part 4 of 4 · Platform</p>
+      <h2>Security &amp; HIPAA considerations</h2>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Area</th><th>Approach</th></tr></thead>
+        <tbody>
+          <tr><td>Authentication</td><td>Email + password (Argon2id hashing), MFA (TOTP) available Phase 2, SSO/SAML reserved for Phase 3</td></tr>
+          <tr><td>Authorization</td><td>Role-based via <code>roles.permissions</code>, enforced at both API middleware and DB row-level-security layer — never UI-only</td></tr>
+          <tr><td>Audit logs</td><td>Immutable, insert-only <code>audit_log_entries</code> (AR-054) for every field change; a separate <code>access_log</code> records who <em>viewed</code> a lead detail page, not just who edited it — required for HIPAA "minimum necessary" review</td></tr>
+          <tr><td>Encryption</td><td>TLS 1.2+ in transit everywhere; encryption at rest at the database/volume level; column-level encryption for <code>guardian_phone</code> and any free-text clinical note fields</td></tr>
+          <tr><td>Backup strategy</td><td>Nightly full backup + continuous WAL archiving for point-in-time recovery; 30-day retention; quarterly restore drill logged as a compliance artifact</td></tr>
+          <tr><td>Session management</td><td>Short-lived access token (15 min) + rotating refresh token (7 days); server-side revocation list for immediate logout-everywhere on password change or admin-forced deactivation</td></tr>
+          <tr><td>Access logs</td><td>Every lead-detail view logged with viewer, timestamp, and lead ID — queryable from Audit Logs, filtered by entity</td></tr>
+          <tr><td>Role security</td><td>Least-privilege defaults on every new role; Provider role in particular is scoped to consultations they're assigned to, never the full lead list</td></tr>
+          <tr><td>HIPAA posture</td><td>Hosting provider must carry a signed BAA before any lead record with health-adjacent fields (DOB, clinical notes, guardian info) is stored; <code>leads.client_ref</code> keeps this system PHI-light by design (see Part 1); breach-notification runbook defined before go-live, not after</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="performance">
+      <h3 style="margin-top:0;">Performance</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Concern</th><th>Approach</th></tr></thead>
+        <tbody>
+          <tr><td>Caching</td><td>Redis-backed cache for dashboard aggregates, invalidated precisely by AR-044 on the write that affects them — never a blanket TTL guess</td></tr>
+          <tr><td>Pagination</td><td>Cursor-based on all list endpoints (leads, activities, audit log) — stable under concurrent writes, unlike offset pagination</td></tr>
+          <tr><td>Lazy loading</td><td>Kanban board fetches cards per-column on scroll; Analytics charts below the fold defer render until in viewport</td></tr>
+          <tr><td>Real-time updates</td><td>WebSocket/SSE channel per organization broadcasts stage changes and new leads so two coordinators viewing the same board never see stale cards</td></tr>
+          <tr><td>Background jobs</td><td>Sync jobs, notification dispatch, report generation/export, and digest emails all run off a queue, never inline on a user request</td></tr>
+          <tr><td>Queue system</td><td>Redis-backed queue with per-job retry (exponential backoff) and a dead-letter queue after 3 failures, feeding the same Sync Monitor alerting as AR-053</td></tr>
+          <tr><td>Search indexing</td><td>Postgres full-text + trigram to start (adequate at Wellspring's current volume); abstracted behind a search-service interface so a move to a dedicated engine needs no caller changes</td></tr>
+          <tr><td>Scalability</td><td>Stateless app tier behind a load balancer for horizontal scaling; DB scales vertically first, then via read replicas for reporting traffic (see Part 3 §Future scalability)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="ai">
+      <h3 style="margin-top:0;">Future AI features (Phase 3)</h3>
+      <p>Architecture: an assistant that calls the same read-scoped Reporting/Dashboard API endpoints defined in Part 3 — never raw SQL — so it inherits the same role-based permission boundary a human user has. All AI output is logged like any other system action; nothing it produces writes back to a lead record without an explicit human confirm.</p>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Capability</th><th>How it works</th></tr></thead>
+        <tbody>
+          <tr><td>Summarize lead history</td><td>Condenses a lead's Activity Timeline into a 3–4 sentence brief on open</td></tr>
+          <tr><td>Identify bottlenecks</td><td>Scans stage-aging distribution for outliers vs. the org's own historical baseline</td></tr>
+          <tr><td>Predict conversion likelihood</td><td>Lightweight scoring model on structured features only (source, insurance eligibility, response time, day-of-week) — explicitly not on free-text clinical content</td></tr>
+          <tr><td>Suggest next action</td><td>Recommends "call now" / "send eligibility reminder" / "escalate" based on stage + SLA state, surfaced as a suggestion chip, never an auto-executed action</td></tr>
+          <tr><td>Generate management insights / exec summaries</td><td>Natural-language pass over the existing AR-048 weekly KPI snapshot — turns numbers into a short narrative, doesn't invent new numbers</td></tr>
+          <tr><td>Detect anomalies</td><td>Statistical control-chart logic (same pattern as AR-026) generalized across any tracked metric, flags 2+ standard-deviation moves</td></tr>
+          <tr><td>Forecast workload</td><td>Time-series projection of lead volume vs. provider capacity, feeding the Provider Dashboard</td></tr>
+          <tr><td>Natural-language Q&amp;A</td><td>Constrained query translator that maps a question to Reporting API parameters (dimensions/metrics/date range) rather than freeform database access — cannot return anything the asking user's role couldn't already see</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout"><p><strong>Guardrail:</strong> because Wellspring is a mental-health practice, no AI feature reasons over or surfaces verbatim clinical free-text in a way visible beyond the existing permission boundary — summaries stay operational (stage, timing, source), not clinical.</p></div>
+    </section>
+
+    <section id="roadmap">
+      <p class="eyebrow">PRD Part 4 of 4 · Delivery</p>
+      <h2>Development roadmap</h2>
+      <div class="road">
+        <div class="road-phase">
+          <p class="ph-eyebrow">MVP</p>
+          <h4>Phase 1</h4>
+          <ul>
+            <li>Structured intake form, Lead Detail, Activity Timeline</li>
+            <li>Pipeline board (9 default stages) + Table View</li>
+            <li>Sheet → CRM one-way-then-two-way sync (create, update, permanent Lead ID)</li>
+            <li>Core automations: AR-001–002, 008–009, 014–020, 023, 036–040, 050–052, 054</li>
+            <li>Executive + Intake dashboards</li>
+            <li>Admin: users, roles (fixed 5), referral/insurance taxonomy</li>
+            <li>Basic RBAC, audit log, email notifications</li>
+          </ul>
+        </div>
+        <div class="road-phase">
+          <p class="ph-eyebrow">Phase 2</p>
+          <h4>Operational depth</h4>
+          <ul>
+            <li>Calendar View, Duplicate Review Queue + Merge screen</li>
+            <li>Full task/reminder/escalation automation set</li>
+            <li>Referral, Provider, Insurance domain dashboards</li>
+            <li>Report Builder, saved/scheduled reports</li>
+            <li>Command palette, saved filters/Smart Views</li>
+            <li>Full conflict-resolution UI for sync</li>
+            <li>MFA, webhooks, API keys</li>
+          </ul>
+        </div>
+        <div class="road-phase">
+          <p class="ph-eyebrow">Phase 3</p>
+          <h4>Scale &amp; intelligence</h4>
+          <ul>
+            <li>Custom pipeline stages, custom roles</li>
+            <li>Visual automation rule builder (no-deploy rule authoring)</li>
+            <li>AI assistant (all 8 capabilities above)</li>
+            <li>SSO/SAML, SMS notifications</li>
+            <li>Database cutover from Sheets (repository swap, see Part 3)</li>
+            <li>Cohort analysis, forecasting, goal tracking</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="sprints">
+      <h3 style="margin-top:0;">Sprint breakdown (2-week sprints, team of 1 PM/design + 3 engineers)</h3>
+      <div class="sprint"><div class="wk">Spr. 1–2</div><div><h5>Foundation</h5><p>Auth, org/user/role scaffolding, DB schema + migrations, Sheets connector read-only ingestion (AR-050), design system component build-out.</p></div></div>
+      <div class="sprint"><div class="wk">Spr. 3</div><div><h5>Lead core</h5><p>Lead Detail, Intake form with validation (AR-036–040), Activity Timeline, structured referral/insurance taxonomy screens.</p></div></div>
+      <div class="sprint"><div class="wk">Spr. 4</div><div><h5>Pipeline</h5><p>Kanban board, Table View, 9 default stages, stage-exit validation (insurance gate AR-018–020), assignment/reassignment.</p></div></div>
+      <div class="sprint"><div class="wk">Spr. 5</div><div><h5>Sync goes two-way + MVP hardening</h5><p>CRM→Sheet write-back, conflict detection (AR-052), Intake + Executive dashboards, notifications, audit log, UAT with Wellspring staff shadow-running parallel to the sheet.</p><p><strong>MVP ships end of Sprint 5 (~10 weeks).</strong></p></div></div>
+      <div class="sprint"><div class="wk">Spr. 6–7</div><div><h5>Phase 2a</h5><p>Duplicate detection + Merge screen, Calendar View, full task/escalation automation, Sync Monitor + conflict-resolution UI.</p></div></div>
+      <div class="sprint"><div class="wk">Spr. 8–9</div><div><h5>Phase 2b</h5><p>Domain dashboards, Report Builder + scheduled exports, command palette, Smart Views, MFA, webhooks/API keys.</p></div></div>
+      <div class="sprint"><div class="wk">Spr. 10+</div><div><h5>Phase 3</h5><p>Rolling delivery: custom stages/roles, automation rule builder, AI assistant (staged by capability), SSO, DB cutover.</p></div></div>
+    </section>
+
+    <section id="risk">
+      <h3 style="margin-top:0;">Risk assessment</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td>Sheets API rate limits hit during historical backfill of 32 tabs</td><td>High</td><td>Medium</td><td>Batch imports off-peak, throttled well under the 60/min ceiling, resumable job design</td></tr>
+          <tr><td>Historical sheet data quality (typos, blank Client IDs) breaks import assumptions</td><td>High</td><td>Medium</td><td>Import runs as a dry-run into staging first, reconciled against known benchmarks (March 2026 reference numbers) before going live</td></tr>
+          <tr><td>Hosting provider lacks a signed BAA at launch</td><td>Medium</td><td>Critical</td><td>BAA execution is a go-live blocker, not a follow-up item — tracked explicitly in Sprint 1</td></tr>
+          <tr><td>Staff adoption resistance (comfort with the old sheet)</td><td>Medium</td><td>High</td><td>Parallel-run period (Sprint 5 UAT), coordinator-first onboarding, keep the sheet read-only mirror live through Phase 2</td></tr>
+          <tr><td>Irreversible-feeling merge mistakes</td><td>Low</td><td>High</td><td>Merge never hard-deletes — losing record is archived + redirected, always reversible by Admin</td></tr>
+          <tr><td>Automation notification fatigue</td><td>Medium</td><td>Medium</td><td>Per-user toggles on all non-mandatory notification types; digest bundling by default</td></tr>
+          <tr><td>Sync conflict queue piles up if Admin doesn't triage</td><td>Medium</td><td>Medium</td><td>AR-053-style escalation if conflict queue exceeds a threshold unresolved &gt; 48h</td></tr>
+          <tr><td>Google service-account token/auth expires silently</td><td>Low</td><td>Critical</td><td>Daily automated auth-health check; alert Admin days before any token expiry, not after failure</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="testing">
+      <h3 style="margin-top:0;">Testing strategy</h3>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+        <div class="card"><strong>Unit</strong> — stage-transition rules, automation condition evaluation, duplicate-scoring logic, insurance-eligibility checks</div>
+        <div class="card"><strong>Integration</strong> — every API endpoint against a seeded test database, including permission-denial cases per role</div>
+        <div class="card"><strong>End-to-end</strong> — critical flows scripted (intake → contact → schedule → convert; duplicate merge; sync round-trip) against a staging environment</div>
+        <div class="card"><strong>Sync contract tests</strong> — against a Sheets API sandbox, including simulated rate-limit responses and injected conflicts</div>
+        <div class="card"><strong>Migration/backfill testing</strong> — full dry-run import of all 32 historical tabs into staging, row counts and KPI totals reconciled against the March 2026 benchmark reference</div>
+        <div class="card"><strong>Load testing</strong> — concurrent pipeline-board updates and a simulated sync burst at 60 writes/min to confirm graceful queuing, not failure</div>
+        <div class="card"><strong>UAT</strong> — Wellspring coordinators shadow-run the platform alongside the live sheet for two weeks before cutover; sign-off required from at least one Coordinator and one Manager</div>
+      </div>
+    </section>
+
+    <section id="acceptance">
+      <h3 style="margin-top:0;">Acceptance criteria — major features</h3>
+
+      <div class="gwt"><h5>Lead creation</h5>
+        <p class="line"><b>Given</b> a Coordinator submits the intake form with all required fields</p>
+        <p class="line"><b>When</b> they save</p>
+        <p class="line"><b>Then</b> a Lead is created with an auto-generated permanent <code>display_id</code>, assigned round-robin, and the duplicate check has run before the record is shown as saved</p>
+      </div>
+
+      <div class="gwt"><h5>Duplicate detection</h5>
+        <p class="line"><b>Given</b> a new lead's phone number exactly matches an existing active lead</p>
+        <p class="line"><b>When</b> the record is saved</p>
+        <p class="line"><b>Then</b> both records are flagged "Possible duplicate — 90%+" and appear in the Duplicate Review Queue within the same request cycle, not a delayed batch job</p>
+      </div>
+
+      <div class="gwt"><h5>Two-way Google Sheets sync</h5>
+        <p class="line"><b>Given</b> a staff member edits a cell in the connected Google Sheet</p>
+        <p class="line"><b>When</b> the next sync cycle runs (webhook-triggered or ≤5 min poll fallback)</p>
+        <p class="line"><b>Then</b> the corresponding Lead updates in the CRM, and if the same field was independently changed in the CRM since the last sync, a <code>sync_conflicts</code> row is created instead of either value being silently overwritten</p>
+      </div>
+
+      <div class="gwt"><h5>Insurance eligibility gate</h5>
+        <p class="line"><b>Given</b> a lead's Insurance Carrier field is set to a carrier on the "not accepted" list</p>
+        <p class="line"><b>When</b> a Coordinator attempts to advance the stage past Contacted</p>
+        <p class="line"><b>Then</b> the transition is blocked, a "Verify/discuss self-pay" task is created, and a Lost-reason: Insurance suggestion is surfaced</p>
+      </div>
+
+      <div class="gwt"><h5>SLA escalation</h5>
+        <p class="line"><b>Given</b> a lead has had no activity logged for 24 hours since creation</p>
+        <p class="line"><b>When</b> the 15-minute cron evaluates SLA conditions</p>
+        <p class="line"><b>Then</b> the owner is notified in-app and by email, and an "Overdue: first contact" task is created; a further 24h with no activity escalates a copy to the owner's Manager</p>
+      </div>
+
+      <div class="gwt"><h5>Reporting export</h5>
+        <p class="line"><b>Given</b> a Manager runs a saved report for a custom date range</p>
+        <p class="line"><b>When</b> they choose Export → PDF</p>
+        <p class="line"><b>Then</b> a PDF matching the on-screen report renders within 10 seconds for date ranges up to 1 year, generated as a background job if it exceeds that</p>
+      </div>
+
+      <div class="gwt"><h5>Role-based access enforcement</h5>
+        <p class="line"><b>Given</b> a user with the Intake Coordinator role</p>
+        <p class="line"><b>When</b> they call any Admin-scoped API endpoint directly (e.g. <code>/settings/pipeline-stages</code>)</p>
+        <p class="line"><b>Then</b> the API returns <code>403</code> regardless of what the UI does or doesn't show — permission enforcement never relies on the UI hiding a button</p>
+      </div>
+
+      <div class="gwt"><h5>Lead merge</h5>
+        <p class="line"><b>Given</b> two leads are confirmed duplicates and a Manager commits a merge</p>
+        <p class="line"><b>When</b> the merge completes</p>
+        <p class="line"><b>Then</b> the surviving record's <code>display_id</code> is unchanged, the losing record's ID permanently redirects to it, both Activity Timelines are concatenated in chronological order, and an <code>AuditLogEntry</code> records the merge with both original IDs</p>
+      </div>
+    </section>
+
+    <footer>
+      Wellspring Operations Platform — PRD Part 4 of 4 · Prepared by Damco Digital · 13 Jul 2026 · This closes the four-part PRD: Product &amp; UX Spec → Automation Engine → Data, Sync &amp; API → Design System, Security &amp; Roadmap.
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+    var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+    if (!sections.length) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          var id = '#' + entry.target.id;
+          links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px' });
+    sections.forEach(function(s){ io.observe(s); });
+  })();
+</script>

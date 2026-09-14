@@ -1,0 +1,444 @@
+<title>Wellspring Ops Platform — Frontend Spec Part 2: Patterns &amp; Delivery</title>
+<meta name="description" content="Tables, dashboard widgets, design system implementation, responsive design, performance, sync UI, error/loading states, accessibility, testing, standards, and a per-page developer checklist.">
+<style>
+  :root{
+    --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da;
+    --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3;
+    --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0;
+    --warning:#b06a1f; --warning-soft:#f3e3cd;
+    --danger:#a1402f; --danger-soft:#f3ddd6;
+    --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans: "Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733; --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+      --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122; --line:#2c4440; --line-strong:#3c5852;
+      --success:#6fae82; --success-soft:#1d332590; --warning:#dba053; --warning-soft:#3a2d1690; --danger:#d67468; --danger-soft:#3a201b90; }
+  }
+  :root[data-theme="dark"]{ --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733; --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+    --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122; --line:#2c4440; --line-strong:#3c5852;
+    --success:#6fae82; --success-soft:#1d332590; --warning:#dba053; --warning-soft:#3a2d1690; --danger:#d67468; --danger-soft:#3a201b90; }
+  :root[data-theme="light"]{ --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da; --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3; --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0; --warning:#b06a1f; --warning-soft:#f3e3cd; --danger:#a1402f; --danger-soft:#f3ddd6; }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.6; font-size:16px; -webkit-font-smoothing:antialiased; }
+  ::selection{ background:var(--accent-soft); color:var(--ink); }
+  h1,h2,h3,h4{ font-family:var(--serif); font-weight:600; color:var(--ink); text-wrap:balance; }
+  p{ max-width:70ch; }
+  a{ color:var(--accent-deep); }
+  code, .mono{ font-family:var(--mono); }
+  table{ border-collapse:collapse; width:100%; font-size:.84rem; }
+  th{ text-align:left; font-weight:600; color:var(--ink-soft); text-transform:uppercase; font-size:.6rem; letter-spacing:.06em; padding:.48rem .6rem; border-bottom:1px solid var(--line-strong); white-space:nowrap; }
+  td{ padding:.48rem .6rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:hover td{ background:var(--surface-2); }
+
+  .suite-nav{ background:var(--ink); color:var(--paper); font-size:.76rem; padding:.6rem 1.4rem; display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center; }
+  .suite-nav b{ color:var(--accent); font-weight:700; margin-right:.3rem; }
+  .suite-nav a{ color:var(--paper); opacity:.72; text-decoration:none; }
+  .suite-nav a.current{ opacity:1; text-decoration:underline; text-decoration-color:var(--accent); text-underline-offset:3px; }
+  .suite-nav a:hover{ opacity:1; }
+  .suite-nav .sep{ opacity:.35; }
+
+  .shell{ display:grid; grid-template-columns: 250px minmax(0,1fr); max-width:1400px; margin:0 auto; }
+  .rail{ position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto; padding:1.6rem 1.3rem 2rem 2rem; border-right:1px solid var(--line); }
+  .rail-brand{ font-family:var(--serif); font-size:1.02rem; margin:0 0 .15rem; }
+  .rail-brand small{ display:block; font-family:var(--sans); font-size:.63rem; letter-spacing:.09em; text-transform:uppercase; color:var(--accent-deep); margin-top:.35rem; }
+  .rail nav{ margin-top:1.5rem; }
+  .rail-group{ margin-bottom:1.2rem; }
+  .rail-group-title{ font-size:.6rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); margin:0 0 .4rem; }
+  .rail a{ display:block; color:var(--ink-soft); text-decoration:none; font-size:.81rem; padding:.25rem 0; border-left:2px solid transparent; padding-left:.7rem; margin-left:-.72rem; }
+  .rail a:hover{ color:var(--ink); border-left-color:var(--line-strong); }
+  .rail a.active{ color:var(--ink); border-left-color:var(--accent); font-weight:600; }
+  .main{ min-width:0; padding:2.5rem 3.1rem 6rem; }
+  @media (max-width: 980px){ .shell{ grid-template-columns:1fr; } .rail{ position:relative; height:auto; border-right:none; border-bottom:1px solid var(--line); } .main{ padding:2rem 1.2rem 4rem; } }
+
+  section{ margin-bottom:4.2rem; scroll-margin-top:1.5rem; }
+  .eyebrow{ text-transform:uppercase; letter-spacing:.12em; font-size:.68rem; color:var(--accent-deep); font-weight:700; margin:0 0 .5rem; }
+  section > h2{ font-size:1.75rem; margin:0 0 .3rem; }
+  section > h3{ font-size:1.1rem; margin:1.8rem 0 .5rem; }
+  .lede{ color:var(--ink-soft); font-size:1rem; max-width:66ch; margin:0 0 1.3rem; }
+
+  .grid{ display:grid; gap:1rem; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1rem 1.2rem; }
+  .breakout{ width:100%; overflow-x:auto; }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface); margin-bottom:1.4rem; }
+  .table-wrap table{ min-width:600px; }
+
+  .callout{ border-left:3px solid var(--accent); background:var(--surface); border-radius:0 6px 6px 0; padding:.9rem 1.2rem; margin:1.3rem 0; }
+  .callout p{ margin:.2rem 0; }
+  .callout.warn{ border-left-color:var(--warning); }
+
+  pre{ background:var(--ink); color:#d9e8e2; border-radius:6px; padding:1rem 1.2rem; overflow-x:auto; font-family:var(--mono); font-size:.75rem; line-height:1.55; margin:0 0 1.3rem; }
+  @media (prefers-color-scheme: dark){ pre{ background:#081512; } }
+  :root[data-theme="dark"] pre{ background:#081512; }
+  pre .k{ color:#dcb968; } pre .t{ color:#8fd0b8; } pre .c{ color:#7f958f; } pre .s{ color:#e2b8a3; }
+
+  .swatch-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:.7rem; margin:1rem 0 1.5rem; }
+  .swatch{ border-radius:6px; overflow:hidden; border:1px solid var(--line); }
+  .swatch .fill{ height:40px; }
+  .swatch .lbl{ font-size:.66rem; padding:.32rem .5rem; background:var(--surface); font-family:var(--mono); }
+
+  .bp-strip{ display:flex; gap:.5rem; flex-wrap:wrap; margin:1rem 0 1.5rem; }
+  .bp{ background:var(--surface); border:1px solid var(--line-strong); border-radius:6px; padding:.6rem .9rem; font-size:.8rem; text-align:center; flex:1; min-width:110px; }
+  .bp b{ display:block; font-family:var(--mono); color:var(--accent-deep); font-size:.85rem; }
+
+  .checklist-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface); }
+  .checklist-wrap table{ min-width:1400px; font-size:.76rem; }
+  .checklist-wrap th{ font-size:.58rem; }
+  .checklist-wrap td{ padding:.42rem .55rem; }
+  .grp-row td{ background:var(--surface-2); font-weight:700; font-family:var(--serif); font-size:.85rem; color:var(--ink); border-bottom:1px solid var(--line-strong); }
+
+  footer{ border-top:1px solid var(--line); padding-top:1.4rem; color:var(--ink-faint); font-size:.8rem; }
+</style>
+
+<div class="suite-nav">
+  <span><b>Wellspring Ops Platform</b></span>
+  <span class="sep">|</span>
+  <a href="https://claude.ai/code/artifact/36733824-3a8f-4fe8-8a5b-9c0237628a7b">PRD 1 · Product/UX</a>
+  <a href="https://claude.ai/code/artifact/f82028ce-5a81-42aa-b9ed-e3e4b18b2080">PRD 2 · Automation</a>
+  <a href="https://claude.ai/code/artifact/22ae8bf9-df29-40e9-bb1d-1d0db11aa03f">PRD 3 · Data/API</a>
+  <a href="https://claude.ai/code/artifact/83916532-7bff-4a3c-be7b-e6a819446f20">PRD 4 · System/Roadmap</a>
+  <span class="sep">|</span>
+  <a href="https://claude.ai/code/artifact/27964285-c8eb-42e4-9efa-ac8dbcf1aa8f">FE 1 · Architecture</a>
+  <a href="https://claude.ai/code/artifact/e3558904-df3e-48d0-8d0f-b0fa9a347f3e" class="current">FE 2 · Patterns &amp; Delivery</a>
+</div>
+
+<div class="shell">
+  <aside class="rail">
+    <p class="rail-brand">Frontend Spec — Patterns &amp; Delivery<small>Frontend Part 2 of 2</small></p>
+    <nav id="toc">
+      <div class="rail-group">
+        <p class="rail-group-title">UI patterns</p>
+        <a href="#tables">Tables</a>
+        <a href="#widgets">Dashboard widgets</a>
+        <a href="#design-system">Design system implementation</a>
+        <a href="#responsive">Responsive design</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Platform behavior</p>
+        <a href="#performance">Performance</a>
+        <a href="#sync-ui">Google Sheets sync UI</a>
+        <a href="#errors">Error handling</a>
+        <a href="#loading">Loading states</a>
+        <a href="#a11y">Accessibility</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Delivery</p>
+        <a href="#testing">Frontend testing</a>
+        <a href="#standards">Development standards</a>
+        <a href="#checklist">Developer checklist (all screens)</a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <section id="tables">
+      <p class="eyebrow">Frontend Technical Specification · Part 2 of 2</p>
+      <h2>Tables</h2>
+      <p class="lede">One <code>DataTable</code> component (<code>components/shared/DataTable.tsx</code>), built on TanStack Table, powers Pipeline Table View, Users, Audit Log, Webhook Deliveries, and every list screen. Screens configure it via column defs and a data source — they never reimplement sorting or pagination.</p>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Feature</th><th>Implementation</th></tr></thead>
+        <tbody>
+          <tr><td>Pagination</td><td>Cursor-based, matching PRD Part 3's API — <code>DataTable</code> exposes numbered-page UI for &lt;1,000 rows (Users, Webhooks) and a "Load more" pattern for large sets (Pipeline Table, Audit Log)</td></tr>
+          <tr><td>Infinite scrolling</td><td>Used only where PRD Part 1 specifies a feed, not a table — Activity Timeline and Recent Activity widget — via <code>useInfiniteQuery</code>, not the DataTable component</td></tr>
+          <tr><td>Sorting</td><td>Server-side for Pipeline Table and Audit Log (sort param on the query); client-side (TanStack Table's built-in sort) for small in-memory sets like Users and Webhooks</td></tr>
+          <tr><td>Filtering</td><td>Column filters write to URL search params (see State Management in Part 1); the filter bar and the table read the same URL state, so a shared link reproduces the exact view</td></tr>
+          <tr><td>Column customization</td><td>Show/hide + reorder via a column-picker popover; persisted per-user per-table in <code>localStorage</code>, not the server (purely a display preference)</td></tr>
+          <tr><td>Bulk actions</td><td>Checkbox column enables a sticky action bar (Reassign, Archive, Export selected) that appears only when ≥1 row is selected</td></tr>
+          <tr><td>Row actions</td><td>Kebab menu per row (desktop) / long-press context sheet (touch) — Change Stage, Assign, Add Task, Merge, Archive, mirroring PRD Part 1's context-menu spec exactly</td></tr>
+          <tr><td>Export</td><td>Calls the relevant PRD Part 3 export endpoint and streams the response as a Blob download — no client-side CSV/PDF generation, so exported data always matches server truth</td></tr>
+          <tr><td>Sticky headers</td><td><code>position: sticky; top: 0</code> on <code>&lt;thead&gt;</code> within a scroll container, so headers stay visible in dense views without JS</td></tr>
+          <tr><td>Virtualization</td><td>TanStack Virtual activates automatically above a 200-row threshold (Pipeline Table, Audit Log) — the component's public API is identical below and above that threshold, so no screen-level code changes when a table grows</td></tr>
+        </tbody>
+      </table></div>
+      <pre><span class="c">// features/pipeline/components/PipelineTable.tsx (usage, not reimplementation)</span>
+<span class="k">const</span> columns: ColumnDef&lt;Lead&gt;[] = [
+  { accessorKey: <span class="s">'displayId'</span>, header: <span class="s">'ID'</span>, enableSorting: <span class="k">true</span> },
+  { accessorKey: <span class="s">'stage'</span>, header: <span class="s">'Stage'</span>, cell: (r) =&gt; &lt;StatusBadge stage={r.getValue()} /&gt; },
+  { accessorKey: <span class="s">'owner'</span>, header: <span class="s">'Owner'</span> },
+  { accessorKey: <span class="s">'daysInStage'</span>, header: <span class="s">'Days in stage'</span>, cell: (r) =&gt; &lt;SlaHealthDot days={r.getValue()} /&gt; },
+]
+<span class="k">return</span> &lt;DataTable columns={columns} query={useLeads(filtersFromUrl)} rowActions={leadRowActions} bulkActions={leadBulkActions} /&gt;</pre>
+    </section>
+
+    <section id="widgets">
+      <h3 style="margin-top:0;">Dashboard widgets</h3>
+      <p class="lede">Every widget takes a typed config prop and renders nothing it wasn't told to — no widget fetches its own data directly; the parent dashboard page passes query results down, keeping widgets reusable across all 4 dashboard personas and the 3 domain dashboards.</p>
+      <pre><span class="k">interface</span> KpiCardProps {
+  label: string
+  value: number | string
+  format?: <span class="s">'number'</span> | <span class="s">'percent'</span> | <span class="s">'currency'</span> | <span class="s">'duration'</span>
+  delta?: { value: number; direction: <span class="s">'up'</span> | <span class="s">'down'</span>; goodDirection: <span class="s">'up'</span> | <span class="s">'down'</span> }
+  href?: string  <span class="c">// drill-down target, e.g. /analytics?metric=scheduling_rate</span>
+}
+
+<span class="k">interface</span> ChartWidgetProps {
+  type: <span class="s">'line'</span> | <span class="s">'bar'</span> | <span class="s">'donut'</span> | <span class="s">'funnel'</span>
+  data: ChartDatum[]
+  xKey: string; yKey: string
+  formatY?: (v: number) =&gt; string
+  emptyLabel?: string  <span class="c">// shown in place of an empty chart, never a blank box</span>
+}</pre>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Widget</th><th>Config API</th><th>Used on</th></tr></thead>
+        <tbody>
+          <tr><td>KpiCard</td><td><code>KpiCardProps</code> above</td><td>All 4 dashboards, all 3 domain dashboards</td></tr>
+          <tr><td>TrendCard</td><td><code>{ metricKey, range, sparkline: boolean }</code></td><td>My Dashboard, Executive Dashboard</td></tr>
+          <tr><td>ChartWidget (line/bar/donut/funnel)</td><td><code>ChartWidgetProps</code> above (Recharts underneath)</td><td>Executive funnel, source-mix donut, 12-month trend line</td></tr>
+          <tr><td>Heatmap (custom)</td><td><code>{ rows: string[], cols: string[], values: number[][], colorScale }</code></td><td>Operations Dashboard stage-aging grid only</td></tr>
+          <tr><td>Leaderboard</td><td><code>{ rows: {label, value, href}[], metricLabel }</code></td><td>Referral/Provider dashboards, Staff Scorecard</td></tr>
+          <tr><td>FunnelChart</td><td><code>{ stages: {label, count}[] }</code></td><td>Executive Dashboard, Analytics</td></tr>
+          <tr><td>CalendarWidget</td><td><code>{ events, view: 'week'|'month', onEventClick }</code></td><td>Pipeline Calendar View, My Dashboard upcoming strip</td></tr>
+          <tr><td>ActivityFeed</td><td><code>{ items, limit, onLoadMore }</code></td><td>Dashboards' Recent Activity, global Activity Timeline</td></tr>
+          <tr><td>NotificationsWidget</td><td><code>{ items, onMarkRead }</code></td><td>Notification Drawer, Notifications Center</td></tr>
+          <tr><td>QuickActions</td><td><code>{ actions: {label, icon, onClick}[] }</code></td><td>Every dashboard, Pipeline, Tasks</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="design-system">
+      <h3 style="margin-top:0;">Design system implementation</h3>
+      <p class="lede">The token values are already ratified in PRD Part 4 — this section is purely the Tailwind/shadcn mechanics of applying them, not new design decisions.</p>
+      <div class="swatch-row">
+        <div class="swatch"><div class="fill" style="background:#17302e"></div><div class="lbl">--ink</div></div>
+        <div class="swatch"><div class="fill" style="background:#b3903f"></div><div class="lbl">--accent</div></div>
+        <div class="swatch"><div class="fill" style="background:#f5f0e8"></div><div class="lbl">--paper</div></div>
+        <div class="swatch"><div class="fill" style="background:#3f7a56"></div><div class="lbl">--success</div></div>
+        <div class="swatch"><div class="fill" style="background:#b06a1f"></div><div class="lbl">--warning</div></div>
+        <div class="swatch"><div class="fill" style="background:#a1402f"></div><div class="lbl">--danger</div></div>
+      </div>
+      <pre><span class="c">// tailwind.config.ts — tokens as CSS variables, themeable without a rebuild</span>
+<span class="k">export default</span> {
+  theme: { extend: { colors: {
+    ink: <span class="s">'hsl(var(--ink))'</span>, accent: <span class="s">'hsl(var(--accent))'</span>, paper: <span class="s">'hsl(var(--paper))'</span>,
+    success: <span class="s">'hsl(var(--success))'</span>, warning: <span class="s">'hsl(var(--warning))'</span>, danger: <span class="s">'hsl(var(--danger))'</span>,
+  },
+  fontFamily: { serif: [<span class="s">'var(--font-display)'</span>], sans: [<span class="s">'var(--font-body)'</span>], mono: [<span class="s">'var(--font-mono)'</span>] } } }
+}</pre>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Element</th><th>shadcn/ui base</th><th>Wellspring customization</th></tr></thead>
+        <tbody>
+          <tr><td>Buttons</td><td><code>button.tsx</code> variants</td><td>Map <code>default</code>→ink-solid, <code>outline</code>→secondary, <code>destructive</code>→danger; no new variants added</td></tr>
+          <tr><td>Inputs</td><td><code>input.tsx</code>, <code>select.tsx</code></td><td>Border radius 5px per PRD Part 4; label-above pattern enforced via the shared field components, not per-screen</td></tr>
+          <tr><td>Cards</td><td><code>card.tsx</code></td><td>1px <code>--line</code> border, no shadow in light theme, subtle shadow in dark theme for depth against the darker paper</td></tr>
+          <tr><td>Tables</td><td>shadcn <code>table.tsx</code> + TanStack Table</td><td>Dense (36px) vs comfortable (48px) row-height variants, selected via a prop, not a separate component</td></tr>
+          <tr><td>Dialogs</td><td><code>dialog.tsx</code> (Radix)</td><td>Destructive dialogs require typed confirmation text per PRD Part 1 — a <code>ConfirmDialog</code> wrapper enforces this, plain dialogs don't</td></tr>
+          <tr><td>Toasts</td><td><code>sonner</code> or shadcn <code>toast.tsx</code></td><td>Bottom-right, max 3 stacked, success auto-dismiss 4s / error persists — matches PRD Part 4 exactly</td></tr>
+          <tr><td>Drawers</td><td><code>sheet.tsx</code></td><td>Used for Lead Quick View, Notification Drawer, Task Drawer — all right-anchored, focus-trapped</td></tr>
+          <tr><td>Badges/Tags</td><td><code>badge.tsx</code></td><td>Badge = semantic/system state (color-coded); Tag = user-removable chip (neutral unless itself semantic, e.g. "Urgent")</td></tr>
+          <tr><td>Alerts</td><td><code>alert.tsx</code></td><td>Used for page-level callouts (compliance/PHI acknowledgment, sync errors) — not for transient feedback, that's Toasts</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="responsive">
+      <h3 style="margin-top:0;">Responsive design</h3>
+      <div class="bp-strip">
+        <div class="bp"><b>&lt;640px</b>Mobile</div>
+        <div class="bp"><b>640–1024px</b>Tablet</div>
+        <div class="bp"><b>1024–1280px</b>Small laptop</div>
+        <div class="bp"><b>1280–1536px</b>Desktop</div>
+        <div class="bp"><b>&gt;1536px</b>Large desktop</div>
+      </div>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Page</th><th>Mobile</th><th>Tablet</th><th>Small laptop</th><th>Desktop / Large</th></tr></thead>
+        <tbody>
+          <tr><td>Dashboard</td><td>KPI strip swipeable, widgets stacked</td><td>2-col KPI grid, widgets stacked</td><td>Full grid, sidebar collapsed by default</td><td>Full grid, sidebar expanded</td></tr>
+          <tr><td>Pipeline</td><td>Table View only, card-per-row</td><td>Table View, more columns visible</td><td>Kanban available, 6 columns scroll</td><td>Kanban, all columns visible without scroll at 1536px+</td></tr>
+          <tr><td>Lead Detail</td><td>Tabs replace 2-col layout</td><td>Tabs, wider content</td><td>2-col (Details | Timeline)</td><td>2-col with wider Timeline</td></tr>
+          <tr><td>Reports/Analytics</td><td>View + export only</td><td>View + export only</td><td>Report Builder enabled</td><td>Report Builder, side-by-side preview</td></tr>
+          <tr><td>Admin/Settings</td><td>Single column, tabs become an accordion</td><td>Tabs as horizontal scroll</td><td>Full tab bar</td><td>Full tab bar, wider content column</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="performance">
+      <p class="eyebrow">Platform behavior · 01</p>
+      <h2>Performance</h2>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Strategy</th><th>Applied to</th></tr></thead>
+        <tbody>
+          <tr><td>Lazy loading (<code>next/dynamic</code>)</td><td>Report Builder's chart preview, Merge screen, Org Setup Wizard — anything not needed on first paint</td></tr>
+          <tr><td>Code splitting</td><td>Automatic per-route via App Router; admin-only screens (Users, Roles, Audit Log, Integrations) split into their own chunk, never shipped to Coordinator/Provider sessions</td></tr>
+          <tr><td>Image optimization</td><td><code>next/image</code> for any attachment thumbnails/avatars</td></tr>
+          <tr><td>Memoization</td><td><code>React.memo</code> on <code>KanbanCard</code> and <code>DataTable</code> rows; <code>useMemo</code> for derived filter results; <code>useCallback</code> for handlers passed into virtualized lists</td></tr>
+          <tr><td>Virtualized tables</td><td>TanStack Virtual on Pipeline Table and Audit Log above 200 rows (see Tables)</td></tr>
+          <tr><td>Bundle optimization</td><td><code>@next/bundle-analyzer</code> in CI; Recharts imported per-chart-type, not as a barrel import; heavy admin screens dynamically imported</td></tr>
+          <tr><td>Route prefetching</td><td>Default Next.js <code>&lt;Link&gt;</code> prefetch on viewport entry; manual prefetch on row hover for Pipeline Table → Lead Detail</td></tr>
+          <tr><td>Suspense boundaries</td><td>Each dashboard widget wrapped individually — one slow chart never blocks the KPI row or Activity Feed from rendering</td></tr>
+          <tr><td>Streaming (Server Components)</td><td>Executive Dashboard's KPI row streams first, charts stream in after; matches the Suspense boundary above</td></tr>
+          <tr><td>Skeleton loaders</td><td>Every <code>loading.tsx</code> — see Loading States below</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="sync-ui">
+      <h3 style="margin-top:0;">Google Sheets synchronization UI</h3>
+      <p class="lede">Surfaces the sync architecture from PRD Part 3 without exposing its internals — staff should see health and act on conflicts, never think about hashes or queues.</p>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>UI element</th><th>Behavior</th></tr></thead>
+        <tbody>
+          <tr><td>Sync indicator</td><td>Small dot in the top bar and on the Sync Monitor page: green (synced &lt;5 min), amber (syncing / stale 5–15 min), red (error/paused) — driven by <code>useSyncStatus</code>'s 10s poll</td></tr>
+          <tr><td>Sync progress</td><td>During a manual force-sync, the trigger button becomes a progress state ("Syncing 340/612 rows…") sourced from the job's progress field, not a fake timed spinner</td></tr>
+          <tr><td>Conflict resolution UI</td><td>Sync Monitor's conflict list renders each <code>sync_conflicts</code> row as a side-by-side card (Sheet value | CRM value) with Keep Sheet / Keep CRM / Manual entry buttons — identical pattern to the Lead Merge screen for consistency</td></tr>
+          <tr><td>Offline edits</td><td>A persistent banner ("You're offline — N changes queued") when the network-status hook detects offline; queued mutations show a small clock icon instead of their normal saved-state indicator</td></tr>
+          <tr><td>Retry mechanisms</td><td>Failed sync rows show "Retry now" inline; automatic backoff countdown ("Retrying in 8s…") displayed rather than hidden</td></tr>
+          <tr><td>Last synced timestamp</td><td>Relative-time component ("Synced 2 min ago") that ticks client-side between polls so it never looks stale even between network requests</td></tr>
+          <tr><td>Failed sync notifications</td><td>Toast + Notification Center entry + persistent Sync Monitor banner, tied to automation rule AR-053 from PRD Part 2 — three surfaces, not one, since this is a critical-severity condition</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="errors">
+      <h3 style="margin-top:0;">Error handling</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Case</th><th>Handling</th></tr></thead>
+        <tbody>
+          <tr><td>Global error boundary</td><td><code>global-error.tsx</code> — full-page fallback with "Reload" and a support-contact line; only reached if a segment-level boundary itself throws</td></tr>
+          <tr><td>Segment error boundary</td><td><code>error.tsx</code> per route segment — keeps the sidebar/top bar intact, only the failed content area shows the error + Retry</td></tr>
+          <tr><td>API failures (4xx)</td><td>Inline — field-level for validation (422), a dedicated <code>PermissionDenied</code> component for 403, never a raw toast for something actionable in-place</td></tr>
+          <tr><td>API failures (5xx)</td><td>Toast with Retry action; the underlying React Query mutation/query stays retryable, not discarded</td></tr>
+          <tr><td>Offline mode</td><td><code>useNetworkStatus</code> hook (based on <code>navigator.onLine</code> + a lightweight heartbeat ping) drives the offline banner and disables mutation-triggering buttons rather than letting them fail loudly</td></tr>
+          <tr><td>Permission denied</td><td>403 responses render <code>&lt;PermissionDenied action="..." /&gt;</code> — explains what was blocked, never a generic error page</td></tr>
+          <tr><td>Network retry UI</td><td>Shared <code>&lt;ErrorState onRetry&gt;</code> component used by every failed query — consistent icon, message, and button across the app</td></tr>
+          <tr><td>Empty states</td><td>Shared <code>&lt;EmptyState&gt;</code> — icon + message + primary action ("No leads match these filters — Clear filters"), never a bare "No data"</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="loading">
+      <h3 style="margin-top:0;">Loading states</h3>
+      <p class="lede">Every data-bearing screen gets a purpose-built skeleton matching its real layout — spinners are reserved for sub-second, non-layout-shifting waits only (button-click submits).</p>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Screen type</th><th>Loading treatment</th></tr></thead>
+        <tbody>
+          <tr><td>Dashboards</td><td>Skeleton KPI row (6–8 pulsing tiles) + skeleton chart blocks; each widget's Suspense boundary resolves independently</td></tr>
+          <tr><td>Pipeline Board</td><td>Skeleton columns with 2–3 skeleton cards each</td></tr>
+          <tr><td>Pipeline Table / Audit Log</td><td>Skeleton rows at the real row height (dense/comfortable) to avoid layout shift when data arrives</td></tr>
+          <tr><td>Lead Detail</td><td>Two-column skeleton (profile fields left, timeline entries right)</td></tr>
+          <tr><td>Reports</td><td>Skeleton chart + skeleton table; Report Builder's live preview shows a subtle inline spinner only (sub-second, no layout change)</td></tr>
+          <tr><td>Forms (submit)</td><td>Button enters a loading state (spinner + disabled), form stays interactive-looking but blocked — never a full-page spinner for a form submit</td></tr>
+          <tr><td>Optimistic rendering</td><td>Stage changes, task completion, and notification read-state render instantly (see Part 1's API mapping) and roll back with a toast only on failure — the loading state most users never see</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="a11y">
+      <h3 style="margin-top:0;">Accessibility</h3>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr));">
+        <div class="card"><strong>WCAG 2.1 AA</strong> target across the app; shadcn/ui's Radix foundation covers focus-trap, roving tabindex, and ARIA roles for dialogs/menus/tabs out of the box.</div>
+        <div class="card"><strong>Keyboard navigation</strong> — Kanban board has a full keyboard-operable alternative (Table View plus a "Change Stage" menu), since drag-and-drop alone is never sufficient.</div>
+        <div class="card"><strong>Focus management</strong> — modals/drawers trap focus and return it to the trigger element on close; route changes move focus to the new page's <code>&lt;h1&gt;</code>.</div>
+        <div class="card"><strong>Screen reader support</strong> — toasts and notification updates use <code>aria-live="polite"</code>; table headers use proper <code>scope</code>; status pills pair color with visually-hidden text (e.g. "Eligible").</div>
+        <div class="card"><strong>Color contrast</strong> — verified ≥4.5:1 for body text in both themes against the PRD Part 4 palette; semantic colors never used as the sole signal.</div>
+        <div class="card"><strong>ARIA attributes</strong> — <code>aria-current="page"</code> on active nav items, <code>aria-expanded</code> on accordions/dropdowns, <code>aria-busy</code> during data loads, <code>aria-describedby</code> linking every form error to its field.</div>
+      </div>
+    </section>
+
+    <section id="testing">
+      <h3 style="margin-top:0;">Frontend testing</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Layer</th><th>Tooling</th><th>What's covered</th></tr></thead>
+        <tbody>
+          <tr><td>Unit</td><td>Vitest</td><td>Zod schemas, permission-matrix logic (<code>hasPermission</code>), formatting utils, duplicate-scoring display logic</td></tr>
+          <tr><td>Component</td><td>React Testing Library</td><td><code>DataTable</code>, <code>KpiCard</code>, shared form fields, <code>StatusBadge</code> — render + interaction, not implementation details</td></tr>
+          <tr><td>Integration</td><td>RTL + MSW (mocked API)</td><td>Feature flows against a mocked PRD Part 3 API: Lead Detail load + stage change, Intake form submit + validation, Merge screen field reconciliation</td></tr>
+          <tr><td>End-to-end</td><td>Playwright</td><td>Login → create lead → log activity → schedule → convert; duplicate merge; sync conflict resolution; RBAC — a Coordinator session cannot reach <code>/admin/*</code></td></tr>
+        </tbody>
+      </table></div>
+      <p>Every major feature carries at minimum: one unit test on its validation/business logic, one component test on its primary UI piece, and one E2E path covering its critical happy flow — mirroring the Given/When/Then acceptance criteria already defined in PRD Part 4.</p>
+    </section>
+
+    <section id="standards">
+      <h3 style="margin-top:0;">Development standards</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Area</th><th>Convention</th></tr></thead>
+        <tbody>
+          <tr><td>File naming</td><td>kebab-case for route segments and non-component files (<code>lead.schema.ts</code>); PascalCase for component files matching the export (<code>LeadTimeline.tsx</code>)</td></tr>
+          <tr><td>Component naming</td><td>PascalCase, one component per file, co-located <code>ComponentName.test.tsx</code></td></tr>
+          <tr><td>Hook naming</td><td><code>useX</code> for queries, <code>useXMutation</code>-style verbs for mutations (<code>useCreateLead</code>, <code>useCompleteTask</code>) — never a bare noun for a hook that writes data</td></tr>
+          <tr><td>API services</td><td><code>x.service.ts</code> per PRD Part 3 group, exporting plain typed functions — hooks call services, components never call <code>fetch</code>/services directly</td></tr>
+          <tr><td>Folder organization</td><td>Feature-sliced (see Part 1) — a new PRD Part 1 screen always maps to exactly one <code>features/&lt;name&gt;</code> folder</td></tr>
+          <tr><td>Git commits</td><td>Conventional Commits — <code>feat(leads): add merge screen</code>, <code>fix(sync): correct conflict field diff</code>, <code>refactor</code>, <code>test</code>, <code>docs</code>, <code>chore</code></td></tr>
+          <tr><td>Formatting</td><td>Prettier + <code>prettier-plugin-tailwindcss</code> (auto-sorts class lists) — no manual class ordering debates</td></tr>
+          <tr><td>Linting</td><td>ESLint with <code>typescript-eslint</code> (strict), <code>eslint-plugin-jsx-a11y</code> enforced as errors not warnings, <code>eslint-plugin-react-hooks</code></td></tr>
+          <tr><td>Type safety</td><td><code>strict: true</code> in <code>tsconfig.json</code>, no <code>any</code> (lint-blocked), API types generated from/aligned to PRD Part 3's schema, Zod as the single source of truth for form/data shapes via <code>z.infer</code></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="checklist">
+      <h3 style="margin-top:0;">Developer checklist — every screen</h3>
+      <p class="lede">One row per screen from PRD Part 1's inventory. "✓" in Perm. means the route/action is guarded by <code>&lt;Can&gt;</code> client-side in addition to the server-side enforcement in PRD Part 3/4 — never a substitute for it.</p>
+      <div class="checklist-wrap"><table>
+        <thead><tr><th>Screen</th><th>Key API calls</th><th>Key components</th><th>State deps</th><th>Validation</th><th>Perm.</th><th>Loading</th><th>Error</th><th>Responsive note</th><th>A11y note</th></tr></thead>
+        <tbody>
+          <tr class="grp-row"><td colspan="10">Auth &amp; onboarding</td></tr>
+          <tr><td>Login</td><td>POST /auth/login</td><td>LoginForm</td><td>RHF local</td><td>Zod: email, password required</td><td>—</td><td>Button spinner</td><td>Inline "invalid credentials"</td><td>Single column, all sizes</td><td>Autofocus email, Enter submits</td></tr>
+          <tr><td>Reset Password</td><td>POST /auth/reset-password</td><td>ResetForm</td><td>RHF local</td><td>Zod: token + new password rules</td><td>—</td><td>Button spinner</td><td>Inline, expired-token specific message</td><td>Single column</td><td>Password rules announced via aria-describedby</td></tr>
+          <tr><td>Org Setup Wizard</td><td>POST /settings/*, /integrations/sheets/connect</td><td>Stepper, per-step forms</td><td>RHF per step + Zustand step index</td><td>Zod per step + combined</td><td>Admin only</td><td>Skeleton per step</td><td>Step-level inline errors</td><td>Desktop-first, usable on tablet</td><td>Stepper announces current step via aria-current</td></tr>
+          <tr class="grp-row"><td colspan="10">Dashboards</td></tr>
+          <tr><td>Executive Dashboard</td><td>GET /dashboards/executive</td><td>KpiCard×6, FunnelChart, ChartWidget, Leaderboard</td><td>React Query + URL date range</td><td>—</td><td>Leadership, Admin</td><td>Per-widget Suspense skeleton</td><td>Per-widget ErrorState</td><td>KPI grid → swipeable strip on mobile</td><td>Chart data available via accessible table fallback</td></tr>
+          <tr><td>Operations Dashboard</td><td>GET /dashboards/manager</td><td>Heatmap (custom), KpiCard, workload chart</td><td>React Query</td><td>—</td><td>Manager+</td><td>Skeleton</td><td>ErrorState</td><td>Heatmap scrolls horizontally on mobile</td><td>Heatmap cells have text alternative on focus</td></tr>
+          <tr><td>Intake Dashboard</td><td>GET /dashboards/intake</td><td>Queue list, QuickActions</td><td>React Query, 15s refetch</td><td>—</td><td>Coordinator+</td><td>Skeleton rows</td><td>ErrorState</td><td>Full parity, primary mobile screen</td><td>Queue rows keyboard-navigable</td></tr>
+          <tr><td>My Dashboard</td><td>GET /dashboards/me</td><td>TrendCard, CalendarWidget, ActivityFeed</td><td>React Query</td><td>—</td><td>All</td><td>Skeleton</td><td>ErrorState</td><td>Stacks vertically on mobile</td><td>—</td></tr>
+          <tr class="grp-row"><td colspan="10">Leads &amp; pipeline</td></tr>
+          <tr><td>Pipeline — Board</td><td>GET /leads (by stage)</td><td>KanbanBoard, KanbanColumn, KanbanCard</td><td>React Query + Zustand drag state + URL filters</td><td>Stage-exit checks before commit</td><td>Coordinator, Manager</td><td>Skeleton columns</td><td>ErrorState per column</td><td>Desktop/laptop only — Table View on mobile/tablet</td><td>Keyboard "Change Stage" alt to drag</td></tr>
+          <tr><td>Pipeline — Table</td><td>GET /leads</td><td>DataTable, PipelineFilterBar</td><td>React Query + URL sort/filter/page</td><td>—</td><td>Coordinator, Manager</td><td>Skeleton rows</td><td>ErrorState</td><td>Primary mobile pipeline view</td><td>Sortable headers announce sort direction</td></tr>
+          <tr><td>Pipeline — Calendar</td><td>GET /consultations (via leads scoped)</td><td>PipelineCalendar</td><td>React Query scoped to visible week</td><td>—</td><td>Coordinator, Provider</td><td>Skeleton week grid</td><td>ErrorState</td><td>Week view collapses to agenda list on mobile</td><td>Agenda list is the accessible fallback</td></tr>
+          <tr><td>Lead Detail</td><td>GET /leads/:id, /leads/:id/activities, /leads/:id/duplicates</td><td>ProfileCard, StatusBadge, InsuranceCard, Timeline, NotesPanel, TaskPanel, AppointmentWidget, DuplicateBanner</td><td>React Query ×3 + RHF per field (autosave)</td><td>Field-level Zod, stage-exit rule check</td><td>Owner, Manager+</td><td>2-col skeleton</td><td>ErrorState + not-found.tsx for bad ID</td><td>Tabs replace 2-col below 1024px</td><td>Timeline entries are a semantic list, not divs</td></tr>
+          <tr><td>Lead Creation</td><td>POST /leads</td><td>IntakeForm + field components</td><td>RHF + Zod</td><td>Full intake schema incl. conditional guardian fields</td><td>Coordinator+</td><td>Button spinner on submit</td><td>Field-level + duplicate-warning banner</td><td>Single column, all sizes</td><td>Guardian fields announced when revealed (aria-live)</td></tr>
+          <tr><td>Lead Merge</td><td>GET /leads/:id/duplicates, POST /leads/:id/merge</td><td>MergeScreen (field-by-field picker)</td><td>Local form state, no autosave</td><td>Require a selection per conflicting field</td><td>Manager+ for post-Consult-Scheduled leads</td><td>Skeleton comparison rows</td><td>Inline, blocks submit until resolved</td><td>Intercepted modal on desktop, full page on mobile</td><td>Radio-group semantics per field row</td></tr>
+          <tr><td>Duplicate Review Queue</td><td>GET /leads (duplicate-flagged)</td><td>DataTable variant</td><td>React Query</td><td>—</td><td>Coordinator+</td><td>Skeleton rows</td><td>EmptyState "No duplicates"</td><td>Table collapses to cards on mobile</td><td>—</td></tr>
+          <tr class="grp-row"><td colspan="10">Domain dashboards</td></tr>
+          <tr><td>Referral / Provider / Insurance Dashboards</td><td>GET /dashboards/referrals|providers|insurance (shared template)</td><td>KpiCard, ChartWidget, Leaderboard</td><td>React Query</td><td>—</td><td>Manager+, Leadership</td><td>Skeleton</td><td>ErrorState</td><td>Stacks on mobile/tablet</td><td>—</td></tr>
+          <tr class="grp-row"><td colspan="10">Reporting &amp; analytics</td></tr>
+          <tr><td>Reports Home / Saved</td><td>GET /reports/templates, /reports/saved</td><td>Template gallery, DataTable</td><td>React Query</td><td>—</td><td>Manager+</td><td>Skeleton cards/rows</td><td>ErrorState</td><td>Gallery grid → 1-col on mobile</td><td>—</td></tr>
+          <tr><td>Report Builder</td><td>POST /reports/run, POST /reports/saved</td><td>ReportBuilder, ChartWidget, DataTable preview</td><td>RHF (report def) + debounced React Query</td><td>At least 1 metric + valid date range</td><td>Manager+</td><td>Inline preview spinner (sub-second)</td><td>Inline, "adjust parameters"</td><td>Desktop/laptop only in MVP</td><td>Live region announces preview update</td></tr>
+          <tr><td>Analytics / Forecast</td><td>GET /dashboards + custom analytics params</td><td>ChartWidget variants, cohort table</td><td>React Query</td><td>—</td><td>Manager+, Leadership</td><td>Skeleton</td><td>ErrorState</td><td>Visualization picker stacks on mobile</td><td>Chart-type selector is a real listbox, not divs</td></tr>
+          <tr class="grp-row"><td colspan="10">Operations</td></tr>
+          <tr><td>Tasks</td><td>GET /tasks, POST /tasks/:id/complete</td><td>Task list, TaskPanel reuse</td><td>React Query</td><td>Outcome note required for follow_up completion</td><td>All (own), Manager (team)</td><td>Skeleton rows</td><td>ErrorState</td><td>Full parity — primary mobile use case</td><td>Complete checkbox has accessible label incl. lead ID</td></tr>
+          <tr><td>Activity Timeline (global)</td><td>GET /activity (org-wide)</td><td>ActivityFeed (infinite)</td><td>useInfiniteQuery</td><td>—</td><td>Manager+</td><td>Skeleton feed items</td><td>ErrorState</td><td>Full width on mobile</td><td>—</td></tr>
+          <tr><td>Notifications Center</td><td>GET /notifications, POST /notifications/:id/read</td><td>NotificationsWidget</td><td>React Query</td><td>—</td><td>All (own)</td><td>Skeleton rows</td><td>ErrorState</td><td>Full parity</td><td>Unread state conveyed by text, not just a dot</td></tr>
+          <tr class="grp-row"><td colspan="10">Administration</td></tr>
+          <tr><td>User Management</td><td>GET/POST/PATCH /users, POST /users/:id/deactivate</td><td>DataTable, InviteDialog</td><td>React Query + RHF (invite form)</td><td>Email format, role required</td><td>Admin</td><td>Skeleton rows</td><td>ErrorState + inline invite errors</td><td>Desktop-oriented, usable on tablet</td><td>Deactivate requires typed confirmation</td></tr>
+          <tr><td>Roles &amp; Permissions</td><td>Permission matrix config (Phase 3 custom roles)</td><td>Permission matrix editor</td><td>RHF (matrix as nested fields)</td><td>At least one page-level permission per role</td><td>Admin</td><td>Skeleton grid</td><td>ErrorState</td><td>Matrix scrolls horizontally on smaller screens</td><td>Matrix cells are real checkboxes with row/col labels</td></tr>
+          <tr><td>Settings — General/Pipeline/Referral/Insurance</td><td>GET/POST/PATCH /settings/*</td><td>SettingsShell tabs, per-tab forms</td><td>RHF (explicit submit, dirty-guard)</td><td>Per-tab Zod schema</td><td>Admin</td><td>Skeleton form fields</td><td>Inline + "unsaved changes" guard</td><td>Tabs → accordion on mobile</td><td>Dirty-state warning is announced, not just visual</td></tr>
+          <tr><td>Audit Logs</td><td>GET /audit-log</td><td>DataTable (virtualized)</td><td>React Query + URL filters</td><td>—</td><td>Admin, Manager (scoped)</td><td>Skeleton rows</td><td>ErrorState</td><td>Filter bar collapses to a sheet on mobile</td><td>—</td></tr>
+          <tr><td>Integrations / Sheets Sync Monitor</td><td>GET /integrations/sheets/status|conflicts, POST force-sync/resolve</td><td>Sync indicator, conflict cards</td><td>React Query (10–15s polling)</td><td>Conflict resolution requires a choice per field</td><td>Admin</td><td>Skeleton status card</td><td>Persistent error banner, see Sync UI</td><td>Conflict cards stack on mobile</td><td>Status announced via aria-live on change</td></tr>
+          <tr><td>API Settings / Webhooks</td><td>GET/POST/DELETE /webhooks, GET deliveries</td><td>DataTable, CreateWebhookDialog</td><td>React Query + RHF</td><td>Valid URL, event type required</td><td>Admin</td><td>Skeleton rows</td><td>ErrorState</td><td>Desktop-oriented</td><td>—</td></tr>
+          <tr><td>Profile</td><td>GET/PATCH /auth/me</td><td>ProfileForm, NotificationSettings</td><td>RHF + React Query</td><td>Standard field validation</td><td>All (own)</td><td>Skeleton form</td><td>Inline</td><td>Single column</td><td>—</td></tr>
+        </tbody>
+      </table></div>
+      <p class="lede" style="margin-top:1rem;"><strong>Acceptance criteria for every row above:</strong> the screen renders its skeleton (not a spinner) on first load, its <code>error.tsx</code>/ErrorState on any failed required query, its EmptyState when a query succeeds with zero results, is fully operable by keyboard, and — for any Admin/Manager-scoped screen — returns the user to an appropriate fallback (not a blank page) if a role check fails client-side, matching the 403 behavior already enforced server-side per PRD Part 3/4.</p>
+    </section>
+
+    <footer>
+      Frontend Technical Specification — Part 2 of 2 · Prepared by Damco Digital · 13 Jul 2026 · This closes the six-document suite: PRD Parts 1–4 → Frontend Spec Parts 1–2.
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+    var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+    if (!sections.length) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          var id = '#' + entry.target.id;
+          links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px' });
+    sections.forEach(function(s){ io.observe(s); });
+  })();
+</script>

@@ -1,0 +1,774 @@
+<title>Wellspring Ops Platform — PRD Part 1: Product &amp; UX Spec</title>
+<meta name="description" content="Screen inventory, navigation, dashboards, lead management, pipeline, tasks, notifications, search, roles, mobile, wireframes and user flows — developer-ready.">
+<style>
+  :root{
+    --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da;
+    --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3;
+    --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0;
+    --warning:#b06a1f; --warning-soft:#f3e3cd;
+    --danger:#a1402f; --danger-soft:#f3ddd6;
+    --wf-ink:#8a8f8c; --wf-line:#b7bcb8; --wf-bg:#f4f5f3;
+    --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans: "Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733; --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+      --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122; --line:#2c4440; --line-strong:#3c5852;
+      --success:#6fae82; --success-soft:#1d332590; --warning:#dba053; --warning-soft:#3a2d1690;
+      --danger:#d67468; --danger-soft:#3a201b90; --wf-ink:#7c8c88; --wf-line:#3c4d49; --wf-bg:#132825; }
+  }
+  :root[data-theme="dark"]{ --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733; --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+    --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122; --line:#2c4440; --line-strong:#3c5852;
+    --success:#6fae82; --success-soft:#1d332590; --warning:#dba053; --warning-soft:#3a2d1690;
+    --danger:#d67468; --danger-soft:#3a201b90; --wf-ink:#7c8c88; --wf-line:#3c4d49; --wf-bg:#132825; }
+  :root[data-theme="light"]{ --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da; --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3; --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0; --warning:#b06a1f; --warning-soft:#f3e3cd;
+    --danger:#a1402f; --danger-soft:#f3ddd6; --wf-ink:#8a8f8c; --wf-line:#b7bcb8; --wf-bg:#f4f5f3; }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.6; font-size:16px; -webkit-font-smoothing:antialiased; }
+  ::selection{ background:var(--accent-soft); color:var(--ink); }
+  h1,h2,h3,h4{ font-family:var(--serif); font-weight:600; color:var(--ink); text-wrap:balance; letter-spacing:.2px; }
+  p{ max-width:68ch; }
+  a{ color:var(--accent-deep); }
+  code, .mono{ font-family:var(--mono); }
+  table{ border-collapse:collapse; width:100%; font-size:.9rem; }
+  th{ text-align:left; font-weight:600; color:var(--ink-soft); text-transform:uppercase; font-size:.66rem; letter-spacing:.07em; padding:.5rem .7rem; border-bottom:1px solid var(--line-strong); white-space:nowrap; }
+  td{ padding:.55rem .7rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:hover td{ background:var(--surface-2); }
+  .num{ font-variant-numeric: tabular-nums; }
+
+  .suite-nav{ background:var(--ink); color:var(--paper); font-size:.78rem; padding:.6rem 1.4rem; display:flex; gap:1.3rem; flex-wrap:wrap; align-items:center; }
+  .suite-nav b{ color:var(--accent); font-weight:700; margin-right:.3rem; }
+  .suite-nav a{ color:var(--paper); opacity:.75; text-decoration:none; }
+  .suite-nav a.current{ opacity:1; text-decoration:underline; text-decoration-color:var(--accent); text-underline-offset:3px; }
+  .suite-nav a:hover{ opacity:1; }
+
+  .shell{ display:grid; grid-template-columns: 260px minmax(0,1fr); max-width:1360px; margin:0 auto; }
+  .rail{ position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto; padding:1.6rem 1.3rem 2rem 2rem; border-right:1px solid var(--line); }
+  .rail-brand{ font-family:var(--serif); font-size:1.05rem; margin:0 0 .15rem; }
+  .rail-brand small{ display:block; font-family:var(--sans); font-size:.65rem; letter-spacing:.09em; text-transform:uppercase; color:var(--accent-deep); margin-top:.35rem; }
+  .rail nav{ margin-top:1.6rem; }
+  .rail-group{ margin-bottom:1.4rem; }
+  .rail-group-title{ font-size:.64rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); margin:0 0 .5rem; }
+  .rail a{ display:block; color:var(--ink-soft); text-decoration:none; font-size:.85rem; padding:.3rem 0; border-left:2px solid transparent; padding-left:.7rem; margin-left:-.72rem; }
+  .rail a:hover{ color:var(--ink); border-left-color:var(--line-strong); }
+  .rail a.active{ color:var(--ink); border-left-color:var(--accent); font-weight:600; }
+  .main{ min-width:0; padding:2.6rem 3.2rem 6rem; }
+  @media (max-width: 980px){ .shell{ grid-template-columns:1fr; } .rail{ position:relative; height:auto; border-right:none; border-bottom:1px solid var(--line); } .main{ padding:2rem 1.2rem 4rem; } }
+
+  section{ margin-bottom:4.6rem; scroll-margin-top:1.5rem; }
+  .eyebrow{ text-transform:uppercase; letter-spacing:.12em; font-size:.7rem; color:var(--accent-deep); font-weight:700; margin:0 0 .5rem; }
+  section > h2{ font-size:1.85rem; margin:0 0 .3rem; }
+  section > h3{ font-size:1.2rem; margin:2.2rem 0 .6rem; }
+  .lede{ color:var(--ink-soft); font-size:1.02rem; max-width:64ch; margin:0 0 1.6rem; }
+  .prose > p{ color:var(--ink-soft); }
+
+  .grid{ display:grid; gap:1rem; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1rem 1.2rem; }
+  .breakout{ width:100%; overflow-x:auto; }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface); }
+  .table-wrap table{ min-width:620px; }
+
+  .tag{ display:inline-block; font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; font-weight:700; padding:.18rem .48rem; border-radius:3px; }
+  .tag-a{ background:var(--accent-soft); color:var(--accent-deep); }
+  .tag-must{ background:var(--danger-soft); color:var(--danger); }
+  .tag-nice{ background:var(--warning-soft); color:var(--warning); }
+  .tag-future{ background:var(--line); color:var(--ink-soft); }
+
+  .callout{ border-left:3px solid var(--accent); background:var(--surface); border-radius:0 6px 6px 0; padding:.9rem 1.2rem; margin:1.3rem 0; }
+  .callout p{ margin:.2rem 0; }
+  .callout.warn{ border-left-color:var(--warning); }
+
+  /* wireframe language, reused from blueprint */
+  .wf-wrap{ margin:1.4rem 0; }
+  .wf-caption{ font-size:.78rem; color:var(--ink-faint); margin-top:.55rem; }
+  .wf{ background:var(--wf-bg); border:1px solid var(--wf-line); border-radius:4px; padding:1rem; color:var(--wf-ink); font-family:var(--mono); font-size:.72rem; }
+  .wf-title{ text-transform:uppercase; letter-spacing:.08em; font-size:.62rem; color:var(--wf-ink); margin-bottom:.7rem; display:flex; justify-content:space-between; flex-wrap:wrap; gap:.4rem; }
+  .wf-topbar{ display:flex; justify-content:space-between; align-items:center; border:1px dashed var(--wf-line); border-radius:3px; padding:.5rem .7rem; margin-bottom:.7rem; flex-wrap:wrap; gap:.4rem; }
+  .wf-chip{ border:1px dashed var(--wf-line); border-radius:3px; padding:.15rem .5rem; }
+  .wf-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:.5rem; margin-bottom:.7rem; }
+  .wf-kpi{ border:1px dashed var(--wf-line); border-radius:3px; padding:.5rem; }
+  .wf-kpi b{ display:block; font-size:.9rem; color:var(--wf-ink); margin-top:.25rem; }
+  .wf-cols{ display:grid; gap:.7rem; }
+  .wf-cols.two{ grid-template-columns:1.3fr 1fr; }
+  .wf-cols.three{ grid-template-columns:repeat(3,1fr); }
+  .wf-block{ border:1px dashed var(--wf-line); border-radius:3px; padding:.6rem; min-height:60px; }
+  .wf-line{ height:6px; background:var(--wf-line); opacity:.35; border-radius:2px; margin:.35rem 0; }
+  .wf-line.short{ width:45%; } .wf-line.mid{ width:70%; }
+  .wf-funnel{ display:flex; flex-direction:column; gap:.3rem; }
+  .wf-funnel-row{ display:flex; align-items:center; gap:.5rem; }
+  .wf-funnel-bar{ height:14px; background:var(--wf-line); opacity:.4; border-radius:2px; }
+  .wf-card{ border:1px solid var(--wf-line); border-radius:3px; padding:.4rem; margin-bottom:.4rem; }
+  .wf-card .dot{ display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:.3rem; }
+  .dot-g{ background:var(--success); } .dot-a{ background:var(--warning); } .dot-r{ background:var(--danger); }
+  .wf-pill{ display:inline-block; border:1px dashed var(--wf-line); border-radius:10px; padding:.1rem .5rem; margin-right:.3rem; }
+  .wf-timeline{ border-left:2px dashed var(--wf-line); padding-left:.8rem; display:flex; flex-direction:column; gap:.5rem; }
+  .wf-timeline .ev{ position:relative; } .wf-timeline .ev::before{ content:""; position:absolute; left:-1.05rem; top:.2rem; width:7px; height:7px; border-radius:50%; background:var(--wf-line); }
+
+  /* flows */
+  .flow{ display:flex; flex-direction:column; gap:0; margin:1.4rem 0; }
+  .flow-step{ display:grid; grid-template-columns:2.2rem 1fr; gap:1rem; padding:.8rem 0; }
+  .flow-step .n{ width:2.2rem; height:2.2rem; border-radius:50%; background:var(--surface-2); border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; font-family:var(--serif); color:var(--ink-soft); }
+  .flow-step h5{ margin:.1rem 0 .2rem; font-size:.95rem; }
+  .flow-step p{ margin:0; font-size:.85rem; color:var(--ink-soft); }
+  .flow-connector{ margin-left:1.05rem; width:1px; height:.6rem; background:var(--line-strong); }
+
+  .stage-track{ display:flex; align-items:stretch; gap:.4rem; margin:1.4rem 0; overflow-x:auto; }
+  .stage{ flex:1; min-width:120px; background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--accent); border-radius:0 0 6px 6px; padding:.7rem .8rem; }
+  .stage.exit{ border-top-color:var(--danger); } .stage.re{ border-top-color:var(--success); }
+  .stage h5{ margin:0 0 .3rem; font-size:.78rem; }
+  .stage p{ margin:0; font-size:.72rem; color:var(--ink-faint); max-width:none; }
+  .stage-arrow{ align-self:center; color:var(--ink-faint); }
+
+  footer{ border-top:1px solid var(--line); padding-top:1.4rem; color:var(--ink-faint); font-size:.8rem; }
+</style>
+
+<div class="suite-nav">
+  <span><b>PRD Suite</b> Wellspring Operations Platform</span>
+  <a href="https://claude.ai/code/artifact/36733824-3a8f-4fe8-8a5b-9c0237628a7b" class="current">1 · Product &amp; UX Spec</a>
+  <a href="https://claude.ai/code/artifact/f82028ce-5a81-42aa-b9ed-e3e4b18b2080">2 · Automation Engine</a>
+  <a href="https://claude.ai/code/artifact/22ae8bf9-df29-40e9-bb1d-1d0db11aa03f">3 · Data, Sync &amp; API</a>
+  <a href="https://claude.ai/code/artifact/83916532-7bff-4a3c-be7b-e6a819446f20">4 · Design System, Security &amp; Roadmap</a>
+  <span style="opacity:.35;">|</span>
+  <a href="https://claude.ai/code/artifact/27964285-c8eb-42e4-9efa-ac8dbcf1aa8f">FE 1 · Frontend Architecture</a>
+  <a href="https://claude.ai/code/artifact/e3558904-df3e-48d0-8d0f-b0fa9a347f3e">FE 2 · Frontend Patterns</a>
+</div>
+
+<div class="shell">
+  <aside class="rail">
+    <p class="rail-brand">Product &amp; UX Spec<small>PRD Part 1 of 4</small></p>
+    <nav id="toc">
+      <div class="rail-group">
+        <p class="rail-group-title">Foundation</p>
+        <a href="#scope">Scope of this phase</a>
+        <a href="#screens">Screen inventory</a>
+        <a href="#navigation">Navigation architecture</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Experience</p>
+        <a href="#dashboards">Dashboards</a>
+        <a href="#leads">Lead management</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#tasks">Task management</a>
+        <a href="#notifications">Notifications</a>
+        <a href="#search">Search system</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Governance</p>
+        <a href="#roles">Roles &amp; permissions</a>
+        <a href="#mobile">Mobile experience</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Reference</p>
+        <a href="#wireframes">Wireframes (all screens)</a>
+        <a href="#flows">User flows</a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main">
+
+    <section id="scope">
+      <p class="eyebrow">PRD Phase — Not a concept, a spec</p>
+      <h2>Wellspring Operations Platform</h2>
+      <p class="lede">This is Part 1 of a four-document PRD converting the approved CRM Blueprint into a build-ready specification. It assumes the Blueprint's findings (32 disconnected weekly tabs, free-text referral/insurance fields, no pipeline, no activity log) as settled context — nothing here re-argues that case. Every screen, field, rule, and permission below is written so a development team can start building without a follow-up product question.</p>
+      <div class="callout">
+        <p><strong>Reading order:</strong> Part 1 (this document) — product &amp; UX. Part 2 — automation rule catalog. Part 3 — database, API, and Google Sheets sync architecture. Part 4 — design system, security, performance, AI roadmap, sprints, testing, and acceptance criteria.</p>
+      </div>
+    </section>
+
+    <section id="screens">
+      <p class="eyebrow">Foundation · 01</p>
+      <h2>Complete screen inventory</h2>
+      <p class="lede">36 routed screens plus 4 global overlay surfaces. Grouped by functional area with primary audience and one-line purpose.</p>
+
+      <h3>Auth &amp; onboarding</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>#</th><th>Screen</th><th>Route</th><th>Primary users</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td>Login</td><td class="mono">/login</td><td>All</td><td>Email/password auth; SSO slot reserved for Phase 3</td></tr>
+          <tr><td class="num">2</td><td>Forgot / Reset Password</td><td class="mono">/reset-password</td><td>All</td><td>Token-based reset, 30-min expiry</td></tr>
+          <tr><td class="num">3</td><td>Org Setup Wizard</td><td class="mono">/welcome</td><td>Admin</td><td>First-run: locations, providers, referral taxonomy, insurance carriers, Sheets connection</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Dashboards</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>#</th><th>Screen</th><th>Route</th><th>Primary users</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="num">4</td><td>Executive Dashboard</td><td class="mono">/dashboard/executive</td><td>Leadership</td><td>Org-wide KPIs, funnel health, trend, revenue-adjacent metrics</td></tr>
+          <tr><td class="num">5</td><td>Operations Dashboard</td><td class="mono">/dashboard/manager</td><td>Ops Managers</td><td>Team workload, SLA breaches, staff comparison, queue health</td></tr>
+          <tr><td class="num">6</td><td>Intake Dashboard</td><td class="mono">/dashboard/intake</td><td>Intake Coordinators</td><td>Today's queue, overdue follow-ups, new leads to triage</td></tr>
+          <tr><td class="num">7</td><td>My Dashboard</td><td class="mono">/dashboard/me</td><td>Any staff/provider</td><td>Personal workload, upcoming consultations, personal KPIs</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Leads &amp; pipeline</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>#</th><th>Screen</th><th>Route</th><th>Primary users</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="num">8</td><td>Pipeline — Kanban View</td><td class="mono">/pipeline/board</td><td>Coordinators, Managers</td><td>Stage-by-stage board, drag to advance</td></tr>
+          <tr><td class="num">9</td><td>Pipeline — Table View</td><td class="mono">/pipeline/table</td><td>Coordinators, Managers</td><td>Dense sortable/filterable grid, bulk actions</td></tr>
+          <tr><td class="num">10</td><td>Pipeline — Calendar View</td><td class="mono">/pipeline/calendar</td><td>Coordinators, Providers</td><td>Consultations by date/provider/location</td></tr>
+          <tr><td class="num">11</td><td>Lead Detail</td><td class="mono">/leads/:id</td><td>All</td><td>Full profile, timeline, tasks, notes, attachments</td></tr>
+          <tr><td class="num">12</td><td>Lead Creation</td><td class="mono">/leads/new</td><td>Coordinators</td><td>Structured intake form</td></tr>
+          <tr><td class="num">13</td><td>Lead Merge</td><td class="mono">/leads/:id/merge</td><td>Coordinators, Managers</td><td>Side-by-side field reconciliation for duplicates</td></tr>
+          <tr><td class="num">14</td><td>Duplicate Review Queue</td><td class="mono">/leads/duplicates</td><td>Coordinators</td><td>System-suggested duplicate pairs awaiting a decision</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Domain dashboards</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>#</th><th>Screen</th><th>Route</th><th>Primary users</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="num">15</td><td>Referral Dashboard</td><td class="mono">/dashboards/referrals</td><td>Managers, Leadership</td><td>Source-level volume &amp; scheduling-rate performance</td></tr>
+          <tr><td class="num">16</td><td>Provider Dashboard</td><td class="mono">/dashboards/providers</td><td>Managers, Providers</td><td>Per-provider capacity, caseload, scheduling rate</td></tr>
+          <tr><td class="num">17</td><td>Insurance Dashboard</td><td class="mono">/dashboards/insurance</td><td>Managers, Leadership</td><td>Carrier acceptance mix, rejection-driven loss</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Reporting &amp; analytics</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>#</th><th>Screen</th><th>Route</th><th>Primary users</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="num">18</td><td>Reports Home</td><td class="mono">/reports</td><td>Managers, Leadership</td><td>Template gallery + recent runs</td></tr>
+          <tr><td class="num">19</td><td>Report Builder</td><td class="mono">/reports/new</td><td>Managers</td><td>Custom metric/dimension/date-range report designer</td></tr>
+          <tr><td class="num">20</td><td>Saved Reports</td><td class="mono">/reports/saved</td><td>Managers, Leadership</td><td>Named, reusable, schedulable report definitions</td></tr>
+          <tr><td class="num">21</td><td>Analytics</td><td class="mono">/analytics</td><td>Managers, Leadership</td><td>Funnel, trend, heat map, leaderboard visual library</td></tr>
+          <tr><td class="num">22</td><td>Cohort &amp; Forecasting</td><td class="mono">/analytics/forecast</td><td>Leadership</td><td>Cohort retention, volume forecasting, goal tracking</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Operations</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>#</th><th>Screen</th><th>Route</th><th>Primary users</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="num">23</td><td>Tasks</td><td class="mono">/tasks</td><td>All</td><td>Personal + team task queue, filters, bulk complete</td></tr>
+          <tr><td class="num">24</td><td>Activity Timeline (global)</td><td class="mono">/activity</td><td>Managers</td><td>Org-wide activity feed across all leads</td></tr>
+          <tr><td class="num">25</td><td>Notifications Center</td><td class="mono">/notifications</td><td>All</td><td>Full notification history beyond the drawer</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Administration</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>#</th><th>Screen</th><th>Route</th><th>Primary users</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="num">26</td><td>User Management</td><td class="mono">/admin/users</td><td>Admin</td><td>Invite, deactivate, role-assign staff</td></tr>
+          <tr><td class="num">27</td><td>Roles &amp; Permissions</td><td class="mono">/admin/roles</td><td>Admin</td><td>Permission matrix editor, custom role builder</td></tr>
+          <tr><td class="num">28</td><td>Settings — General</td><td class="mono">/settings</td><td>Admin</td><td>Org name, locations, business hours, branding</td></tr>
+          <tr><td class="num">29</td><td>Settings — Pipeline Config</td><td class="mono">/settings/pipeline</td><td>Admin</td><td>Custom stage editor, automation rule toggles</td></tr>
+          <tr><td class="num">30</td><td>Settings — Referral Taxonomy</td><td class="mono">/settings/referral-sources</td><td>Admin</td><td>Controlled referral-source list &amp; sub-types</td></tr>
+          <tr><td class="num">31</td><td>Settings — Insurance Carriers</td><td class="mono">/settings/insurance</td><td>Admin</td><td>Accepted/excluded carrier list, effective-dated</td></tr>
+          <tr><td class="num">32</td><td>Audit Logs</td><td class="mono">/admin/audit-log</td><td>Admin, Manager (scoped)</td><td>Field-level change history across all entities</td></tr>
+          <tr><td class="num">33</td><td>Integrations</td><td class="mono">/admin/integrations</td><td>Admin</td><td>Connected systems: Google Sheets, email, SMS (future)</td></tr>
+          <tr><td class="num">34</td><td>Google Sheets Sync Monitor</td><td class="mono">/admin/integrations/sheets-sync</td><td>Admin</td><td>Sync health, conflict queue, retry controls — see Part 3</td></tr>
+          <tr><td class="num">35</td><td>API Settings / Keys</td><td class="mono">/admin/api</td><td>Admin</td><td>API key issuance, scopes, rate-limit status</td></tr>
+          <tr><td class="num">36</td><td>Webhooks</td><td class="mono">/admin/webhooks</td><td>Admin</td><td>Outbound event subscriptions, delivery logs</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Global overlay surfaces (not routes)</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Surface</th><th>Trigger</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>Command Palette</td><td><code>⌘K</code> / <code>Ctrl+K</code></td><td>Fuzzy-search leads, pages, and actions from anywhere</td></tr>
+          <tr><td>Quick Add</td><td>Floating <code>+</code> button, all screens</td><td>New Lead / New Task / New Note without leaving context</td></tr>
+          <tr><td>Notification Drawer</td><td>Bell icon, top bar</td><td>Last 20 notifications, mark-read, jump to source</td></tr>
+          <tr><td>Task Drawer</td><td>Task count badge, top bar</td><td>Today's tasks without leaving the current screen</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="navigation">
+      <p class="eyebrow">Foundation · 02</p>
+      <h2>Navigation architecture</h2>
+
+      <h3>Sidebar (persistent, collapsible)</h3>
+      <p>Fixed left rail, 240px expanded / 64px icon-only collapsed (state persisted per user). Sections, in order, each with role-based visibility:</p>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Section</th><th>Icon area contains</th><th>Visible to</th></tr></thead>
+        <tbody>
+          <tr><td>Dashboard</td><td>Routes to role-appropriate default (Executive/Manager/Intake/Me)</td><td>All</td></tr>
+          <tr><td>Pipeline</td><td>Board / Table / Calendar sub-tabs</td><td>Coordinator, Manager, Admin</td></tr>
+          <tr><td>Leads</td><td>All leads, Duplicates queue</td><td>Coordinator, Manager, Admin</td></tr>
+          <tr><td>Domain dashboards</td><td>Referral, Provider, Insurance</td><td>Manager, Admin, Leadership</td></tr>
+          <tr><td>Reports &amp; Analytics</td><td>Reports, Saved, Analytics, Forecasting</td><td>Manager, Admin, Leadership</td></tr>
+          <tr><td>Tasks</td><td>My tasks, Team tasks (Manager+)</td><td>All</td></tr>
+          <tr><td>Admin</td><td>Users, Roles, Settings, Audit, Integrations, API</td><td>Admin only</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Top bar</h3>
+      <p>Left-to-right: sidebar collapse toggle · global search input (opens Command Palette on focus) · Quick Add button · notification bell with unread badge · task badge with due-today count · user menu (profile, theme, sign out).</p>
+
+      <h3>Breadcrumbs</h3>
+      <p>Pattern: <code>Section › Subsection › Entity</code>. Example: <code>Pipeline › Table View › Lead #7786</code>. The final segment is never a link; every prior segment is.</p>
+
+      <h3>Quick actions, context menus, drawers, modals</h3>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+        <div class="card"><strong>Quick actions</strong> — floating action button bottom-right on Pipeline, Leads, and Tasks screens: New Lead, New Task, Log Activity.</div>
+        <div class="card"><strong>Context menus</strong> — right-click (desktop) / long-press (touch) on a pipeline card or table row: Change Stage, Assign to…, Add Task, Flag Priority, Merge, Archive.</div>
+        <div class="card"><strong>Right-side drawers</strong> — Lead Quick View (from Table/Kanban, no navigation away), Notification Drawer, Task Drawer. All drawers close on Escape or outside click and trap focus while open.</div>
+        <div class="card"><strong>Modals</strong> — New Lead (short form), Confirm Merge, Bulk Reassign, Confirm Archive/Delete, Confirm Stage Automation Override. Destructive actions always require explicit confirm text, never a bare "OK."</div>
+      </div>
+
+      <h3>Global command palette</h3>
+      <p><code>⌘K</code>/<code>Ctrl+K</code> anywhere in the app. Sections in result list, top to bottom: <em>Recent</em> (last 5 visited leads/pages) → <em>Leads</em> (fuzzy match on name/Client ID/phone) → <em>Pages</em> (all 36 routes) → <em>Actions</em> ("New Lead," "New Task," "Run report: Weekly Client Report"). Arrow keys navigate, Enter executes, Escape closes.</p>
+
+      <h3>Mobile navigation</h3>
+      <p>Bottom tab bar, 5 items: Dashboard, Pipeline (table view only on mobile), Tasks, Search, More (Reports/Analytics/Admin collapse here). Sidebar and top bar are replaced entirely below 768px — see <a href="#mobile">Mobile Experience</a>.</p>
+    </section>
+
+    <section id="dashboards">
+      <p class="eyebrow">Experience · 01</p>
+      <h2>Dashboards</h2>
+      <p class="lede">Four role-specific home screens. Same visual language, different KPIs, different defaults, different drill-down depth.</p>
+
+      <h3>Executive Dashboard</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Element</th><th>Spec</th></tr></thead>
+        <tbody>
+          <tr><td>KPIs</td><td>Total Leads (period), Scheduling Rate, Conversion Rate, Cost per Scheduled Appt (once ad spend joins in), Lost-to-Insurance %, Avg Time-to-Schedule, Active Patient Count, Provider Utilization %</td></tr>
+          <tr><td>Widgets</td><td>Funnel chart (New→Converted), 12-month trend line, Location comparison bar, Top-5 lost reasons, Referral source leaderboard</td></tr>
+          <tr><td>Filters</td><td>Date range (preset: WTD/MTD/QTD/YTD/custom), Location, Service line</td></tr>
+          <tr><td>Quick actions</td><td>Export board as PDF, Share snapshot link (read-only, expiring), Schedule as recurring email</td></tr>
+          <tr><td>Drill-down</td><td>Click any KPI tile → opens Analytics pre-filtered to that metric/date range</td></tr>
+          <tr><td>Export</td><td>PDF (board snapshot), CSV (underlying KPI table)</td></tr>
+        </tbody>
+      </table></div>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-title"><span>EXECUTIVE DASHBOARD</span><span>QTD ▾ &nbsp; ALL LOCATIONS ▾ &nbsp; [EXPORT] [SHARE]</span></div>
+        <div class="wf-kpis">
+          <div class="wf-kpi">TOTAL LEADS<b>612</b></div>
+          <div class="wf-kpi">SCHED. RATE<b>54%</b></div>
+          <div class="wf-kpi">CONVERSION<b>31%</b></div>
+          <div class="wf-kpi">LOST‑INSURANCE<b>27%</b></div>
+          <div class="wf-kpi">AVG T‑T‑SCHED<b>2.4d</b></div>
+          <div class="wf-kpi">ACTIVE PTS<b>184</b></div>
+        </div>
+        <div class="wf-cols two">
+          <div class="wf-block"><div class="wf-title" style="margin-bottom:.4rem;">FUNNEL — NEW → CONVERTED</div><div class="wf-funnel">
+            <div class="wf-funnel-row">New <div class="wf-funnel-bar" style="width:100%"></div></div>
+            <div class="wf-funnel-row">Contacted <div class="wf-funnel-bar" style="width:81%"></div></div>
+            <div class="wf-funnel-row">Scheduled <div class="wf-funnel-bar" style="width:54%"></div></div>
+            <div class="wf-funnel-row">Converted <div class="wf-funnel-bar" style="width:31%"></div></div>
+          </div></div>
+          <div class="wf-block"><div class="wf-title" style="margin-bottom:.4rem;">TOP LOST REASONS</div><div class="wf-line mid"></div><div class="wf-line short"></div><div class="wf-line mid"></div></div>
+        </div>
+        <div class="wf-block" style="margin-top:.6rem;"><div class="wf-title" style="margin-bottom:.4rem;">12‑MONTH TREND</div><div class="wf-line" style="width:100%;opacity:.2"></div></div>
+      </div></div>
+
+      <h3>Operations Dashboard (Manager)</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Element</th><th>Spec</th></tr></thead>
+        <tbody>
+          <tr><td>KPIs</td><td>Open leads by stage, SLA breaches today, Overdue follow-ups, Team scheduling rate, Avg response time, Duplicate queue size</td></tr>
+          <tr><td>Widgets</td><td>Staff workload bar chart, SLA breach list (name-level), stage-aging heat map, insurance-rejection trend</td></tr>
+          <tr><td>Filters</td><td>Staff member, location, provider, date range</td></tr>
+          <tr><td>Quick actions</td><td>Reassign from breach list inline, bulk-nudge overdue owners</td></tr>
+          <tr><td>Drill-down</td><td>Click a staff bar → that staff member's Tasks screen, pre-filtered</td></tr>
+          <tr><td>Export</td><td>CSV of current breach/overdue list</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Intake Dashboard</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Element</th><th>Spec</th></tr></thead>
+        <tbody>
+          <tr><td>KPIs</td><td>New leads today, My open leads, My overdue follow-ups, My scheduling rate this week</td></tr>
+          <tr><td>Widgets</td><td>Today's queue list (sorted by SLA risk), next 3 scheduled consultations, quick eligibility-check shortcut</td></tr>
+          <tr><td>Filters</td><td>None by default — this is a queue, not a report; optional "show team" toggle for backup coverage</td></tr>
+          <tr><td>Quick actions</td><td>Log activity inline, mark contacted, schedule consultation — all without opening Lead Detail</td></tr>
+          <tr><td>Drill-down</td><td>Click any queue row → Lead Detail</td></tr>
+          <tr><td>Export</td><td>Not applicable — operational, not reporting, surface</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>My Dashboard (individual staff/provider)</h3>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Element</th><th>Spec</th></tr></thead>
+        <tbody>
+          <tr><td>KPIs</td><td>My caseload, my scheduling rate, my avg response time, upcoming consultations this week</td></tr>
+          <tr><td>Widgets</td><td>Personal 8-week trend sparkline, upcoming calendar strip, recent activity feed (mine only)</td></tr>
+          <tr><td>Filters</td><td>Date range only</td></tr>
+          <tr><td>Quick actions</td><td>Add task, log activity</td></tr>
+          <tr><td>Drill-down</td><td>Calendar strip → Calendar View filtered to self</td></tr>
+          <tr><td>Export</td><td>Personal performance CSV, self-service only</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="callout"><p><strong>Domain dashboards (Referral, Provider, Insurance)</strong> share one template — a KPI row + trend + leaderboard/breakdown table — instantiated with different dimensions. Referral: source × scheduling rate. Provider: provider × caseload/capacity. Insurance: carrier × acceptance/rejection mix. Full field lists in the Reporting section of Part 3's report/API tables.</p></div>
+    </section>
+
+    <section id="leads">
+      <p class="eyebrow">Experience · 02</p>
+      <h2>Lead management</h2>
+
+      <h3>Creation</h3>
+      <p>Required fields: Referral Source (channel dropdown + conditional sub-type/referrer-name), Service(s) Requested (multi-select), Zip Code (validated 5-digit, checked against active service-area list — out-of-area triggers a non-blocking warning, not a hard stop), Date of Birth (date picker; age &lt; 18 auto-reveals Guardian Name + Guardian Phone as required). Optional at creation: Insurance Carrier (if unknown, stage cannot advance past <em>Contacted</em> until set — see Pipeline). Client ID is system-generated, immutable, format <code>WS-100000</code> incrementing.</p>
+
+      <h3>Editing</h3>
+      <p>Inline edit on Lead Detail for all fields except Client ID and Created Date. Every field edit writes an <code>Activity</code> row of type <code>field_change</code> and an <code>AuditLogEntry</code> (old value, new value, editor, timestamp). Stage cannot be changed via field edit — only via the explicit Change Stage action, which runs stage-exit validation (see Pipeline).</p>
+
+      <h3>Assignment &amp; reassignment</h3>
+      <p>New leads auto-assign round-robin across active Coordinators at that location (configurable in Settings → Pipeline Config), skipping anyone marked Out of Office. Manual reassignment (Manager/Admin only) is available from Lead Detail, Table View row action, and Kanban card context menu; reassignment writes an Activity entry and resets the "time with current owner" clock used for SLA widgets.</p>
+
+      <h3>Status changes, notes, activity history</h3>
+      <p>"Status" in the UI = pipeline stage; there is no separate free-floating status field, closing the exact ambiguity the old sheet's "Did they schedule?" column created. Notes are a dedicated Activity subtype (<code>note</code>), timestamped and attributable, rendered inline in the same chronological timeline as calls, emails, and stage changes — never a separate silo.</p>
+
+      <h3>Follow-ups &amp; scheduling</h3>
+      <p>"Log Activity" captures type (Call, Email, SMS-future, In-person), outcome (Reached / No answer / Left voicemail / Bad number), and free-text note. Logging a call outcome of "Reached" surfaces a "Schedule Consultation" quick action inline. Scheduling opens a date/time/provider/location picker; on save the lead auto-advances to <em>Consultation Scheduled</em> and a calendar event is created.</p>
+
+      <h3>Attachments</h3>
+      <p>Drag-and-drop on Lead Detail. Accepted: PDF, PNG, JPG, DOCX, max 15MB/file. Never accepts a file typed as containing clinical notes without an explicit "This may contain PHI" acknowledgment checkbox — logged for compliance.</p>
+
+      <h3>Duplicate handling &amp; merge</h3>
+      <p>Duplicate candidates are computed on every create/update (see automation rules AR-014–AR-017 in Part 2) using phone, email, DOB+zip, and name-similarity scoring. A match above threshold surfaces a non-blocking banner on both leads: "Possible duplicate of #7786 — Review." The Merge screen shows both records field-by-field, side by side; for each field the user picks which value survives (default: most recently updated), activity timelines are concatenated chronologically, and the losing record is soft-archived with a permanent redirect from its old ID to the surviving one.</p>
+
+      <h3>Timeline, tags, priority</h3>
+      <p>The Activity Timeline is the single source of truth for lead history — every stage change, note, call, email, task completion, and field edit appears here in one chronological stream, replacing the old sheet's single "Dates of Manual Follow Up Attempts" cell. Tags are free-form, org-scoped (e.g. <code>adhd-waitlist</code>, <code>returning-patient</code>), searchable, and multi-select. Priority is a 3-value flag (Standard / High / Urgent) settable by any staff member and required-with-reason when set to Urgent (e.g. clinical risk language detected — see AR-041 in Part 2).</p>
+    </section>
+
+    <section id="pipeline">
+      <p class="eyebrow">Experience · 03</p>
+      <h2>Pipeline</h2>
+      <p class="lede">Nine default stages. Organizations may add custom stages between any two defaults via Settings → Pipeline Config; the four terminal-adjacent automations (SLA timers, reporting rollups) recalculate automatically against whatever stage order is configured.</p>
+
+      <div class="stage-track">
+        <div class="stage"><h5>New Lead</h5><p>Captured, unreviewed</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage"><h5>Attempted Contact</h5><p>≥1 outreach logged, no response yet</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage"><h5>Contacted</h5><p>Reached; insurance confirmed</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage"><h5>Consult Scheduled</h5><p>Appointment booked</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage"><h5>Consult Completed</h5><p>Appointment occurred</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage"><h5>Qualified</h5><p>Clinically appropriate fit confirmed</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage"><h5>Converted</h5><p>Paperwork + first appt complete</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage exit"><h5>Lost</h5><p>Exit reason required</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage re"><h5>Reactivated</h5><p>Lost lead re-engaged</p></div>
+      </div>
+
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Stage</th><th>Entry criteria</th><th>Exit / advance criteria</th><th>Automation hook (Part 2)</th></tr></thead>
+        <tbody>
+          <tr><td>New Lead</td><td>Created via intake form, API, or Sheets sync</td><td>First activity logged</td><td>AR-001, AR-002</td></tr>
+          <tr><td>Attempted Contact</td><td>Outreach logged, no reach</td><td>Reached, or 3 failed attempts → escalate</td><td>AR-003–AR-006</td></tr>
+          <tr><td>Contacted</td><td>Reached the lead</td><td>Insurance carrier field populated + eligible</td><td>AR-018–AR-021</td></tr>
+          <tr><td>Consult Scheduled</td><td>Insurance eligible, appointment booked</td><td>Appointment date reached</td><td>AR-008, AR-009</td></tr>
+          <tr><td>Consult Completed</td><td>Appointment occurred (no-show routes to a Lost sub-reason instead)</td><td>Clinical fit reviewed</td><td>AR-010–AR-012</td></tr>
+          <tr><td>Qualified</td><td>Clinical fit confirmed</td><td>Paperwork + first booked visit complete</td><td>AR-013</td></tr>
+          <tr><td>Converted</td><td>Active patient</td><td>Terminal (success) state</td><td>AR-022</td></tr>
+          <tr><td>Lost</td><td>Any prior stage, exit reason selected (Insurance / No-response / Cost / Capacity / Out-of-area / Clinical fit / Other)</td><td>Terminal unless reactivated</td><td>AR-023–AR-026</td></tr>
+          <tr><td>Reactivated</td><td>Manual re-open from Lost, or inbound contact from a previously-Lost record matched by duplicate engine</td><td>Re-enters at Attempted Contact</td><td>AR-027</td></tr>
+        </tbody>
+      </table></div>
+      <p class="lede" style="margin-top:1rem;">Custom stages: Admins insert a stage between any two existing ones from Settings → Pipeline Config, naming it and choosing which default automations (SLA clock, dashboard rollup bucket) it inherits. Deleting a stage requires migrating its current leads to an adjacent stage first — the system blocks deletion otherwise.</p>
+    </section>
+
+    <section id="tasks">
+      <p class="eyebrow">Experience · 04</p>
+      <h2>Task management</h2>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Component</th><th>Spec</th></tr></thead>
+        <tbody>
+          <tr><td>Daily task queue</td><td>Default view of <code>/tasks</code>: due today + overdue, sorted overdue-first then by due time</td></tr>
+          <tr><td>Today's follow-ups</td><td>Auto-populated whenever a lead has been in <em>Attempted Contact</em> or <em>Contacted</em> with no activity logged for 24h (AR-004)</td></tr>
+          <tr><td>Overdue follow-ups</td><td>Any task past its due date, surfaced in red on Tasks, Intake Dashboard, and Operations Dashboard</td></tr>
+          <tr><td>Reminders</td><td>User-set, one-time, tied to a lead; delivered via in-app + email at due time</td></tr>
+          <tr><td>Recurring tasks</td><td>Cadence options: daily, weekly, custom RRULE; used for e.g. "check ADHD waitlist capacity" ops tasks not tied to a single lead</td></tr>
+          <tr><td>Automatic task creation</td><td>System-created tasks are tagged <code>source: automation</code> with the triggering rule ID visible on hover, so staff always know why a task appeared</td></tr>
+          <tr><td>Assignment</td><td>Defaults to the lead's current owner; Managers may reassign; unassigned ops tasks default to the location's on-duty Coordinator</td></tr>
+          <tr><td>Completion tracking</td><td>Complete requires an outcome note if the task type is <code>follow_up</code>; a bare checkbox-complete is disabled for that type</td></tr>
+          <tr><td>Escalation</td><td>A task overdue by more than the org's SLA threshold (default 24h) auto-escalates: creates a copy assigned to the owner's Manager and fires AR-002/AR-005</td></tr>
+        </tbody>
+      </table></div>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-topbar">MY TASKS &nbsp; [ TODAY (6) ] [ OVERDUE (2) ] [ UPCOMING (11) ] [ + NEW TASK ]</div>
+        <div class="wf-card"><span class="dot dot-r"></span>Follow up — #7783 · overdue 2d · <span class="wf-chip">source: AR‑004</span></div>
+        <div class="wf-card"><span class="dot dot-a"></span>Confirm insurance — #7786 · due today</div>
+        <div class="wf-card"><span class="dot dot-g"></span>Reminder: call back re: MK availability — #7785 · due today</div>
+      </div></div>
+    </section>
+
+    <section id="notifications">
+      <p class="eyebrow">Experience · 05</p>
+      <h2>Notifications</h2>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Type</th><th>Channel(s)</th><th>Recipient</th><th>Trigger example</th></tr></thead>
+        <tbody>
+          <tr><td>In-app</td><td>Bell drawer + toast if currently active in-app</td><td>Assigned owner</td><td>Task assigned, stage changed on a lead you own</td></tr>
+          <tr><td>Email</td><td>Transactional email</td><td>Assigned owner / Manager</td><td>Daily summary, escalation, SLA breach</td></tr>
+          <tr><td>SMS (future, Phase 3)</td><td>SMS gateway (Twilio-class)</td><td>On-call staff</td><td>Urgent-priority lead created after hours</td></tr>
+          <tr><td>Escalation alert</td><td>In-app + email, high visual weight</td><td>Manager of the breaching staff member</td><td>No contact within 24h (AR-002)</td></tr>
+          <tr><td>Manager alert</td><td>In-app + email</td><td>Manager</td><td>Team member exceeds 3 overdue tasks</td></tr>
+          <tr><td>Missed SLA alert</td><td>In-app + email</td><td>Owner + Manager</td><td>Any SLA timer (contact, follow-up, response) breached</td></tr>
+          <tr><td>Daily summary</td><td>Email, 7am local</td><td>Coordinators, Managers</td><td>Yesterday's leads, today's queue size, overdue count</td></tr>
+          <tr><td>Weekly summary</td><td>Email, Monday 7am local</td><td>Managers, Leadership</td><td>Week-over-week KPI snapshot — replaces manually built weekly reports</td></tr>
+        </tbody>
+      </table></div>
+      <p>All notification types are individually toggleable per user in <code>/settings</code> (Notifications tab) except Missed-SLA-to-Manager and Escalation, which are org-mandatory and Admin-controlled only, so a coordinator can't silently opt out of the oversight signal.</p>
+    </section>
+
+    <section id="search">
+      <p class="eyebrow">Experience · 06</p>
+      <h2>Search system</h2>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Feature</th><th>Spec</th></tr></thead>
+        <tbody>
+          <tr><td>Global search</td><td>Top-bar input, opens Command Palette; searches Client ID, name (if present), phone, email, tags</td></tr>
+          <tr><td>Advanced filters</td><td>Table View filter bar: Stage, Location, Provider, Insurance carrier, Referral source, Service, Owner, Date range, Priority, Tag — combinable with AND logic</td></tr>
+          <tr><td>Saved filters / Smart Views</td><td>Any filter combination can be named and pinned to the sidebar under Pipeline, e.g. "Overdue + High Priority"</td></tr>
+          <tr><td>Boolean search</td><td>Query box supports <code>AND</code>/<code>OR</code>/<code>NOT</code> and quoted phrases, e.g. <code>insurance:medicaid AND stage:"Attempted Contact"</code></td></tr>
+          <tr><td>Recent searches</td><td>Last 10 queries per user, shown when the search box is focused empty</td></tr>
+          <tr><td>Pinned searches</td><td>Star icon on any search result set to promote it to Smart Views</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="roles">
+      <p class="eyebrow">Governance · 01</p>
+      <h2>Roles &amp; permissions</h2>
+      <p class="lede">Page-level and action-level permissions for the five defined roles. <span class="tag tag-a">●</span> = full · <span class="tag tag-nice">◐</span> = scoped/partial · blank = no access. Custom roles (Phase 3) compose from the same permission atoms.</p>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Permission</th><th>Admin</th><th>Manager</th><th>Intake Coordinator</th><th>Provider</th><th>Read-only</th></tr></thead>
+        <tbody>
+          <tr><td>View own assigned leads</td><td>●</td><td>●</td><td>●</td><td>●</td><td>◐ view only</td></tr>
+          <tr><td>View all leads</td><td>●</td><td>●</td><td></td><td>◐ own consultations</td><td>●</td></tr>
+          <tr><td>Create lead</td><td>●</td><td>●</td><td>●</td><td></td><td></td></tr>
+          <tr><td>Edit lead fields</td><td>●</td><td>●</td><td>●</td><td>◐ clinical notes only</td><td></td></tr>
+          <tr><td>Change pipeline stage</td><td>●</td><td>●</td><td>●</td><td>◐ Consult Completed/Qualified only</td><td></td></tr>
+          <tr><td>Reassign leads</td><td>●</td><td>●</td><td></td><td></td><td></td></tr>
+          <tr><td>Merge duplicates</td><td>●</td><td>●</td><td>◐ suggest only, Manager approves</td><td></td><td></td></tr>
+          <tr><td>Delete/archive lead</td><td>●</td><td>◐ archive only</td><td></td><td></td><td></td></tr>
+          <tr><td>Run &amp; export reports</td><td>●</td><td>●</td><td>◐ own metrics only</td><td>◐ own metrics only</td><td>●</td></tr>
+          <tr><td>Build custom reports</td><td>●</td><td>●</td><td></td><td></td><td></td></tr>
+          <tr><td>Edit referral/insurance taxonomy</td><td>●</td><td>◐ request only</td><td></td><td></td><td></td></tr>
+          <tr><td>Configure pipeline stages/automation</td><td>●</td><td></td><td></td><td></td><td></td></tr>
+          <tr><td>Manage users &amp; roles</td><td>●</td><td></td><td></td><td></td><td></td></tr>
+          <tr><td>View audit log</td><td>●</td><td>◐ own team only</td><td></td><td></td><td></td></tr>
+          <tr><td>Manage integrations/API/webhooks</td><td>●</td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="mobile">
+      <p class="eyebrow">Governance · 02</p>
+      <h2>Mobile experience</h2>
+      <div class="table-wrap breakout"><table>
+        <thead><tr><th>Screen</th><th>Responsive behavior</th></tr></thead>
+        <tbody>
+          <tr><td>Dashboard</td><td>KPI row becomes a horizontally-swipeable strip; widgets stack vertically, charts simplify to sparklines</td></tr>
+          <tr><td>Pipeline</td><td>Kanban board is desktop-only; mobile defaults to Table View rendered as a stacked card list, one lead per card</td></tr>
+          <tr><td>Lead pages</td><td>Tabs (Details / Timeline / Tasks / Notes) replace the two-column desktop layout</td></tr>
+          <tr><td>Tasks</td><td>Full parity with desktop; this is a primary mobile use case for coordinators between calls</td></tr>
+          <tr><td>Search</td><td>Full-screen takeover on focus, keyboard-first result list</td></tr>
+          <tr><td>Reports</td><td>View-and-export only on mobile; Report Builder is desktop-only in MVP/Phase 2, revisited in Phase 3</td></tr>
+          <tr><td>Quick actions</td><td>Bottom-sheet instead of floating button; same three actions (New Lead, New Task, Log Activity)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="wireframes">
+      <p class="eyebrow">Reference · 01</p>
+      <h2>Wireframes — remaining screens</h2>
+      <p class="lede">Dashboard, Pipeline board, Lead Detail, Intake form, Reports, and Staff scorecard wireframes were established in the CRM Blueprint and carry forward unchanged. Below are the screens new to this PRD phase.</p>
+
+      <h3>Login</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-block" style="max-width:340px;margin:0 auto;">
+          <div class="wf-title">WELLSPRING OPS — SIGN IN</div>
+          <div class="wf-line mid"></div><div class="wf-line mid"></div>
+          <div class="wf-chip" style="display:block;text-align:center;margin-top:.6rem;">Sign in</div>
+          <div class="wf-line short" style="margin:.6rem auto 0;"></div>
+        </div>
+      </div></div>
+
+      <h3>Pipeline — Table View</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-topbar">FILTERS: Stage ▾ Location ▾ Insurance ▾ Owner ▾ &nbsp; [ + SMART VIEW ] &nbsp; [ BULK ACTIONS ▾ ]</div>
+        <div class="wf-block">
+          ID · NAME · STAGE · OWNER · SOURCE · INSURANCE · DAYS IN STAGE<br>
+          <div class="wf-line mid"></div><div class="wf-line mid"></div><div class="wf-line mid"></div><div class="wf-line short"></div>
+        </div>
+      </div></div>
+
+      <h3>Pipeline — Calendar View</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-topbar">WEEK OF JUL 13 ▾ &nbsp; PROVIDER: ALL ▾ &nbsp; LOCATION: ALL ▾</div>
+        <div class="wf-cols" style="grid-template-columns:repeat(7,1fr);">
+          <div class="wf-block">Mon<div class="wf-line short"></div></div>
+          <div class="wf-block">Tue<div class="wf-line short"></div><div class="wf-line short"></div></div>
+          <div class="wf-block">Wed</div>
+          <div class="wf-block">Thu<div class="wf-line short"></div></div>
+          <div class="wf-block">Fri<div class="wf-line short"></div></div>
+          <div class="wf-block">Sat</div>
+          <div class="wf-block">Sun</div>
+        </div>
+      </div></div>
+
+      <h3>Duplicate Review Queue &amp; Lead Merge</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-cols two">
+          <div class="wf-block"><div class="wf-title">DUPLICATE QUEUE (3)</div>
+            <div class="wf-card">#7776 ↔ #6301 · phone match · 94%</div>
+            <div class="wf-card">#7291 ↔ #7716 · DOB+zip · 81%</div>
+          </div>
+          <div class="wf-block"><div class="wf-title">MERGE #7776 ↔ #6301</div>
+            FIELD · RECORD A · RECORD B · KEEP<br>
+            <div class="wf-line mid"></div><div class="wf-line mid"></div>
+            <div class="wf-chip" style="margin-top:.5rem;">Merge records</div>
+          </div>
+        </div>
+      </div></div>
+
+      <h3>Referral / Provider / Insurance dashboards (shared template)</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-kpis"><div class="wf-kpi">VOLUME<b>—</b></div><div class="wf-kpi">SCHED. RATE<b>—</b></div><div class="wf-kpi">TOP PERFORMER<b>—</b></div></div>
+        <div class="wf-cols two">
+          <div class="wf-block"><div class="wf-title">TREND</div><div class="wf-line mid" style="opacity:.2"></div></div>
+          <div class="wf-block"><div class="wf-title">LEADERBOARD</div><div class="wf-line short"></div><div class="wf-line short"></div><div class="wf-line short"></div></div>
+        </div>
+      </div></div>
+
+      <h3>Analytics</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-topbar">CHART: Funnel ▾ Line ▾ Heat map ▾ Leaderboard ▾ Cohort ▾</div>
+        <div class="wf-block" style="min-height:120px;">[ selected visualization renders here, full-bleed ]</div>
+      </div></div>
+
+      <h3>Notifications Center &amp; Tasks (full-screen)</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-cols two">
+          <div class="wf-block"><div class="wf-title">NOTIFICATIONS</div><div class="wf-card"><span class="dot dot-a"></span>SLA breach: #7783</div><div class="wf-card"><span class="dot dot-g"></span>Task completed: #6301</div></div>
+          <div class="wf-block"><div class="wf-title">TASKS</div><div class="wf-card"><span class="dot dot-r"></span>Follow up — #7783</div></div>
+        </div>
+      </div></div>
+
+      <h3>User Management &amp; Roles editor</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-topbar">USERS (14) &nbsp; [ + INVITE ]</div>
+        <div class="wf-block">NAME · ROLE · LOCATION · STATUS<br><div class="wf-line mid"></div><div class="wf-line mid"></div></div>
+      </div></div>
+
+      <h3>Settings — Pipeline Config, Referral Taxonomy, Insurance Carriers</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-topbar">SETTINGS &nbsp; [ General ] [ Pipeline ] [ Referral Sources ] [ Insurance ] [ Notifications ]</div>
+        <div class="wf-block">STAGE ORDER (drag to reorder) — New Lead · Attempted Contact · Contacted · … <div class="wf-chip">+ Add custom stage</div></div>
+      </div></div>
+
+      <h3>Audit Log</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-topbar">FILTER: Entity ▾ User ▾ Date range ▾</div>
+        <div class="wf-block">TIMESTAMP · USER · ENTITY · FIELD · OLD → NEW<br><div class="wf-line mid"></div><div class="wf-line mid"></div></div>
+      </div></div>
+
+      <h3>Integrations &amp; Google Sheets Sync Monitor</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-cols two">
+          <div class="wf-block"><div class="wf-title">CONNECTED</div><div class="wf-chip" style="border-color:var(--success)">✓ Google Sheets</div></div>
+          <div class="wf-block"><div class="wf-title">SYNC HEALTH</div>Last sync: 2 min ago · Queue: 0 · Failures (24h): 1 <div class="wf-chip">View conflict queue</div></div>
+        </div>
+      </div></div>
+
+      <h3>API Settings &amp; Webhooks</h3>
+      <div class="wf-wrap"><div class="wf">
+        <div class="wf-cols two">
+          <div class="wf-block"><div class="wf-title">API KEYS</div><div class="wf-line short"></div><div class="wf-chip">+ Generate key</div></div>
+          <div class="wf-block"><div class="wf-title">WEBHOOKS</div>lead.created → https://…<br>stage.changed → https://…</div>
+        </div>
+      </div></div>
+
+      <h3>Mobile — Dashboard, Pipeline, Lead Detail</h3>
+      <div class="wf-wrap"><div class="wf-cols three">
+        <div class="wf" style="max-width:180px;"><div class="wf-title">MOBILE HOME</div><div class="wf-kpi">TASKS<b>6</b></div><div class="wf-block" style="min-height:40px;">swipe KPIs →</div></div>
+        <div class="wf" style="max-width:180px;"><div class="wf-title">MOBILE PIPELINE</div><div class="wf-card">#7786 · Contacted</div><div class="wf-card">#7783 · New</div></div>
+        <div class="wf" style="max-width:180px;"><div class="wf-title">MOBILE LEAD</div>[Details][Timeline][Tasks]<div class="wf-line short"></div></div>
+      </div></div>
+    </section>
+
+    <section id="flows">
+      <p class="eyebrow">Reference · 02</p>
+      <h2>User flows</h2>
+
+      <h3>New lead intake flow</h3>
+      <div class="flow">
+        <div class="flow-step"><div class="n">1</div><div><h5>Lead arrives</h5><p>Via intake form, Google Sheets sync, or API</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">2</div><div><h5>Duplicate check runs automatically</h5><p>Phone/email/DOB+zip match against existing leads (AR-014–AR-017)</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">3</div><div><h5>Auto-assigned to a Coordinator</h5><p>Round-robin at the relevant location</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">4</div><div><h5>Coordinator makes first contact</h5><p>Logged as an Activity; SLA clock starts at creation, not first contact</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">5</div><div><h5>Insurance eligibility confirmed</h5><p>Required before stage can advance past Contacted</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">6</div><div><h5>Consultation scheduled</h5><p>Calendar event created; auto-advances stage</p></div></div>
+      </div>
+
+      <h3>Escalation flow (missed SLA)</h3>
+      <div class="flow">
+        <div class="flow-step"><div class="n">1</div><div><h5>24h elapses with no activity logged</h5><p>Since lead creation or last activity, whichever is later</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">2</div><div><h5>AR-002 fires</h5><p>In-app + email notification to owner</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">3</div><div><h5>48h elapses</h5><p>AR-005 fires: escalation copy created for the owner's Manager</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">4</div><div><h5>Manager reassigns or intervenes</h5><p>From the Operations Dashboard breach list, inline</p></div></div>
+      </div>
+
+      <h3>Duplicate merge flow</h3>
+      <div class="flow">
+        <div class="flow-step"><div class="n">1</div><div><h5>System flags a likely duplicate</h5><p>Non-blocking banner on both records</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">2</div><div><h5>Coordinator opens Duplicate Review Queue</h5><p>Sees match basis and confidence score</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">3</div><div><h5>Merge screen: field-by-field reconciliation</h5><p>Manager approval required if either record has already reached Consult Scheduled or later</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">4</div><div><h5>Merge commits</h5><p>Timelines concatenated, losing ID soft-archived with a permanent redirect</p></div></div>
+      </div>
+
+      <h3>Report generation flow</h3>
+      <div class="flow">
+        <div class="flow-step"><div class="n">1</div><div><h5>Manager opens Reports Home</h5><p>Picks a saved template or starts a custom build</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">2</div><div><h5>Sets date range, dimensions, metrics</h5><p>Live preview renders as selections change</p></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="n">3</div><div><h5>Exports or schedules</h5><p>PDF/CSV immediately, or recurring email delivery</p></div></div>
+      </div>
+    </section>
+
+    <footer>
+      Wellspring Operations Platform — PRD Part 1 of 4 · Prepared by Damco Digital · 13 Jul 2026 · Continue to Part 2: Automation Engine.
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+    var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+    if (!sections.length) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          var id = '#' + entry.target.id;
+          links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px' });
+    sections.forEach(function(s){ io.observe(s); });
+  })();
+</script>

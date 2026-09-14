@@ -1,7 +1,7 @@
 # KodaCars — Action Tracker
 
-> Last updated: 2026-05-12
-> Open: 14 | In Progress: 0 | Completed: 2
+> Last updated: 2026-09-08
+> Open: 18 | In Progress: 0 | Completed: 2
 
 ---
 
@@ -23,6 +23,10 @@
 | 12 | 2026-05-12 | Build 15-20 quality backlinks in 3 months (directory + local listings) | Rishabh | Medium | Month 3 | Open | SEO Strategy |
 | 13 | 2026-05-12 | Identify first parking lot partner (Way.com / APR) | Client (Brahm) | Critical | TBD | Open | GTM |
 | 14 | 2026-05-12 | Set up referral programme ("Give $50, Get $50") | Client/Rishabh | Medium | Pre-launch | Open | GTM |
+| 15 | 2026-09-08 | Launch small always-on Google Search campaign on high-intent lot-owner keywords (e.g. "monetize my parking lot") | Rishabh | Medium | TBD | Open | Ad Platform Feasibility Research |
+| 16 | 2026-09-08 | Build Meta lot-owner acquisition campaign (Work demographics job title/employer + Hotel/Motel/Real Estate interest targeting) as secondary channel to LinkedIn | Rishabh | Medium | TBD | Open | Ad Platform Feasibility Research |
+| 17 | 2026-09-08 | Test Microsoft Advertising LinkedIn Profile Targeting (industry/job-function bid boost) paired with parking/hotel-monetization Search keywords | Rishabh | Medium | TBD | Open | Ad Platform Feasibility Research (Round 2) |
+| 18 | 2026-09-08 | Run Quora Ads test on parking/hotel-ops topic and question targeting — needs real $50-200/day budget over 2-3 weeks, not the $5/day platform minimum, to get useful data | Rishabh | Low | TBD | Open | Ad Platform Feasibility Research (Round 2) |
 
 ---
 
@@ -39,7 +43,8 @@
 
 | Date | Task | Status |
 |---|---|---|
-| — | — | — |
+| 2026-09-08 | Confirm Lot Owner TG presence/feasibility on X, YouTube, LinkedIn, Meta ahead of digital presence expansion | Completed |
+| 2026-09-08 | Extend feasibility research to Quora, Reddit, Microsoft/Bing Ads (LinkedIn Profile Targeting) | Completed |
 
 ---
 

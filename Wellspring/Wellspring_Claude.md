@@ -1,8 +1,8 @@
 # Wellspring Therapeutic Partners — Client Control Room
 
-> Last updated: 2026-05-12
-> Sources: QBR Q1 2026 (Final), Competitor Intelligence Report (Mar 2026), Weekly Reports (Mar 8 – Apr 18, 2026)
-> Data period: November 2025 – April 2026
+> Last updated: 2026-08-25
+> Sources: QBR Q1 2026 (Final), Competitor Intelligence Report (Mar 2026), Weekly Reports (Mar 8 – Aug 22, 2026)
+> Data period: November 2025 – August 2026
 
 ---
 
@@ -44,7 +44,7 @@
 | **TOTAL** | | **$4,214** | **48** | **$87.80** | **4.51%** | **14** | |
 
 **Top Converting Keywords:** Loss & Grief Support (8), Therapists Near Me (8), Psychiatrist Troy MI (3), Grief Therapist Michigan (2)
-**Negatives added:** Medicaid, Medicare, free/low-cost/cheap therapy, Blue Cross Complete, Molina, HAP, Windsor (out of service area), jobs/careers
+**Negatives added:** Medicaid, Medicare, free/low-cost/cheap therapy, Blue Cross Complete, Molina, HAP, Windsor (out of service area), jobs/careers, UHC medicaid, priority medicaid, state insurance, government insurance, meridian health, meridian medicaid *(added Aug 2026 after 8-week recurring block)*
 
 ### Meta Ads — Total Spend Nov–Feb: $2,460
 
@@ -237,6 +237,45 @@
 | Apr 12–18 | 50.0% | Recovered; DSA outperforming |
 | May 3–9 | 53.8% | Regional Search launched; strong DSA week |
 | May 10–16 | **63.2%** | Best in 2 months; 19 leads; Internal 100%; Google 28.6% |
+
+---
+
+## Campaign Structure Update — August 2026
+
+### Active Campaigns (as of 19 Aug 2026)
+
+| Campaign | Label | Status | Notes |
+|---|---|---|---|
+| `Damco_WS_Generic_Search_041125` | Generic Search | **Active — primary** | Reinstated as primary campaign Aug 2026. Paused briefly when Broad Match test launched. |
+| `Damco_DSA_Wellspring_Ad_270226` | DSA | **Active** | Consistently most efficient CPC ($2.50–$3.20). Running all 7 days. |
+| `Damco_WS_Generic_Search_090626_Broad` | Broad Match | **Being wound down** | Launched as a test in Jun 2026. Underperformed vs Generic Search on conversion rate and lead quality. Being phased out over 2–3 days from 19 Aug 2026. |
+
+### Campaign Test — Broad Match (`090626_Broad`) — Outcome
+
+- Launched ~Jun 2026 as a broad match test against the existing Generic Search campaign
+- Ran Aug 9–15 as the dominant spend driver (68% of budget, $355 of $524)
+- **Verdict:** Inferior lead quality and lower conversion rate vs `041125`. Decision made 19 Aug 2026 to revert.
+- `041125` reinstated as primary. Broad Match to be fully paused within 2–3 days.
+
+### Medicaid Negative Keywords — Resolved Aug 2026
+
+Negative keywords added to both active campaigns: `medicaid`, `UHC medicaid`, `priority medicaid`, `state insurance`, `government insurance`, `meridian health`, `meridian medicaid`. Issue had recurred for 8 consecutive weeks (mid-Jun to mid-Aug 2026). Now closed.
+
+---
+
+## Weekly Performance Log — Jul–Aug 2026
+
+| Week | Spend | Total Leads | Google Leads | Google Booked | Google Rate | Total Booked | Overall Rate | Key Event |
+|---|---|---|---|---|---|---|---|---|
+| Jul 12–18 | $557 | 15 | 7 | 3 | 43% | 10 | 67% | Medicaid block (5th week) |
+| Jul 19–25 | $532 | 11 | 5 | 3 | 60% | 8 | 73% | Best scheduling rate in months |
+| Jul 26–Aug 1 | $287 | 16 | 6 | 5 | 83% | 11 | 69% | Intentional spend reduction; best CPL ($48) on record |
+| Aug 2–8 | $571 | 12 | 4 | 0 | 0% | 4 | 33% | First week with 0 ad bookings; all 4 had specific disqualifiers |
+| Aug 9–15 | $524 | 16 | 7 | 3 | 43% | 7 | 44% | Broad Match wound down; Medicaid negatives added; 7 Google leads per consultation sheet (source of truth) |
+| Aug 16–22 | $474 | 15 | 2 | 2 | 100% | 9 | 60% | 6 platform form conv vs 2 CRM leads — gap flagged; DSA 0 form conv (7 call clicks); Internal referrals 5/5 booked; Broad Match fully off |
+| Aug 23–29 | $322 | 10 | 5 | 4 | 80% | 4 | 40% | Actual confirmed spend $321.96 (report published at $122 — partial export at time of build); CPL $64; no-response top decline reason (3 leads); Cigna + Medicaid blocked 2 |
+| Aug 30–Sep 5 | $431 | 10 | 4 | 2 | 50% | 5 | 50% | Full export; both non-bookings were specific disqualifiers (Medicare + addiction treatment not offered); External + Psychology Today 3/3 booked; CPL $108; spend up 34% WoW — change history review flagged |
+| Sep 6–12 | $506 | 10 | 4 | 2 confirmed + 2 pending | 50%+ | 4 (57% of confirmed) | 57% confirmed | Spend highest in 6 weeks ($506); DSA 7 call clicks / 0 form conv (3rd consecutive week); HAP blocked a lead again; 2 Google Ads leads (Sep 10) awaiting Sam's review — true rate not final; CPL $127 |
 
 ---
 

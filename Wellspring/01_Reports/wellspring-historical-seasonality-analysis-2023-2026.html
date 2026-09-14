@@ -1,0 +1,538 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Wellspring — Historical Insights Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--cream:#F7F3EE;--cream-dark:#EDE7DC;--charcoal:#1C1C1A;--warm-mid:#6B6460;--teal:#3D7A72;--teal-light:#5A9E95;--teal-pale:#EAF3F2;--rust:#C25B3F;--amber:#C9882A;--violet:#5C4E9E;--green:#3D8A60;--pink:#C4527A;--red:#C44040;--border:#DDD5C8;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#f0ece6;font-family:'DM Sans',sans-serif;color:var(--charcoal);font-size:13px;line-height:1.6;}
+  .page{max-width:1100px;margin:0 auto;padding:28px 32px;background:var(--cream);min-height:100vh;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:16px;border-bottom:1.5px solid var(--border);margin-bottom:8px;}
+  .logo-name{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:500;letter-spacing:-0.5px;color:var(--charcoal);line-height:1;}
+  .logo-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:4px;font-weight:500;}
+  .header-meta{text-align:right;}
+  .report-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--warm-mid);font-weight:500;}
+  .report-week{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--charcoal);margin-top:2px;}
+  .report-prepared{font-size:11px;color:var(--warm-mid);margin-top:4px;}
+  .section-label{font-size:9px;text-transform:uppercase;letter-spacing:3px;color:var(--teal);font-weight:500;margin-bottom:8px;}
+  .section-divider{margin:0 0 14px;padding-top:0;display:flex;align-items:center;gap:12px;}
+  .section-divider .sdot{width:9px;height:9px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+  .section-divider h2{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--charcoal);}
+  .section-divider .stag{font-size:10px;color:var(--warm-mid);font-weight:400;font-family:'DM Sans',sans-serif;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+  .kpi-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 18px;position:relative;overflow:hidden;}
+  .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal);border-radius:10px 10px 0 0;}
+  .kpi-card.amber::before{background:var(--amber);}.kpi-card.violet::before{background:var(--violet);}
+  .kpi-card.green::before{background:var(--green);}.kpi-card.rust::before{background:var(--rust);}.kpi-card.pink::before{background:var(--pink);}
+  .kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--warm-mid);font-weight:500;margin-bottom:4px;}
+  .kpi-value{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;color:var(--charcoal);line-height:1;}
+  .kpi-sub{font-size:11px;color:var(--warm-mid);margin-top:3px;}
+  .kpi-badge{display:inline-block;font-size:9.5px;padding:2px 7px;border-radius:20px;margin-top:4px;font-weight:500;}
+  .badge-up{background:#E8F5EC;color:#2E7D4F;}.badge-warn{background:#FDF6EC;color:#C9882A;}.badge-down{background:#FDF1EE;color:#C25B3F;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  .panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+  .panel-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--charcoal);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .panel-title .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+  .campaign-table{width:100%;border-collapse:collapse;}
+  .campaign-table th{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--warm-mid);font-weight:500;padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;}
+  .campaign-table th:first-child{text-align:left;}
+  .campaign-table td{padding:11px 10px;font-size:12.5px;text-align:right;border-bottom:1px solid #F0EDE8;color:var(--charcoal);}
+  .campaign-table td:first-child{text-align:left;}
+  .campaign-table tr.total-row td{border-bottom:none;font-weight:500;background:var(--teal-pale);}
+  .campaign-table tr.total-row td:first-child{border-radius:6px 0 0 6px;}
+  .campaign-table tr.total-row td:last-child{border-radius:0 6px 6px 0;}
+  .metric-highlight{display:inline-block;background:var(--teal-pale);color:var(--teal);font-weight:500;border-radius:4px;padding:1px 6px;font-size:12px;}
+  .hbar-row{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+  .hbar-label{font-size:11.5px;color:var(--charcoal);min-width:170px;flex-shrink:0;}
+  .hbar-track{flex:1;background:var(--cream-dark);border-radius:4px;height:26px;}
+  .hbar-fill{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;min-width:34px;}
+  .hbar-pct{font-size:11px;font-weight:600;color:#fff;white-space:nowrap;}
+  .hbar-count{font-size:12px;color:var(--warm-mid);min-width:50px;text-align:right;font-weight:600;}
+  .insight-card{border-left:3px solid var(--teal);padding:10px 14px;margin-bottom:9px;background:var(--teal-pale);border-radius:0 8px 8px 0;font-size:12.5px;line-height:1.55;}
+  .insight-card.amber{border-left-color:var(--amber);background:#FDF6EC;}
+  .insight-card.rust{border-left-color:var(--rust);background:#FDF1EE;}
+  .insight-card.green{border-left-color:var(--green);background:#EAF6EE;}
+  .insight-card strong{font-weight:600;color:var(--charcoal);}
+  .top-insights{background:linear-gradient(135deg,var(--teal),#2c5a54);border-radius:12px;padding:18px 22px;margin-bottom:18px;}
+  .top-insights .til{font-size:9px;text-transform:uppercase;letter-spacing:2.5px;color:#E8C97A;font-weight:600;margin-bottom:10px;}
+  .top-insights ol{margin:0;padding-left:18px;color:#fff;}
+  .top-insights li{margin-bottom:9px;font-size:12.5px;line-height:1.55;}
+  .top-insights li:last-child{margin-bottom:0;}
+  .top-insights b{color:#F5DFA0;}
+  .notice-inline{background:#FDF6EC;border:1px solid #F0D9B5;border-radius:8px;padding:9px 14px;font-size:11px;color:var(--charcoal);margin-bottom:14px;}
+  .notice-inline strong{font-weight:500;}
+  .trend-card{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center;}
+  .trend-card.current{background:var(--teal-pale);border-color:#b2d8d4;}
+  .trend-week{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--warm-mid);font-weight:500;margin-bottom:6px;}
+  .trend-metric{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--charcoal);line-height:1;}
+  .trend-sub{font-size:10px;color:var(--warm-mid);margin-top:3px;}
+  .source-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .chip{background:var(--cream);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;display:flex;align-items:center;gap:6px;}
+  .chip-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:600;letter-spacing:.2px;}
+  .tag.high{background:#FDF1EE;color:var(--rust);}.tag.med{background:#FDF6EC;color:var(--amber);}
+  .tag.low{background:#E8F5EC;color:#2E7D4F;}.tag.info{background:var(--teal-pale);color:var(--teal);}
+  .footer{margin-top:20px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .footer-left{font-size:10.5px;color:var(--warm-mid);line-height:1.7;}
+  .footer-right{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:var(--teal);}
+  .chart-svg{width:100%;height:auto;}
+  .gridline{stroke:#DDD5C8;stroke-width:1;}
+  .axis-line{stroke:#6B6460;stroke-width:1;}
+  .axis-label{fill:#6B6460;font-size:11px;font-family:'DM Sans',sans-serif;}
+  .bar-value{fill:#1C1C1A;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:11.5px;color:var(--warm-mid);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .caption{font-size:11px;color:var(--warm-mid);margin-top:8px;line-height:1.5;}
+  @media(max-width:800px){.two-col,.kpi-grid{grid-template-columns:1fr;}}
+
+  /* TABS */
+  .tab-nav{display:flex;gap:2px;flex-wrap:wrap;margin:18px 0 22px;border-bottom:2px solid var(--border);}
+  .tab-btn{background:transparent;border:none;padding:10px 15px;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:500;color:var(--warm-mid);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;letter-spacing:.2px;white-space:nowrap;}
+  .tab-btn:hover{color:var(--charcoal);}
+  .tab-btn.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:600;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;animation:fadein .2s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div>
+      <div class="logo-name">Wellspring</div>
+      <div class="logo-sub">Therapeutic Partners</div>
+    </div>
+    <div class="header-meta">
+      <div class="report-label">Historical Insights Report</div>
+      <div class="report-week">2023 – 2026 YTD</div>
+      <div class="report-prepared">Prepared by Damco Digital &nbsp;·&nbsp; Generated 25 Aug 2026</div>
+    </div>
+  </div>
+
+  <div class="notice-inline">
+    <strong>Sources:</strong> Consultation Demographics workbook (37 weekly tabs + 2023/2024 legacy sheets) + Google Ads Performance Report.
+  </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="growth" onclick="showTab('growth')">Growth &amp; Seasonality</button>
+    <button class="tab-btn" data-tab="funnel" onclick="showTab('funnel')">The Funnel</button>
+    <button class="tab-btn" data-tab="channel" onclick="showTab('channel')">Channel Performance</button>
+    <button class="tab-btn" data-tab="capture" onclick="showTab('capture')">Capture &amp; Service</button>
+    <button class="tab-btn" data-tab="who" onclick="showTab('who')">Who's Inquiring</button>
+    <button class="tab-btn" data-tab="action" onclick="showTab('action')">Action Plan</button>
+  </div>
+
+  <!-- ============ TAB 1: GROWTH & SEASONALITY ============ -->
+  <div class="tab-panel active" id="tab-growth">
+    <div class="section-divider"><span class="sdot"></span><h2>Growth &amp; Seasonality Across Three Eras</h2><span class="stag">2023 (Apr–Dec) · 2024 (full year) · 2025+2026 (Dec–Aug, partial)</span></div>
+
+    <div class="top-insights">
+      <div class="til">Top 2 Insights</div>
+      <ol>
+        <li><b>Scheduling rate has climbed every era, not just this year.</b> 21.6% (2023) → 43.5% (2024) → 53.9% (2025+2026) — a genuine multi-year quality improvement, separate from the ramp-up seen within 2026 itself.</li>
+        <li><b>The only seasonal pattern that repeats across years is an October rebound</b> after an Aug/Sep trough (2023's highest month; 2024's post-trough recovery) — worth testing against a third year before treating it as a rule.</li>
+      </ol>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title"><span class="dot"></span> Total Volume by Era</div>
+        <div class="chart-svg">
+<svg viewBox="0 0 760 260" class="chart-svg" role="img" aria-label="bar chart">
+<line x1="40" y1="204.0" x2="750" y2="204.0" class="gridline"/>
+<text x="34" y="207.0" class="axis-label" text-anchor="end">0</text>
+<line x1="40" y1="158.0" x2="750" y2="158.0" class="gridline"/>
+<text x="34" y="161.0" class="axis-label" text-anchor="end">304</text>
+<line x1="40" y1="112.0" x2="750" y2="112.0" class="gridline"/>
+<text x="34" y="115.0" class="axis-label" text-anchor="end">609</text>
+<line x1="40" y1="66.0" x2="750" y2="66.0" class="gridline"/>
+<text x="34" y="69.0" class="axis-label" text-anchor="end">913</text>
+<line x1="40" y1="20.0" x2="750" y2="20.0" class="gridline"/>
+<text x="34" y="23.0" class="axis-label" text-anchor="end">1218</text>
+<rect x="40.0" y="50.0" width="227.3" height="154.0" rx="3" fill="#3D7A72"><title>2023 (Apr-Dec): 1019</title></rect>
+<text x="153.7" y="42.0" class="bar-value" text-anchor="middle">1019</text>
+<text x="153.7" y="220" class="axis-label" text-anchor="middle">2023</text>
+<text x="153.7" y="234" class="axis-label" text-anchor="middle">(Apr-Dec)</text>
+<rect x="281.3" y="44.0" width="227.3" height="160.0" rx="3" fill="#C9882A"><title>2024 (full yr): 1059</title></rect>
+<text x="395.0" y="36.0" class="bar-value" text-anchor="middle">1059</text>
+<text x="395.0" y="220" class="axis-label" text-anchor="middle">2024</text>
+<text x="395.0" y="234" class="axis-label" text-anchor="middle">(full yr)</text>
+<rect x="522.7" y="124.7" width="227.3" height="79.3" rx="3" fill="#3D8A60"><title>2025+2026 (Dec-Aug): 525</title></rect>
+<text x="636.3" y="116.7" class="bar-value" text-anchor="middle">525</text>
+<text x="636.3" y="220" class="axis-label" text-anchor="middle">2025+2026</text>
+<text x="636.3" y="234" class="axis-label" text-anchor="middle">(Dec-Aug)</text>
+<line x1="40" y1="204" x2="750" y2="204" class="axis-line"/>
+</svg>
+        </div>
+        <p class="caption">2025+2026 covers 9 months of the era vs 2024's 12 and 2023's 9 — not a straight comparison; see monthly detail in the underlying data.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="dot" style="background:var(--amber)"></span> Scheduling Rate by Era</div>
+        <div class="chart-svg">
+<svg viewBox="0 0 760 260" class="chart-svg" role="img" aria-label="bar chart">
+<line x1="40" y1="204.0" x2="750" y2="204.0" class="gridline"/>
+<text x="34" y="207.0" class="axis-label" text-anchor="end">0</text>
+<line x1="40" y1="158.0" x2="750" y2="158.0" class="gridline"/>
+<text x="34" y="161.0" class="axis-label" text-anchor="end">18</text>
+<line x1="40" y1="112.0" x2="750" y2="112.0" class="gridline"/>
+<text x="34" y="115.0" class="axis-label" text-anchor="end">35</text>
+<line x1="40" y1="66.0" x2="750" y2="66.0" class="gridline"/>
+<text x="34" y="69.0" class="axis-label" text-anchor="end">52</text>
+<line x1="40" y1="20.0" x2="750" y2="20.0" class="gridline"/>
+<text x="34" y="23.0" class="axis-label" text-anchor="end">70</text>
+<rect x="40.0" y="147.2" width="227.3" height="56.8" rx="3" fill="#3D7A72"><title>2023 (Apr-Dec): 21.6</title></rect>
+<text x="153.7" y="139.2" class="bar-value" text-anchor="middle">21.6%</text>
+<text x="153.7" y="220" class="axis-label" text-anchor="middle">2023</text>
+<text x="153.7" y="234" class="axis-label" text-anchor="middle">(Apr-Dec)</text>
+<rect x="281.3" y="89.7" width="227.3" height="114.3" rx="3" fill="#C9882A"><title>2024 (full yr): 43.5</title></rect>
+<text x="395.0" y="81.7" class="bar-value" text-anchor="middle">43.5%</text>
+<text x="395.0" y="220" class="axis-label" text-anchor="middle">2024</text>
+<text x="395.0" y="234" class="axis-label" text-anchor="middle">(full yr)</text>
+<rect x="522.7" y="62.3" width="227.3" height="141.7" rx="3" fill="#3D8A60"><title>2025+2026 (Dec-Aug): 53.9</title></rect>
+<text x="636.3" y="54.3" class="bar-value" text-anchor="middle">53.9%</text>
+<text x="636.3" y="220" class="axis-label" text-anchor="middle">2025+2026</text>
+<text x="636.3" y="234" class="axis-label" text-anchor="middle">(Dec-Aug)</text>
+<line x1="40" y1="204" x2="750" y2="204" class="axis-line"/>
+</svg>
+        </div>
+        <p class="caption">2023 updated 26 Aug 2026: the client sent a clean, PHI-free November 2023 tracker that replaced the old unreliable November subset (135 inquiries, 66 scheduled = 48.9% — well above the year's other months). This raised 2023's total from 995→1,019 and its scheduling-rate floor from 15.5%→21.6%. Apr, May and Dec still lack reliable status data.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--rust)"></span> Month-by-Month: Leads Generated &amp; Scheduling Rate (Dec 2025–Aug 2026)</div>
+      <p class="caption" style="margin-top:0;margin-bottom:10px;">Shown as two aligned charts sharing the same months rather than one dual-axis chart — leads and scheduling rate are different scales, and overlaying them on one axis would distort one or the other.</p>
+      <div style="font-size:11px;color:var(--warm-mid);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:2px;">Total Leads Generated</div>
+      <div class="chart-svg">
+<svg viewBox="0 0 760 260" class="chart-svg" role="img" aria-label="bar chart">
+<line x1="40" y1="204.0" x2="750" y2="204.0" class="gridline"/>
+<text x="34" y="207.0" class="axis-label" text-anchor="end">0</text>
+<line x1="40" y1="158.0" x2="750" y2="158.0" class="gridline"/>
+<text x="34" y="161.0" class="axis-label" text-anchor="end">25</text>
+<line x1="40" y1="112.0" x2="750" y2="112.0" class="gridline"/>
+<text x="34" y="115.0" class="axis-label" text-anchor="end">49</text>
+<line x1="40" y1="66.0" x2="750" y2="66.0" class="gridline"/>
+<text x="34" y="69.0" class="axis-label" text-anchor="end">74</text>
+<line x1="40" y1="20.0" x2="750" y2="20.0" class="gridline"/>
+<text x="34" y="23.0" class="axis-label" text-anchor="end">99</text>
+<rect x="40.0" y="161.2" width="66.4" height="42.8" rx="3" fill="#3D7A72"><title>Dec 25: 23</title></rect>
+<text x="73.2" y="153.2" class="bar-value" text-anchor="middle">23</text>
+<text x="73.2" y="220" class="axis-label" text-anchor="middle">Dec 25</text>
+<rect x="120.4" y="144.5" width="66.4" height="59.5" rx="3" fill="#3D7A72"><title>Jan 26: 32</title></rect>
+<text x="153.7" y="136.5" class="bar-value" text-anchor="middle">32</text>
+<text x="153.7" y="220" class="axis-label" text-anchor="middle">Jan 26</text>
+<rect x="200.9" y="44.0" width="66.4" height="160.0" rx="3" fill="#3D7A72"><title>Feb 26: 86</title></rect>
+<text x="234.1" y="36.0" class="bar-value" text-anchor="middle">86</text>
+<text x="234.1" y="220" class="axis-label" text-anchor="middle">Feb 26</text>
+<rect x="281.3" y="57.0" width="66.4" height="147.0" rx="3" fill="#3D7A72"><title>Mar 26: 79</title></rect>
+<text x="314.6" y="49.0" class="bar-value" text-anchor="middle">79</text>
+<text x="314.6" y="220" class="axis-label" text-anchor="middle">Mar 26</text>
+<rect x="361.8" y="84.9" width="66.4" height="119.1" rx="3" fill="#3D7A72"><title>Apr 26: 64</title></rect>
+<text x="395.0" y="76.9" class="bar-value" text-anchor="middle">64</text>
+<text x="395.0" y="220" class="axis-label" text-anchor="middle">Apr 26</text>
+<rect x="442.2" y="75.6" width="66.4" height="128.4" rx="3" fill="#3D7A72"><title>May 26: 69</title></rect>
+<text x="475.4" y="67.6" class="bar-value" text-anchor="middle">69</text>
+<text x="475.4" y="220" class="axis-label" text-anchor="middle">May 26</text>
+<rect x="522.7" y="81.2" width="66.4" height="122.8" rx="3" fill="#3D7A72"><title>Jun 26: 66</title></rect>
+<text x="555.9" y="73.2" class="bar-value" text-anchor="middle">66</text>
+<text x="555.9" y="220" class="axis-label" text-anchor="middle">Jun 26</text>
+<rect x="603.1" y="86.8" width="66.4" height="117.2" rx="3" fill="#3D7A72"><title>Jul 26: 63</title></rect>
+<text x="636.3" y="78.8" class="bar-value" text-anchor="middle">63</text>
+<text x="636.3" y="220" class="axis-label" text-anchor="middle">Jul 26</text>
+<rect x="683.6" y="124.0" width="66.4" height="80.0" rx="3" fill="#3D7A72"><title>Aug 26*: 43</title></rect>
+<text x="716.8" y="116.0" class="bar-value" text-anchor="middle">43</text>
+<text x="716.8" y="220" class="axis-label" text-anchor="middle">Aug 26*</text>
+<line x1="40" y1="204" x2="750" y2="204" class="axis-line"/>
+</svg>
+      </div>
+      <div style="font-size:11px;color:var(--warm-mid);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin:14px 0 2px;">Scheduling Rate</div>
+      <div class="chart-svg">
+<svg viewBox="0 0 760 260" class="chart-svg" role="img" aria-label="line chart">
+<line x1="44" y1="226.0" x2="744" y2="226.0" class="gridline"/>
+<text x="38" y="229.0" class="axis-label" text-anchor="end">0%</text>
+<line x1="44" y1="174.5" x2="744" y2="174.5" class="gridline"/>
+<text x="38" y="177.5" class="axis-label" text-anchor="end">20%</text>
+<line x1="44" y1="123.0" x2="744" y2="123.0" class="gridline"/>
+<text x="38" y="126.0" class="axis-label" text-anchor="end">40%</text>
+<line x1="44" y1="71.5" x2="744" y2="71.5" class="gridline"/>
+<text x="38" y="74.5" class="axis-label" text-anchor="end">60%</text>
+<line x1="44" y1="20.0" x2="744" y2="20.0" class="gridline"/>
+<text x="38" y="23.0" class="axis-label" text-anchor="end">80%</text>
+<path d="M 44.0 181.2 L 131.5 137.4 L 219.0 121.2 L 306.5 89.0 L 394.0 53.0 L 481.5 54.2 L 569.0 70.0 L 656.5 62.5 L 744.0 94.2" fill="none" stroke="#C25B3F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="44.0" cy="181.2" r="4.5" fill="#C25B3F"><title>Dec 25: 17.4%</title></circle>
+<circle cx="131.5" cy="137.4" r="4.5" fill="#C25B3F"><title>Jan 26: 34.4%</title></circle>
+<circle cx="219.0" cy="121.2" r="4.5" fill="#C25B3F"><title>Feb 26: 40.7%</title></circle>
+<circle cx="306.5" cy="89.0" r="4.5" fill="#C25B3F"><title>Mar 26: 53.2%</title></circle>
+<circle cx="394.0" cy="53.0" r="4.5" fill="#C25B3F"><title>Apr 26: 67.2%</title></circle>
+<circle cx="481.5" cy="54.2" r="4.5" fill="#C25B3F"><title>May 26: 66.7%</title></circle>
+<circle cx="569.0" cy="70.0" r="4.5" fill="#C25B3F"><title>Jun 26: 60.6%</title></circle>
+<circle cx="656.5" cy="62.5" r="4.5" fill="#C25B3F"><title>Jul 26: 63.5%</title></circle>
+<circle cx="744.0" cy="94.2" r="4.5" fill="#C25B3F"><title>Aug 26*: 51.2%</title></circle>
+<text x="44.0" y="244" class="axis-label" text-anchor="middle">Dec 25</text>
+<text x="131.5" y="244" class="axis-label" text-anchor="middle">Jan 26</text>
+<text x="219.0" y="244" class="axis-label" text-anchor="middle">Feb 26</text>
+<text x="306.5" y="244" class="axis-label" text-anchor="middle">Mar 26</text>
+<text x="394.0" y="244" class="axis-label" text-anchor="middle">Apr 26</text>
+<text x="481.5" y="244" class="axis-label" text-anchor="middle">May 26</text>
+<text x="569.0" y="244" class="axis-label" text-anchor="middle">Jun 26</text>
+<text x="656.5" y="244" class="axis-label" text-anchor="middle">Jul 26</text>
+<text x="744.0" y="244" class="axis-label" text-anchor="middle">Aug 26*</text>
+<line x1="44" y1="226" x2="744" y2="226" class="axis-line"/>
+</svg>
+      </div>
+      <p class="caption">*Aug 2026 is partial (through the 22nd) — the volume dip is a reporting-cutoff artifact, not a confirmed decline. Note volume peaked in Feb (86) while scheduling rate kept climbing through April (67.2%) — the best-quality month wasn't the highest-volume month.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--violet)"></span> Seasonal Observations</div>
+      <div class="insight-card">
+        <strong>October rebound (2023 &amp; 2024):</strong> 2023's Oct (140) is its highest month, up from Aug/Sep (84 each); 2024's Oct (90) rebounds from an Aug/Sep trough (66, 71). Worth testing a modest October 2026 spend increase.
+      </div>
+      <div class="insight-card amber">
+        <strong>Summer softening (both years):</strong> Jun–Aug sits ~40% below each year's peak. In 2026 this coincided with scheduling rate holding 60%+ — quality didn't drop, only quantity. Maintain rather than cut summer spend.
+      </div>
+      <div class="insight-card rust">
+        <strong>December disagreement:</strong> lowest month of 2024 (59) but mid-pack in 2023 (112). The two years disagree — don't pre-emptively cut December 2026 budget on this alone.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB 2: FUNNEL ============ -->
+  <div class="tab-panel" id="tab-funnel">
+    <div class="section-divider"><span class="sdot" style="background:var(--amber)"></span><h2>The Funnel: Where Leads Are Actually Lost</h2><span class="stag">2025+2026 is the only era with paperwork/intake tracking</span></div>
+
+    <div class="top-insights">
+      <div class="til">Top 2 Insights</div>
+      <ol>
+        <li><b>The scheduling rate has more than doubled since 2023 and kept climbing: 21.6% → 43.5% → 53.9%.</b> That's the one funnel stage tracked in all three eras — every other stage below it (paperwork, intake) simply didn't exist as a measurement before 2025, so we have no way to know if today's 35% paperwork drop-off is new or if it's always been there, hidden.</li>
+        <li><b>We only gained the ability to see the paperwork/intake stages in the current era — and what we found (a 35% drop-off between scheduling and paperwork) was invisible in 2023 and 2024 by definition, not because it didn't exist.</b> This is a case where the year-over-year comparison itself is the finding: better tracking revealed a leak that likely existed all along.</li>
+      </ol>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot"></span> 2025+2026 Funnel Waterfall (n=525)</div>
+      <div class="hbar-row"><div class="hbar-label">Total leads</div><div class="hbar-track"><div class="hbar-fill" style="width:100%;background:var(--teal);"><span class="hbar-pct">100%</span></div></div><div class="hbar-count">525</div></div>
+      <div class="hbar-row"><div class="hbar-label">Reached consultation</div><div class="hbar-track"><div class="hbar-fill" style="width:91%;background:var(--teal-light);"><span class="hbar-pct">91%</span></div></div><div class="hbar-count">478</div></div>
+      <div class="hbar-row"><div class="hbar-label">Scheduled</div><div class="hbar-track"><div class="hbar-fill" style="width:54%;background:var(--amber);"><span class="hbar-pct">54%</span></div></div><div class="hbar-count">283</div></div>
+      <div class="hbar-row"><div class="hbar-label">Paperwork done</div><div class="hbar-track"><div class="hbar-fill" style="width:35%;background:var(--rust);"><span class="hbar-pct">35%</span></div></div><div class="hbar-count">184</div></div>
+      <div class="hbar-row"><div class="hbar-label">Intake done</div><div class="hbar-track"><div class="hbar-fill" style="width:34%;background:var(--green);"><span class="hbar-pct">34%</span></div></div><div class="hbar-count">177</div></div>
+      <p class="caption">64 more are mid-process on paperwork and 67 mid-process on intake (recent weeks not yet resolved) — the 35% drop-off is measured against fully-resolved cases.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--violet)"></span> Funnel Comparison Across All Three Eras</div>
+      <table class="campaign-table">
+        <thead><tr><th>Stage</th><th>2023 (n=1,019)</th><th>2024 (n=1,059)</th><th>2025+2026 (n=525)</th></tr></thead>
+        <tbody>
+          <tr><td>Inquiry/form completed</td><td>66.0%</td><td>70.2%</td><td>91.0% (reached consultation)</td></tr>
+          <tr><td>→ Scheduled (of all inquiries)</td><td>21.6%*</td><td>43.5%</td><td>53.9%</td></tr>
+          <tr><td>→ Completed paperwork</td><td style="color:var(--warm-mid);">not tracked</td><td style="color:var(--warm-mid);">not tracked</td><td>65.0% of scheduled</td></tr>
+          <tr><td>→ Completed intake</td><td style="color:var(--warm-mid);">not tracked</td><td style="color:var(--warm-mid);">not tracked</td><td>62.5% of scheduled</td></tr>
+        </tbody>
+      </table>
+      <p class="caption">*2023 figure is still a floor — November is now resolved via the client's corrected tracker, but Apr, May and Dec remain unknown-status.</p>
+    </div>
+  </div>
+
+  <!-- ============ TAB 3: CHANNEL PERFORMANCE ============ -->
+  <div class="tab-panel" id="tab-channel">
+    <div class="section-divider"><span class="sdot" style="background:var(--pink)"></span><h2>Channel Performance: Volume vs Quality</h2><span class="stag">Feb–Aug 2026 only — the only period with Source tracking</span></div>
+
+    <div class="top-insights">
+      <div class="til">Top 2 Insights</div>
+      <ol>
+        <li><b>Psychology Today is the only channel that's shown up as a top performer in every era we have data for — 38 leads in 2023, 163 in 2024, and still running strong in 2025+2026 (34 leads, 68.8% scheduling) — yet it's the one channel that's LOST visibility over time.</b> It was an explicitly tracked, named source in 2023/2024; today it's uncounted, buried inside the generic "Other" bucket.</li>
+        <li><b>The entire channel-tracking taxonomy changed character between eras, and we lost a whole category of insight as a result.</b> 2023/2024 tracked relationship-based referrals — doctors' offices (142 leads in 2024 alone) and existing/returning patients (224 combined) were major, named channels. The current Source field only tracks ad-platform categories (Google/Meta/Internal/Other/External), so we can no longer tell whether physician and patient referrals are still a major engine or have quietly declined — the comparison itself is the gap.</li>
+      </ol>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title"><span class="dot"></span> Scheduling Rate by Source</div>
+        <div class="hbar-row"><div class="hbar-label">Internal</div><div class="hbar-track"><div class="hbar-fill" style="width:86%;background:var(--green);"><span class="hbar-pct">86%</span></div></div><div class="hbar-count">n=133</div></div>
+        <div class="hbar-row"><div class="hbar-label">External</div><div class="hbar-track"><div class="hbar-fill" style="width:74%;background:var(--green);"><span class="hbar-pct">74%</span></div></div><div class="hbar-count">n=59</div></div>
+        <div class="hbar-row"><div class="hbar-label">Google Ads</div><div class="hbar-track"><div class="hbar-fill" style="width:58%;background:var(--amber);"><span class="hbar-pct">58%</span></div></div><div class="hbar-count">n=111</div></div>
+        <div class="hbar-row"><div class="hbar-label">Other</div><div class="hbar-track"><div class="hbar-fill" style="width:40%;background:var(--rust);"><span class="hbar-pct">40%</span></div></div><div class="hbar-count">n=158</div></div>
+        <div class="hbar-row"><div class="hbar-label">Meta Ad</div><div class="hbar-track"><div class="hbar-fill" style="width:4%;background:var(--red);"><span class="hbar-pct">0%</span></div></div><div class="hbar-count">n=10</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="dot" style="background:var(--rust)"></span> Why Leads Decline, by Source</div>
+        <table class="campaign-table">
+          <thead><tr><th>Source</th><th>n (No)</th><th style="text-align:left;">Top reasons</th></tr></thead>
+          <tbody>
+            <tr><td>Other</td><td>88</td><td style="text-align:left;">Insurance 29, Incomplete 22, No resp. 11</td></tr>
+            <tr><td>Google Ads</td><td>46</td><td style="text-align:left;">Other 16, Insurance 14, No resp. 9</td></tr>
+            <tr><td>Meta Ad</td><td>10</td><td style="text-align:left;"><strong style="color:var(--rust);">Insurance 7</strong> (70% of declines)</td></tr>
+            <tr><td>External</td><td>14</td><td style="text-align:left;">Other 7, Insurance 5</td></tr>
+            <tr><td>Internal</td><td>18</td><td style="text-align:left;">Other 6, Incomplete 6</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--teal)"></span> Source Compared Across All Three Eras (different taxonomies — shown side by side)</div>
+      <table class="campaign-table">
+        <thead><tr><th style="text-align:left;">2023 "Referred By" (top named)</th><th style="text-align:left;">2024 "Referral Source" (top named)</th><th style="text-align:left;">2025+2026 "Source" (Feb+)</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left;">Psychology Today 38</td><td style="text-align:left;">Psychology Today 163</td><td style="text-align:left;">Other 158 <span class="caption">(incl. Psych Today 34, 68.8% sched.)</span></td></tr>
+          <tr><td style="text-align:left;">Web/Internet search ~50</td><td style="text-align:left;">Doctors Office/Specialist 142</td><td style="text-align:left;">Internal 133</td></tr>
+          <tr><td style="text-align:left;">Friend 19</td><td style="text-align:left;">Internet Search 137</td><td style="text-align:left;">Google Ads 111</td></tr>
+          <tr><td style="text-align:left;">Google 7</td><td style="text-align:left;">Another Patient 104</td><td style="text-align:left;">External 59</td></tr>
+          <tr><td style="text-align:left;">PCP 6</td><td style="text-align:left;">Internal Referral 66</td><td style="text-align:left;">Meta Ad 10</td></tr>
+        </tbody>
+      </table>
+      <div class="insight-card" style="margin-top:12px;"><strong>Current-period detail (2025+2026 only, no historical baseline exists for these):</strong> "Other" is both the largest channel (158 leads) and the worst-converting one (40.5%) among identifiable buckets. Meta Ads' 0% scheduling rate is specifically driven by insurance mismatches (70% of its declines, vs. 30% for Google Ads) — a targeting problem, not a generic quality one.</div>
+    </div>
+  </div>
+
+  <!-- ============ TAB 4: CAPTURE & SERVICE ============ -->
+  <div class="tab-panel" id="tab-capture">
+    <div class="section-divider"><span class="sdot" style="background:var(--violet)"></span><h2>Capture Method &amp; Service Mix</h2><span class="stag">Service mix compared 2023 vs 2024 vs 2025+2026 · capture method is 2025+2026 only</span></div>
+
+    <div class="top-insights">
+      <div class="til">Top 2 Insights</div>
+      <ol>
+        <li><b>Psychotherapy/Individual Therapy's share of inbound has climbed every single era: 47.1% (2023) → 51.2% (2024) → 61.9% (2025+2026).</b> This is a consistent multi-year shift, not a one-off — the practice has organically become more psychotherapy-dominant over time.</li>
+        <li><b>Medication Management's share moved the opposite way — and not in a straight line: 36.1% (2023) → 42.2% (2024) → 23.0% (2025+2026).</b> It grew before falling, so this isn't simple decline — worth checking with Wellspring whether it's falling demand or a capacity/NP-availability constraint on the supply side.</li>
+      </ol>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot"></span> Service Mix Compared Across All Three Eras</div>
+      <p class="caption" style="margin-top:0;margin-bottom:10px;">Field taxonomies differ by period (2023/2024 use boolean TE/MM/IT flags; 2025+2026 uses free-text, multi-select service tags) — IT ≈ Psychotherapy is the closest cross-era match; TE has no direct 2025+2026 equivalent. 2023 figures include the corrected November tracker, mapping its "Therapy" flag to IT (the new tracker doesn't separately track TE, so 2023's TE% is likely understated).</p>
+      <table class="campaign-table">
+        <thead><tr><th style="text-align:left;">Category</th><th>2023 (n=1,019)</th><th>2024 (n=1,064)</th><th>2025+2026 (n=525)</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left;">IT / Psychotherapy</td><td>47.1%</td><td>51.2%</td><td><strong>61.9%</strong></td></tr>
+          <tr><td style="text-align:left;">MM / Medication Mgmt</td><td>36.1%</td><td>42.2%</td><td>23.0%</td></tr>
+          <tr><td style="text-align:left;">TE (no 2025+2026 equivalent)</td><td>23.7%*</td><td style="color:var(--warm-mid);">not tracked</td><td style="color:var(--warm-mid);">n/a</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title"><span class="dot"></span> Went On to Schedule Ongoing Care, by How the Consultation Was Booked</div>
+        <p class="caption" style="margin-top:0;margin-bottom:10px;">These labels describe how the initial consultation call was arranged (source field: "Type of Consultation") — not the outcome. The bars show whether that person <em>later</em> committed to ongoing scheduled care, a separate field ("Did they schedule?"). "Form-booked" is Wellspring's original "Scheduled via form" label, renamed here to avoid reading as if it were the scheduling outcome itself.</p>
+        <div class="hbar-row"><div class="hbar-label">Completed inquiry</div><div class="hbar-track"><div class="hbar-fill" style="width:77%;background:var(--green);"><span class="hbar-pct">77%</span></div></div><div class="hbar-count">n=150</div></div>
+        <div class="hbar-row"><div class="hbar-label">Organic phone call</div><div class="hbar-track"><div class="hbar-fill" style="width:72%;background:var(--green);"><span class="hbar-pct">72%</span></div></div><div class="hbar-count">n=164</div></div>
+        <div class="hbar-row"><div class="hbar-label">Form-booked consultation</div><div class="hbar-track"><div class="hbar-fill" style="width:53%;background:var(--amber);"><span class="hbar-pct">53%</span></div></div><div class="hbar-count">n=99</div></div>
+        <div class="hbar-row"><div class="hbar-label">Started inquiry (abandoned)</div><div class="hbar-track"><div class="hbar-fill" style="width:4%;background:var(--red);"><span class="hbar-pct">0%</span></div></div><div class="hbar-count">n=47</div></div>
+        <div class="hbar-row"><div class="hbar-label">Meta lead call</div><div class="hbar-track"><div class="hbar-fill" style="width:4%;background:var(--red);"><span class="hbar-pct">0%</span></div></div><div class="hbar-count">n=10</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="dot" style="background:var(--amber)"></span> Scheduling Rate by Service</div>
+        <div class="hbar-row"><div class="hbar-label">Psychotherapy</div><div class="hbar-track"><div class="hbar-fill" style="width:73%;background:var(--green);"><span class="hbar-pct">73%</span></div></div><div class="hbar-count">n=325</div></div>
+        <div class="hbar-row"><div class="hbar-label">Medication Mgmt</div><div class="hbar-track"><div class="hbar-fill" style="width:59%;background:var(--amber);"><span class="hbar-pct">59%</span></div></div><div class="hbar-count">n=121</div></div>
+        <div class="hbar-row"><div class="hbar-label">Testing</div><div class="hbar-track"><div class="hbar-fill" style="width:52%;background:var(--amber);"><span class="hbar-pct">52%</span></div></div><div class="hbar-count">n=37</div></div>
+        <div class="hbar-row"><div class="hbar-label">Testing &amp; Eval.</div><div class="hbar-track"><div class="hbar-fill" style="width:33%;background:var(--rust);"><span class="hbar-pct">33%</span></div></div><div class="hbar-count">n=6</div></div>
+        <div class="hbar-row"><div class="hbar-label">Unknown</div><div class="hbar-track"><div class="hbar-fill" style="width:4%;background:var(--red);"><span class="hbar-pct">1%</span></div></div><div class="hbar-count">n=93</div></div>
+      </div>
+    </div>
+    <div class="insight-card"><strong>Current-period detail (2025+2026 only, no historical baseline exists — neither capture method nor this level of service granularity was tracked in 2023/2024):</strong> people whose consultation was booked by phone or fully completed go on to schedule ongoing care 20+ points more often than people whose consultation was booked through the web form (72–77% vs 53.3%) — a gap in <em>later</em> commitment, not a contradiction with the form itself being "scheduled." Psychotherapy is both the highest-volume and highest-converting service (72.8%); Testing &amp; Evaluations is weakest (33–52%, small n), consistent with known $100 deposit friction.</div>
+  </div>
+
+  <!-- ============ TAB 5: WHO'S INQUIRING ============ -->
+  <div class="tab-panel" id="tab-who">
+    <div class="section-divider"><span class="sdot" style="background:var(--green)"></span><h2>Who's Actually Inquiring</h2><span class="stag">Demographics only exist for 2025+2026 — 2023 has no DOB/sex field; 2024's DOB is filled for just 0.7% of records</span></div>
+
+    <div class="top-insights">
+      <div class="til">Top 2 Insights</div>
+      <ol>
+        <li><b>Sunday is consistently the weakest day for scheduling across all three eras — but Saturday isn't, and that only shows up by comparing years.</b> Sunday: 14.3% (2023) → 32.1% (2024) → 43.9% (2025+2026), weak every time. Saturday: 17.6% (2023) → 46.4% (2024) → 31.6% (2025+2026) — bad in two years but genuinely fine in 2024. A single-year read would have wrongly written off Saturday as a bad day; across three years, only Sunday earns that.</li>
+        <li><b>Age and gender have zero historical baseline to compare against — this itself is the finding.</b> 2023 never collected DOB or sex at all; 2024's DOB field is filled for only 7 of 1,064 records (0.7%, unusable). The 27% children/teen share and 73/27 gender split reported here are a first-ever baseline for Wellspring, not a trend — there's nothing to compare them to yet, and that's a tracking gap worth closing so 2026 can be a real baseline for 2027.</li>
+      </ol>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--rust)"></span> Scheduling Rate by Weekday, Compared Across All Three Eras</div>
+      <table class="campaign-table">
+        <thead><tr><th style="text-align:left;">Day</th><th>2023</th><th>2024</th><th>2025+2026</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left;">Monday</td><td>21.6%</td><td>48.0%</td><td>55.1%</td></tr>
+          <tr><td style="text-align:left;">Tuesday</td><td>20.0%</td><td>44.8%</td><td>61.1%</td></tr>
+          <tr><td style="text-align:left;">Wednesday</td><td>22.8%</td><td>41.3%</td><td>61.7%</td></tr>
+          <tr><td style="text-align:left;">Thursday</td><td>33.3%</td><td>43.4%</td><td>60.6%</td></tr>
+          <tr><td style="text-align:left;">Friday</td><td>21.2%</td><td>39.2%</td><td>56.9%</td></tr>
+          <tr><td style="text-align:left;">Saturday</td><td>17.6%</td><td><strong style="color:var(--green);">46.4%</strong></td><td>31.6%</td></tr>
+          <tr><td style="text-align:left;">Sunday</td><td><strong style="color:var(--rust);">14.3%</strong></td><td><strong style="color:var(--rust);">32.1%</strong></td><td><strong style="color:var(--rust);">43.9%</strong></td></tr>
+        </tbody>
+      </table>
+      <p class="caption">2023 rates use known-status records only (Jun–Nov). Sunday (highlighted) is the lowest or near-lowest day in every era; Saturday's rank swings from worst (2023) to best (2024) to worst again (2025+2026) — not a reliable signal on its own.</p>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title"><span class="dot"></span> Age Distribution (n=372 with usable DOB) — 2025+2026 only, no historical baseline</div>
+        <div class="hbar-row"><div class="hbar-label">0–12 (child)</div><div class="hbar-track"><div class="hbar-fill" style="width:13%;background:var(--teal);"><span class="hbar-pct">13%</span></div></div></div>
+        <div class="hbar-row"><div class="hbar-label">13–17 (teen)</div><div class="hbar-track"><div class="hbar-fill" style="width:14%;background:var(--teal);"><span class="hbar-pct">14%</span></div></div></div>
+        <div class="hbar-row"><div class="hbar-label">18–24</div><div class="hbar-track"><div class="hbar-fill" style="width:16%;background:var(--teal-light);"><span class="hbar-pct">16%</span></div></div></div>
+        <div class="hbar-row"><div class="hbar-label">25–34</div><div class="hbar-track"><div class="hbar-fill" style="width:20%;background:var(--green);"><span class="hbar-pct">20%</span></div></div></div>
+        <div class="hbar-row"><div class="hbar-label">35–44</div><div class="hbar-track"><div class="hbar-fill" style="width:18%;background:var(--green);"><span class="hbar-pct">18%</span></div></div></div>
+        <div class="hbar-row"><div class="hbar-label">45–54</div><div class="hbar-track"><div class="hbar-fill" style="width:12%;background:var(--amber);"><span class="hbar-pct">12%</span></div></div></div>
+        <div class="hbar-row"><div class="hbar-label">55–64</div><div class="hbar-track"><div class="hbar-fill" style="width:5%;background:var(--amber);"><span class="hbar-pct">5%</span></div></div></div>
+        <div class="hbar-row"><div class="hbar-label">65+</div><div class="hbar-track"><div class="hbar-fill" style="width:2%;background:var(--rust);"><span class="hbar-pct">2%</span></div></div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="dot" style="background:var(--pink)"></span> Additional Demographic Notes — 2025+2026 only, no historical baseline</div>
+        <div class="source-chips" style="margin-bottom:12px;">
+          <div class="chip"><div class="chip-dot" style="background:var(--pink);"></div>Female 73.4%</div>
+          <div class="chip"><div class="chip-dot" style="background:var(--teal);"></div>Male 26.6%</div>
+          <div class="chip"><div class="chip-dot" style="background:var(--green);"></div>Repeat inquirers: 90% eventually schedule</div>
+        </div>
+        <div class="insight-card"><strong>Gender:</strong> 73.4% female, 26.6% male (n=497). Both convert similarly (60.2% vs 56.0%) — a reach skew, not a quality gap.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--amber)"></span> Geography &amp; Repeat Behavior — 2025+2026 only, no historical baseline</div>
+      <div class="insight-card amber"><strong>Geography:</strong> top lead zip codes cluster around Macomb County / Clinton Township (48038, 48044, 48036, 48035...); Troy's own zip (48084) barely cracks the top 10 with 10 leads. Worth checking whether geo-targeting/budget matches where demand concentrates.</div>
+      <div class="insight-card green"><strong>Repeat inquirers:</strong> 20 client IDs inquired more than once; 18 of 20 (90%) eventually scheduled — high-intent, not noise. A light remarketing nudge for non-schedulers could pay off.</div>
+    </div>
+  </div>
+
+  <!-- ============ TAB 8: ACTION PLAN ============ -->
+  <div class="tab-panel" id="tab-action">
+    <div class="section-divider"><span class="sdot" style="background:var(--green)"></span><h2>Budget &amp; Action Recommendations</h2><span class="stag">Prioritized by confidence and leverage</span></div>
+
+    <div class="panel">
+      <table class="campaign-table">
+        <thead><tr><th style="text-align:left;">Finding</th><th>Confidence</th><th style="text-align:left;">Suggested action</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left;">35% of scheduled leads never complete paperwork</td><td><span class="tag high">High</span></td><td style="text-align:left;">Operational fix (reminder sequence, simplify paperwork) — highest-leverage item in the account.</td></tr>
+          <tr><td style="text-align:left;">Meta's declines are 70% insurance-related</td><td><span class="tag low">Resolved</span></td><td style="text-align:left;">Meta advertising has already been paused — no further action needed on this unless Meta is reactivated in the future, at which point insurance-qualifying exclusions should be added before scaling spend again.</td></tr>
+          <tr><td style="text-align:left;">"Other" source is largest + worst-converting</td><td><span class="tag high">High</span></td><td style="text-align:left;">Audit the "Other" leads excluding Psychology Today (which already converts well) to identify who these people are, and test ways to move them further into the intake/consultation stage.</td></tr>
+          <tr><td style="text-align:left;">Form submissions convert 20pts worse than calls</td><td><span class="tag low">Resolved</span></td><td style="text-align:left;">Already addressed — phone-call-focused ads are running via the DSA campaign, favoring call-based intake over form submissions.</td></tr>
+          <tr><td style="text-align:left;">Sunday consistently underperforms across all 3 eras; Saturday doesn't (fine in 2024)</td><td><span class="tag high">High — 3-year pattern</span></td><td style="text-align:left;">Bid up on the days that convert best (Tue–Thu); pull back bids specifically on Saturday and Sunday.</td></tr>
+          <tr><td style="text-align:left;">Age/gender demographics have no historical baseline (2023/2024 didn't collect them)</td><td><span class="tag info">Tracking gap</span></td><td style="text-align:left;">Treat 2025+2026 as the first real baseline; revisit this comparison in 2027 once a second year of data exists.</td></tr>
+          <tr><td style="text-align:left;">October rebound (2023 &amp; 2024)</td><td><span class="tag med">Medium (n=2)</span></td><td style="text-align:left;">Minimize spend across July–September (historically the lowest-lead months), then test scaling back up into October to see if the rebound repeats this year.</td></tr>
+          <tr><td style="text-align:left;">27% of leads are for children/teens</td><td><span class="tag low">Worth testing</span></td><td style="text-align:left;">Consider family/pediatric-specific ad creative.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">Wellspring Therapeutic Partners · Historical Insights Report · Internal use<br>Prepared by Damco Digital</div>
+    <div class="footer-right">Wellspring</div>
+  </div>
+
+</div>
+
+<script>
+  function showTab(id){
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById('tab-'+id).classList.add('active');
+    document.querySelector('[data-tab="'+id+'"]').classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+</script>
+</body>
+</html>

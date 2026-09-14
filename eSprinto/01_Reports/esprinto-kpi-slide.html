@@ -1,0 +1,217 @@
+<title>eSprinto Campaign KPIs</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #081818;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Barlow', system-ui, sans-serif;
+  }
+
+  .slide {
+    width: min(960px, 100vw);
+    aspect-ratio: 16 / 9;
+    background: #0c1e1e;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  /* Top accent bar */
+  .slide::before {
+    content: '';
+    display: block;
+    height: 3px;
+    background: linear-gradient(90deg, #D68314 0%, #f0a830 60%, transparent 100%);
+    flex-shrink: 0;
+  }
+
+  /* Background texture lines */
+  .slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 119px,
+        rgba(255,255,255,0.015) 119px,
+        rgba(255,255,255,0.015) 120px
+      );
+    pointer-events: none;
+  }
+
+  .inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 5% 6%;
+    gap: 6%;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .eyebrow {
+    font-size: clamp(8px, 1vw, 11px);
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #D68314;
+    margin-bottom: 4px;
+  }
+  .title {
+    font-size: clamp(14px, 2.2vw, 22px);
+    font-weight: 700;
+    color: #e5ddd0;
+    letter-spacing: .01em;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: .7;
+  }
+  .brand-mark {
+    width: clamp(20px, 2.5vw, 28px);
+    height: clamp(20px, 2.5vw, 28px);
+    background: #D68314;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+  .brand-name {
+    font-size: clamp(9px, 1.1vw, 12px);
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #a89070;
+  }
+
+  /* KPI cards row */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2%;
+    flex: 1;
+    align-items: stretch;
+  }
+
+  .kpi {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-top: 2px solid #D68314;
+    border-radius: 6px;
+    padding: 8% 8% 7%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10%;
+    transition: background .2s;
+  }
+  .kpi:hover { background: rgba(214,131,20,0.07); }
+
+  .kpi-label {
+    font-size: clamp(7px, .85vw, 10px);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .13em;
+    color: #7a9490;
+    line-height: 1.4;
+  }
+
+  .kpi-value {
+    font-size: clamp(16px, 2.6vw, 28px);
+    font-weight: 700;
+    color: #D68314;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kpi-sub {
+    font-size: clamp(7px, .8vw, 9px);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* Footer */
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: clamp(6px, .75vw, 8px);
+    color: rgba(255,255,255,0.18);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding-top: 2%;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+</style>
+
+<div class="slide">
+  <div class="inner">
+
+    <div class="header">
+      <div>
+        <div class="eyebrow">B2C Launch · Sept – Dec 2026</div>
+        <div class="title">Campaign KPIs</div>
+      </div>
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <div class="brand-name">e-Sprinto</div>
+      </div>
+    </div>
+
+    <div class="kpis">
+
+      <div class="kpi">
+        <div class="kpi-label">Total Unique Reach</div>
+        <div class="kpi-value">8L – 14L</div>
+        <div class="kpi-sub">All phases</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label">Warm Audience Built</div>
+        <div class="kpi-value">70K – 1.2L</div>
+        <div class="kpi-sub">By 31 Oct</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label">Pre-Booking Leads</div>
+        <div class="kpi-value">75 – 150</div>
+        <div class="kpi-sub">Teaser phase</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label">Qualified Leads</div>
+        <div class="kpi-value">300 – 500</div>
+        <div class="kpi-sub">Launch + Sustenance</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label">Blended CPL</div>
+        <div class="kpi-value">≤ ₹800</div>
+        <div class="kpi-sub">Performance only</div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <span>Estimates based on ₹4L total media spend · C1 15–25L · C2 30–50L audience pools</span>
+      <span>Damco Digital</span>
+    </div>
+
+  </div>
+</div>

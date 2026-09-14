@@ -19,6 +19,10 @@
 | 8 | 2026-05-12 | Develop real commuter story content — city-specific (Bangalore first) | Rishabh/Creative | Medium | This month | Open | Strategy |
 | 9 | 2026-05-12 | Launch Click-to-WhatsApp trade-in campaign targeting Activa/Jupiter owners | Rishabh | Medium | Q2 | Open | Competitor Research |
 | 10 | 2026-05-12 | Expand Meta targeting to Delhi, Pune, Jaipur (low competition, no BGauss/Simple Energy) | Rishabh | Medium | Q2 | Open | Competitor Research |
+| 11 | 2026-08-07 | Get spend/CPL data for dealership campaign (2026-08-06/07) — can't judge lead cost-efficiency without it | Rishabh | Critical | ASAP | Open | Dealership Lead Analysis |
+| 12 | 2026-08-07 | Manually call-verify a sample of ~10 dealership leads (mix of Hot-tier + 2 flagged junk names) | Rishabh/Client | High | This week | Open | Dealership Lead Analysis |
+| 13 | 2026-08-07 | Pull Meta Ads Manager audience overlap report for Investment_Seekers vs EV_Interest ad sets | Rishabh | Medium | This week | Open | Dealership Lead Analysis |
+| 14 | 2026-08-07 | Fix "15000-2000 sq. ft." typo in dealership lead form (likely meant 1,500-2,000) | Rishabh/Client | Low | This week | Open | Dealership Lead Analysis |
 
 ---
 
@@ -34,7 +38,9 @@
 
 | Date | Task | Status |
 |---|---|---|
-| — | — | — |
+| 2026-07-28 | Write Meta ad copy for B2C dealership recruitment campaign (Delhi NCR, 3 creative concepts, EN + HI) | Completed |
+| 2026-08-06 | Set up ongoing Meta Ads Performance Consultant engagement for the dealership campaign; created daily performance log | Completed |
+| 2026-08-07 | Analyze first lead-level Meta export (37 leads); build Lead Quality Tracker | Completed |
 
 ---
 

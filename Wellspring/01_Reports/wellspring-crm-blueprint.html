@@ -1,0 +1,835 @@
+<title>Wellspring CRM Blueprint</title>
+<meta name="description" content="From spreadsheet to command center: a full CRM design for Wellspring's lead pipeline">
+<style>
+  :root{
+    --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da;
+    --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3;
+    --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0;
+    --warning:#b06a1f; --warning-soft:#f3e3cd;
+    --danger:#a1402f; --danger-soft:#f3ddd6;
+    --wf-ink:#8a8f8c; --wf-line:#b7bcb8; --wf-bg:#f4f5f3;
+    --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans: "Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733;
+      --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+      --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122;
+      --line:#2c4440; --line-strong:#3c5852;
+      --success:#6fae82; --success-soft:#1d332590;
+      --warning:#dba053; --warning-soft:#3a2d1690;
+      --danger:#d67468; --danger-soft:#3a201b90;
+      --wf-ink:#7c8c88; --wf-line:#3c4d49; --wf-bg:#132825;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0f201d; --surface:#162e2a; --surface-2:#1c3733;
+    --ink:#f0ead9; --ink-soft:#aec2bd; --ink-faint:#7f958f;
+    --accent:#dcb968; --accent-deep:#f0cd85; --accent-soft:#3a3122;
+    --line:#2c4440; --line-strong:#3c5852;
+    --success:#6fae82; --success-soft:#1d332590;
+    --warning:#dba053; --warning-soft:#3a2d1690;
+    --danger:#d67468; --danger-soft:#3a201b90;
+    --wf-ink:#7c8c88; --wf-line:#3c4d49; --wf-bg:#132825;
+  }
+  :root[data-theme="light"]{
+    --paper:#f5f0e8; --surface:#ffffff; --surface-2:#efe8da;
+    --ink:#17302e; --ink-soft:#4d6461; --ink-faint:#7c8f8b;
+    --accent:#b3903f; --accent-deep:#8a6c28; --accent-soft:#e7d9b3;
+    --line:#ddd4c0; --line-strong:#c7bb9e;
+    --success:#3f7a56; --success-soft:#dcebe0;
+    --warning:#b06a1f; --warning-soft:#f3e3cd;
+    --danger:#a1402f; --danger-soft:#f3ddd6;
+    --wf-ink:#8a8f8c; --wf-line:#b7bcb8; --wf-bg:#f4f5f3;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.6; font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--accent-soft); color:var(--ink); }
+
+  h1,h2,h3,h4{ font-family:var(--serif); font-weight:600; color:var(--ink); text-wrap:balance; letter-spacing:.2px; }
+  p{ max-width:66ch; }
+  a{ color:var(--accent-deep); }
+  code, .mono{ font-family:var(--mono); }
+  table{ border-collapse:collapse; width:100%; font-size:.92rem; }
+  th{ text-align:left; font-family:var(--sans); font-weight:600; color:var(--ink-soft); text-transform:uppercase; font-size:.68rem; letter-spacing:.07em; padding:.55rem .75rem; border-bottom:1px solid var(--line-strong); white-space:nowrap; }
+  td{ padding:.6rem .75rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:hover td{ background:var(--surface-2); }
+  .num{ font-variant-numeric: tabular-nums; }
+
+  /* ---------- Page shell ---------- */
+  .shell{ display:grid; grid-template-columns: 260px minmax(0,1fr); max-width:1360px; margin:0 auto; }
+  .rail{ position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto; padding:2.2rem 1.3rem 2rem 2rem; border-right:1px solid var(--line); }
+  .rail-brand{ font-family:var(--serif); font-size:1.15rem; margin:0 0 .15rem; }
+  .rail-brand small{ display:block; font-family:var(--sans); font-size:.68rem; letter-spacing:.09em; text-transform:uppercase; color:var(--accent-deep); margin-top:.35rem; }
+  .rail nav{ margin-top:2rem; }
+  .rail-group{ margin-bottom:1.5rem; }
+  .rail-group-title{ font-size:.66rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); margin:0 0 .5rem; }
+  .rail a{ display:block; color:var(--ink-soft); text-decoration:none; font-size:.87rem; padding:.32rem 0; border-left:2px solid transparent; padding-left:.7rem; margin-left:-.72rem; }
+  .rail a:hover{ color:var(--ink); border-left-color:var(--line-strong); }
+  .rail a.active{ color:var(--ink); border-left-color:var(--accent); font-weight:600; }
+  .main{ min-width:0; padding:3rem 3.4rem 6rem; }
+  @media (max-width: 980px){
+    .shell{ grid-template-columns:1fr; }
+    .rail{ position:relative; height:auto; border-right:none; border-bottom:1px solid var(--line); }
+    .main{ padding:2rem 1.3rem 4rem; }
+  }
+
+  section{ margin-bottom:5rem; scroll-margin-top:1.5rem; }
+  .eyebrow{ font-family:var(--sans); text-transform:uppercase; letter-spacing:.12em; font-size:.72rem; color:var(--accent-deep); font-weight:700; margin:0 0 .6rem; }
+  section > h2{ font-size:2rem; margin:0 0 .3rem; }
+  .lede{ color:var(--ink-soft); font-size:1.05rem; max-width:62ch; margin:0 0 1.8rem; }
+  .prose > p{ color:var(--ink-soft); }
+
+  /* ---------- Reusable bits ---------- */
+  .grid{ display:grid; gap:1rem; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1.1rem 1.3rem; }
+  .breakout{ width:100%; overflow-x:auto; }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface); }
+  .table-wrap table{ min-width:640px; }
+
+  .tag{ display:inline-block; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; font-weight:700; padding:.2rem .5rem; border-radius:3px; }
+  .tag-must{ background:var(--danger-soft); color:var(--danger); }
+  .tag-nice{ background:var(--warning-soft); color:var(--warning); }
+  .tag-future{ background:var(--line); color:var(--ink-soft); }
+  .tag-high{ background:var(--danger-soft); color:var(--danger); }
+  .tag-med{ background:var(--warning-soft); color:var(--warning); }
+  .tag-low{ background:var(--success-soft); color:var(--success); }
+
+  .kpi-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:6px; overflow:hidden; margin:1.6rem 0; }
+  .kpi{ background:var(--surface); padding:1.1rem 1.2rem; }
+  .kpi-label{ font-size:.68rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-faint); margin-bottom:.4rem; }
+  .kpi-val{ font-family:var(--serif); font-size:1.9rem; line-height:1; }
+  .kpi-sub{ font-size:.78rem; color:var(--ink-faint); margin-top:.35rem; }
+
+  .callout{ border-left:3px solid var(--accent); background:var(--surface); border-radius:0 6px 6px 0; padding:1rem 1.3rem; margin:1.4rem 0; }
+  .callout p{ margin:.2rem 0; }
+  .callout.warn{ border-left-color:var(--warning); }
+  .callout.danger{ border-left-color:var(--danger); }
+
+  .pain{ display:grid; grid-template-columns:2.6rem 1fr; gap:1rem; padding:1.2rem 0; border-top:1px solid var(--line); }
+  .pain:first-of-type{ border-top:none; }
+  .pain-n{ font-family:var(--serif); font-size:1.5rem; color:var(--line-strong); }
+  .pain h4{ margin:.1rem 0 .4rem; font-size:1.05rem; }
+  .pain .evidence{ font-size:.85rem; color:var(--ink-faint); margin-top:.5rem; padding:.55rem .7rem; background:var(--surface-2); border-radius:4px; }
+  .pain .evidence code{ color:var(--ink-soft); }
+
+  /* ---------- Wireframe styling: deliberately lo-fi, distinct from doc chrome ---------- */
+  .wf-wrap{ margin:1.6rem 0; }
+  .wf-caption{ font-size:.78rem; color:var(--ink-faint); margin-top:.6rem; }
+  .wf{ background:var(--wf-bg); border:1px solid var(--wf-line); border-radius:4px; padding:1rem; color:var(--wf-ink); font-family:var(--mono); font-size:.72rem; }
+  .wf-title{ text-transform:uppercase; letter-spacing:.08em; font-size:.62rem; color:var(--wf-ink); margin-bottom:.7rem; display:flex; justify-content:space-between; }
+  .wf-topbar{ display:flex; justify-content:space-between; align-items:center; border:1px dashed var(--wf-line); border-radius:3px; padding:.5rem .7rem; margin-bottom:.7rem; }
+  .wf-chip{ border:1px dashed var(--wf-line); border-radius:3px; padding:.15rem .5rem; }
+  .wf-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:.5rem; margin-bottom:.7rem; }
+  .wf-kpi{ border:1px dashed var(--wf-line); border-radius:3px; padding:.5rem; }
+  .wf-kpi b{ display:block; font-size:.95rem; color:var(--wf-ink); margin-top:.25rem; }
+  .wf-cols{ display:grid; gap:.7rem; }
+  .wf-cols.two{ grid-template-columns:1.3fr 1fr; }
+  .wf-block{ border:1px dashed var(--wf-line); border-radius:3px; padding:.6rem; min-height:70px; }
+  .wf-line{ height:6px; background:var(--wf-line); opacity:.35; border-radius:2px; margin:.35rem 0; }
+  .wf-line.short{ width:45%; } .wf-line.mid{ width:70%; }
+  .wf-funnel{ display:flex; flex-direction:column; gap:.3rem; }
+  .wf-funnel-row{ display:flex; align-items:center; gap:.5rem; }
+  .wf-funnel-bar{ height:16px; background:var(--wf-line); opacity:.4; border-radius:2px; }
+  .wf-board{ display:grid; grid-template-columns:repeat(6,1fr); gap:.5rem; }
+  .wf-col-h{ text-align:center; border-bottom:1px dashed var(--wf-line); padding-bottom:.35rem; margin-bottom:.4rem; }
+  .wf-card{ border:1px solid var(--wf-line); border-radius:3px; padding:.4rem; margin-bottom:.4rem; }
+  .wf-card .dot{ display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:.3rem; }
+  .dot-g{ background:var(--success); } .dot-a{ background:var(--warning); } .dot-r{ background:var(--danger); }
+  .wf-pill{ display:inline-block; border:1px dashed var(--wf-line); border-radius:10px; padding:.1rem .5rem; margin-right:.3rem; }
+  .wf-timeline{ border-left:2px dashed var(--wf-line); padding-left:.8rem; display:flex; flex-direction:column; gap:.6rem; }
+  .wf-timeline .ev{ position:relative; }
+  .wf-timeline .ev::before{ content:""; position:absolute; left:-1.05rem; top:.2rem; width:7px; height:7px; border-radius:50%; background:var(--wf-line); }
+
+  .entity-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; margin:1.4rem 0; }
+  .entity{ background:var(--surface); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .entity h4{ margin:0; padding:.55rem .8rem; background:var(--surface-2); font-size:.85rem; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+  .entity h4 span{ font-size:.6rem; text-transform:uppercase; color:var(--ink-faint); font-family:var(--sans); letter-spacing:.06em; }
+  .entity ul{ list-style:none; margin:0; padding:.6rem .8rem; font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); }
+  .entity li{ padding:.15rem 0; display:flex; justify-content:space-between; gap:.5rem; }
+  .entity li b{ color:var(--ink); font-weight:600; }
+  .entity li small{ color:var(--ink-faint); white-space:nowrap; }
+
+  .stage-track{ display:flex; align-items:stretch; gap:.4rem; margin:1.6rem 0; overflow-x:auto; }
+  .stage{ flex:1; min-width:130px; background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--accent); border-radius:0 0 6px 6px; padding:.8rem .9rem; }
+  .stage.exit{ border-top-color:var(--danger); }
+  .stage h5{ margin:0 0 .3rem; font-size:.82rem; }
+  .stage p{ margin:0; font-size:.76rem; color:var(--ink-faint); max-width:none; }
+  .stage-arrow{ align-self:center; color:var(--ink-faint); }
+
+  .road{ display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.6rem 0; }
+  .road-phase{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1.2rem 1.3rem; position:relative; }
+  .road-phase .ph-eyebrow{ font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--accent-deep); font-weight:700; }
+  .road-phase h4{ margin:.3rem 0 .2rem; font-size:1.2rem; }
+  .road-phase .dur{ color:var(--ink-faint); font-size:.8rem; margin-bottom:.8rem; }
+  .road-phase ul{ margin:0; padding-left:1.1rem; color:var(--ink-soft); font-size:.87rem; }
+  .road-phase li{ margin-bottom:.4rem; }
+  .road-phase .metric{ margin-top:.9rem; padding-top:.7rem; border-top:1px solid var(--line); font-size:.78rem; color:var(--ink-faint); }
+  @media (max-width:900px){ .road{ grid-template-columns:1fr; } }
+
+  .perm-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.6rem; margin:1rem 0; }
+  .perm-cell{ background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:.7rem .8rem; text-align:center; font-size:.82rem; }
+  .yes{ color:var(--success); font-weight:700; } .partial{ color:var(--warning); font-weight:700; } .no{ color:var(--ink-faint); }
+
+  footer{ border-top:1px solid var(--line); padding-top:1.6rem; color:var(--ink-faint); font-size:.82rem; }
+
+  .toc-tag{ font-size:.6rem; text-transform:uppercase; letter-spacing:.08em; background:var(--accent-soft); color:var(--accent-deep); padding:.1rem .4rem; border-radius:3px; margin-left:.4rem; }
+</style>
+
+<div class="shell">
+  <aside class="rail">
+    <p class="rail-brand">Wellspring CRM Blueprint<small>Damco Digital · Product &amp; UX</small></p>
+    <nav id="toc">
+      <div class="rail-group">
+        <p class="rail-group-title">Findings</p>
+        <a href="#overview">Overview</a>
+        <a href="#sheet-today">The sheet today</a>
+        <a href="#pain-points">Pain points</a>
+        <a href="#missing-fields">Missing fields</a>
+        <a href="#data-quality">Data quality</a>
+        <a href="#automation">Automation gaps</a>
+        <a href="#blind-metrics">Metrics you can't see</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Blueprint</p>
+        <a href="#architecture">Information architecture</a>
+        <a href="#wireframes">Wireframes</a>
+        <a href="#data-model">Data model</a>
+        <a href="#pipeline-workflow">Pipeline &amp; workflow</a>
+      </div>
+      <div class="rail-group">
+        <p class="rail-group-title">Plan</p>
+        <a href="#roles">Roles &amp; permissions</a>
+        <a href="#prioritization">Prioritization</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#compliance">Compliance &amp; security</a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main">
+
+    <section id="overview">
+      <p class="eyebrow">Wellspring Therapeutic Partners — Lead Management</p>
+      <h2>From weekly spreadsheet to a real CRM</h2>
+      <p class="lede">Wellspring's entire lead pipeline currently lives in a Google Sheet that adds one new tab every single week. This document analyzes exactly how that sheet works today — using the live data behind it — and designs the CRM that should replace it: architecture, wireframes, data model, workflow, and a phased build plan.</p>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-label">Weekly tabs live today</div><div class="kpi-val num">32+</div><div class="kpi-sub">Dec 2025 → present, growing by one every Sunday</div></div>
+        <div class="kpi"><div class="kpi-label">Raw columns per tab</div><div class="kpi-val num">19</div><div class="kpi-sub">No Name / Phone / Email — Client ID only</div></div>
+        <div class="kpi"><div class="kpi-label">Structured insurance field</div><div class="kpi-val num">0</div><div class="kpi-sub">Surfaces only inside free‑text rejection notes</div></div>
+        <div class="kpi"><div class="kpi-label">Fields needing a classifier script</div><div class="kpi-val num">2</div><div class="kpi-sub">"How did you hear" + "Source" require an 8‑rule Python script to report on</div></div>
+      </div>
+
+      <div class="prose">
+        <p>This isn't a template CRM pitch. Every finding below is pulled directly from the live <a href="https://docs.google.com/spreadsheets/d/1OCsKgpQ-crR5rtrGTpSK0slRyhlGpqtC5QIi_4Gl_Vc" target="_blank" rel="noopener">consultation sheet</a> — real headers, real rows, real gaps — so the design solves the problems Wellspring's team actually has, not a generic mental‑health‑practice checklist.</p>
+      </div>
+    </section>
+
+    <section id="sheet-today">
+      <p class="eyebrow">Current state</p>
+      <h2>How the sheet actually works</h2>
+      <p class="lede">One tab per week (e.g. <code>7/5/2026-7/11/2026</code>), 19 columns, hand‑maintained by staff during and after each consultation. Here is the live header row and a representative row, unedited.</p>
+
+      <div class="table-wrap breakout">
+        <table>
+          <thead><tr><th>#</th><th>Column header (verbatim)</th><th>Observed values</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td>Number of Leads</td><td>Manual running counter, reset every tab</td></tr>
+            <tr><td class="num">2</td><td>Date Opportunity/Lead was Generated</td><td>Date</td></tr>
+            <tr><td class="num">3</td><td>Consultation Date</td><td>Date, or blank if inquiry never completed</td></tr>
+            <tr><td class="num">4</td><td>Type of Consultation</td><td>"Completed Inquiry" / "Started Inquiry" / "Organic phone call"</td></tr>
+            <tr><td class="num">5</td><td>Patient Date of Birth</td><td>Date, "-", or blank</td></tr>
+            <tr><td class="num">6</td><td>Client ID</td><td>4‑digit ID, or "-" for early/abandoned rows</td></tr>
+            <tr><td class="num">7</td><td>Assigned Sex</td><td>Male / Female</td></tr>
+            <tr><td class="num">8</td><td>Zip Code</td><td>5‑digit zip, or "-"</td></tr>
+            <tr><td class="num">9</td><td>How did you hear about Wellspring?</td><td>Free text — channel names <em>and</em> literal referrer names mixed ("Google", "online search", "A friend", "Denise", "Pediatrician", "Insurance Company")</td></tr>
+            <tr><td class="num">10</td><td>Source</td><td>Internal / External / Other / Google Ads — a second, sometimes‑conflicting attribution field</td></tr>
+            <tr><td class="num">11</td><td>UTM Code</td><td>"-" in every observed row</td></tr>
+            <tr><td class="num">12</td><td>What type of services are you looking for?</td><td>Free‑combined multi‑select: Psychotherapy, Medication Management, Testing</td></tr>
+            <tr><td class="num">13</td><td>Choose your preferred therapy appointment type</td><td>Virtual / In‑Person / Either</td></tr>
+            <tr><td class="num">14</td><td>Reasons Seeking Treatment</td><td>Free text, comma‑joined condition list, inconsistent spelling</td></tr>
+            <tr><td class="num">15</td><td>Did they schedule?</td><td>Yes / No / Pending / blank — four states doing the job of a pipeline stage</td></tr>
+            <tr><td class="num">16</td><td>Reason Not Scheduled</td><td>Free text — this is where insurance exclusions (Medicaid, HAP) actually live</td></tr>
+            <tr><td class="num">17</td><td>Dates of Manual Follow Up Attempts</td><td>One string per lead, e.g. "LVM and emailed 7/10/2026" — no structured log</td></tr>
+            <tr><td class="num">18</td><td>Completed Paperwork</td><td>Pending / Not Applicable — no actual date captured</td></tr>
+            <tr><td class="num">19</td><td>Completed Intake Appointment</td><td>Pending / Not Applicable — no actual date captured</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="wf-caption">Sampled from the <code>7/5/2026–7/11/2026</code> and <code>6/28/2026–7/4/2026</code> tabs via live sheet access, 13 Jul 2026.</p>
+
+      <div class="callout">
+        <p><strong>What's conspicuously absent:</strong> no Name, Phone, or Email column, and no structured Insurance field. Staff clearly keep identity and clinical records in a separate system of record (likely their EHR/practice‑management tool) and use <code>Client ID</code> as the join key. That's the right instinct — and it's the design constraint this CRM has to respect (see <a href="#compliance">Compliance &amp; Security</a>).</p>
+      </div>
+    </section>
+
+    <section id="pain-points">
+      <p class="eyebrow">Findings · 01</p>
+      <h2>Biggest pain points</h2>
+      <p class="lede">Ranked by how much staff time and reporting accuracy they cost every week.</p>
+
+      <div class="pain">
+        <div class="pain-n">1</div>
+        <div>
+          <h4>There is no "this month" or "this quarter" — only 32 separate weeks</h4>
+          <p>Every rollup (the March 2026 benchmark reference, the QBR numbers, any trend line) has to be built by hand, tab by tab. There's no live way to ask "how are we doing this quarter?" without opening dozens of sheets.</p>
+          <div class="evidence">Evidence: 32 tabs from <code>12/8/2025</code> to <code>7/11/2026</code>, one new tab appended every week with no linking structure between them.</div>
+        </div>
+      </div>
+      <div class="pain">
+        <div class="pain-n">2</div>
+        <div>
+          <h4>Referral source requires a script to interpret, not a click to select</h4>
+          <p>"How did you hear about Wellspring?" is free text that mixes channel labels with people's first names. A separate 8‑rule Python classifier (already built and living in <code>lead_quality_skill.md</code>) exists purely to turn this column into a reportable "Source" after the fact.</p>
+          <div class="evidence">Evidence: values seen in one week alone — "Returning Patient", "A friend", "Denise", "Lisa", "Student", "Pediatrician", "Insurance Company", "Google", "online search", "-", "Other".</div>
+        </div>
+      </div>
+      <div class="pain">
+        <div class="pain-n">3</div>
+        <div>
+          <h4>"Did they schedule?" is being asked to do a pipeline's job</h4>
+          <p>Yes / No / Pending / blank is a flattened stand‑in for a real pipeline stage. There's no way to see, at a glance, who's mid‑follow‑up versus who's gone cold versus who genuinely said no.</p>
+          <div class="evidence">Evidence: same column holds "Yes", "No", "Pending", and empty string across adjacent rows in the same week, with no documented distinction between "Pending" and blank.</div>
+        </div>
+      </div>
+      <div class="pain">
+        <div class="pain-n">4</div>
+        <div>
+          <h4>Follow‑up activity is a sentence, not a log</h4>
+          <p>All contact attempts for a lead are jammed into one free‑text cell. There's no way to count touches, measure response time, or trigger a reminder when a lead has gone quiet.</p>
+          <div class="evidence">Evidence: <code>"LVM and emailed 7/10/2026"</code> — two actions, one date, one cell, no way to query "how many leads got 2+ follow‑ups."</div>
+        </div>
+      </div>
+      <div class="pain">
+        <div class="pain-n">5</div>
+        <div>
+          <h4>Insurance eligibility is discovered after the fact, not checked up front</h4>
+          <p>Insurance never appears as its own field — it only shows up buried in "Reason Not Scheduled" text like "Medicaid" or "Priority Medicaid," after staff have already spent time on the lead. This is almost certainly why HAP's acceptance status has stayed an unresolved question for three‑plus months in the account history.</p>
+          <div class="evidence">Evidence: rows reading <code>Reason Not Scheduled: "Medicaid"</code> and <code>"Priority Medicaid"</code> — insurance as an outcome, never as an input.</div>
+        </div>
+      </div>
+      <div class="pain">
+        <div class="pain-n">6</div>
+        <div>
+          <h4>Out‑of‑area leads aren't filtered before they consume staff time</h4>
+          <p>Leads from California and London appear in the same funnel as Troy/Clinton Township prospects, discovered only when a staff member manually writes "Lives in California" as the rejection reason.</p>
+          <div class="evidence">Evidence: <code>Reason Not Scheduled: "Lives in California"</code>, <code>"Lives in London"</code> — no zip/geo gate exists ahead of the consult.</div>
+        </div>
+      </div>
+      <div class="pain">
+        <div class="pain-n">7</div>
+        <div>
+          <h4>Two fields try to capture "how" and disagree with each other</h4>
+          <p><code>Source</code> (Internal/External/Other/Google Ads) and <code>How did you hear</code> are meant to reconcile but sometimes don't — a lead whose "hear" text says "Google" is sometimes tagged <code>Source: Other</code>. Nothing forces consistency at entry time.</p>
+        </div>
+      </div>
+      <div class="pain">
+        <div class="pain-n">8</div>
+        <div>
+          <h4>"Type of Consultation" conflates two different questions</h4>
+          <p>Contact channel (phone call vs. web form) and completion state (started vs. finished) are forced into one enum. A lead who called <em>and</em> completed intake has no way to be tagged as both.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="missing-fields">
+      <p class="eyebrow">Findings · 02</p>
+      <h2>Missing fields</h2>
+      <p class="lede">What the sheet should be capturing but isn't — mapped to the decision it would unblock.</p>
+      <div class="table-wrap breakout">
+        <table>
+          <thead><tr><th>Missing field</th><th>Why it matters</th><th>Currently</th></tr></thead>
+          <tbody>
+            <tr><td>Insurance carrier (structured)</td><td>The #1 driver of lost leads (Medicaid/HAP) can't be flagged at intake or reported on until it's typed as free text at rejection</td><td>Buried in "Reason Not Scheduled"</td></tr>
+            <tr><td>Lead pipeline stage</td><td>Enables a real Kanban view and stage‑by‑stage conversion reporting</td><td>Implied by "Did they schedule?" (3–4 states)</td></tr>
+            <tr><td>Assigned staff / owner</td><td>No accountability for who's working a lead, no staff performance reporting possible</td><td>Not tracked</td></tr>
+            <tr><td>Provider / clinician assigned</td><td>Can't measure per‑provider scheduling rate, capacity, or specialty match (e.g. ADHD testing waitlist)</td><td>Not tracked</td></tr>
+            <tr><td>Location (Troy vs. Clinton Twp)</td><td>No per‑site performance view even though the practice operates two locations</td><td>Only inferable from zip code, inconsistently populated</td></tr>
+            <tr><td>Follow‑up count &amp; next‑due date</td><td>Can't trigger reminders or measure response cadence</td><td>Free‑text sentence in one cell</td></tr>
+            <tr><td>Paperwork sent / completed dates</td><td>Can't compute time‑to‑paperwork or time‑to‑intake cycle time</td><td>"Pending"/"Not Applicable" with no dates</td></tr>
+            <tr><td>Age / minor flag + guardian contact</td><td>Sheet already contains pediatric referrals (DOB 2016, referred by pediatrician) with no guardian‑contact or consent field</td><td>Not tracked</td></tr>
+            <tr><td>Duplicate/returning‑patient flag</td><td>"Returning Patient" appears as a "hear about us" answer — that's really a record‑linkage problem, not a marketing channel</td><td>Miscategorized as a referral source</td></tr>
+            <tr><td>Priority / urgency flag</td><td>No way to visually surface a high‑intent or clinically urgent lead (e.g. self‑harm mention) ahead of a routine inquiry</td><td>Not tracked</td></tr>
+            <tr><td>UTM / campaign ID (populated)</td><td>Column exists but is always blank — true ad‑to‑lead attribution is possible today and isn't being captured</td><td>"-" in 100% of sampled rows</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="data-quality">
+      <p class="eyebrow">Findings · 03</p>
+      <h2>Data quality issues</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+        <div class="card"><strong>Free‑text everywhere a controlled list belongs.</strong> Referral source, services requested, and reasons seeking treatment are all typed by hand — leading to typos ("autisim"), inconsistent phrasing, and a downstream classifier script just to make the data reportable.</div>
+        <div class="card"><strong>Inconsistent null semantics.</strong> "-", blank, "Pending", and "Not Applicable" are used interchangeably across different columns to mean "no data," "not yet," and "n/a" — with no documented rule for which means what.</div>
+        <div class="card"><strong>No enforced required fields.</strong> Rows exist with almost nothing filled in beyond a lead number and a date — a lead that started an inquiry and was never followed up on far enough to even get a Client ID.</div>
+        <div class="card"><strong>No de‑duplication.</strong> With no phone/email/DOB match check, a returning patient inquiring again shows up as a brand‑new lead unless a staff member happens to write "Returning Patient" in the source field.</div>
+        <div class="card"><strong>No validation on structured‑looking fields.</strong> Zip code and DOB are free‑entry text fields, so "-" and blank both appear where a real date picker or zip validator would catch the gap at entry.</div>
+        <div class="card"><strong>Quasi‑PHI in an unrestricted sheet.</strong> DOB + zip + free‑text clinical detail ("Anxiety, depression, autisim") sits in a Google Sheet with no field‑level access control or audit trail. See <a href="#compliance">Compliance &amp; Security</a>.</div>
+      </div>
+    </section>
+
+    <section id="automation">
+      <p class="eyebrow">Findings · 04</p>
+      <h2>Automation opportunities</h2>
+      <div class="table-wrap breakout">
+        <table>
+          <thead><tr><th>Manual today</th><th>Automated in the CRM</th></tr></thead>
+          <tbody>
+            <tr><td>Classifying lead source with an 8‑rule script run after the fact</td><td>Structured Referral Source field at entry — the classification <em>is</em> the input, not a downstream inference</td></tr>
+            <tr><td>Creating a new tab every week and re‑copying formulas</td><td>Rolling date‑range views generated automatically; no tab management, ever</td></tr>
+            <tr><td>Manually writing "LVM and emailed 7/10" in a cell</td><td>Logged activity entries with type, timestamp, and staff attribution; auto‑reminders when a lead goes quiet</td></tr>
+            <tr><td>Hand‑building a "March 2026 benchmark" reference doc</td><td>Live, always‑current benchmark comparison — any date range vs. any prior date range, on demand</td></tr>
+            <tr><td>Emailing/Slacking a QBR deck built from scratch each quarter</td><td>Scheduled report export (PDF/CSV) on a recurring cadence, built from saved report templates</td></tr>
+            <tr><td>Discovering a Medicaid/HAP mismatch only when a lead is rejected</td><td>Insurance‑carrier field flags ineligibility the moment it's entered, before staff time is spent</td></tr>
+            <tr><td>Noticing an out‑of‑area lead only after intake</td><td>Zip‑code service‑area check at the top of the funnel</td></tr>
+            <tr><td>No alerting when a lead has been sitting untouched</td><td>Overdue follow‑up and inactive‑lead alerts on the dashboard, daily</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="blind-metrics">
+      <p class="eyebrow">Findings · 05</p>
+      <h2>Metrics management can't see today</h2>
+      <p class="lede">All of these require either cross‑tab manual aggregation or don't exist because the underlying field isn't captured.</p>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+        <div class="card"><strong>Time‑to‑first‑contact</strong> — how fast a new lead gets its first follow‑up attempt</div>
+        <div class="card"><strong>Time‑to‑schedule</strong> — days from inquiry to booked consultation</div>
+        <div class="card"><strong>Cost per scheduled appointment, by campaign</strong> — needs the still‑empty UTM field wired up</div>
+        <div class="card"><strong>Per‑provider scheduling rate &amp; capacity utilization</strong> — no provider field exists yet</div>
+        <div class="card"><strong>Per‑location performance</strong> (Troy vs. Clinton Township) — no location field exists yet</div>
+        <div class="card"><strong>Staff‑level contact rate and response time</strong> — no lead‑owner field exists yet</div>
+        <div class="card"><strong>Follow‑up count distribution</strong> — how many touches it actually takes to convert a lead</div>
+        <div class="card"><strong>True quarter‑over‑quarter trend lines</strong> — currently rebuilt by hand from static reference documents</div>
+        <div class="card"><strong>Duplicate/returning‑patient rate</strong> — no record‑linkage exists to separate this from new‑lead volume</div>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <p class="eyebrow">Blueprint · 01</p>
+      <h2>Information architecture</h2>
+      <p class="lede">Six top‑level areas, replacing "one Google Sheet" with purpose‑built surfaces for each job staff and managers actually do.</p>
+      <div class="entity-grid">
+        <div class="entity"><h4>Dashboard <span>home</span></h4><ul>
+          <li>KPI summary</li><li>Pipeline funnel</li><li>Trend charts</li><li>Alerts &amp; overdue items</li>
+        </ul></div>
+        <div class="entity"><h4>Pipeline <span>kanban</span></h4><ul>
+          <li>Stage board</li><li>Filters</li><li>Bulk actions</li><li>Saved views</li>
+        </ul></div>
+        <div class="entity"><h4>Leads <span>list + profile</span></h4><ul>
+          <li>Search</li><li>Lead profile</li><li>Activity timeline</li><li>Tasks &amp; notes</li>
+        </ul></div>
+        <div class="entity"><h4>Intake <span>entry form</span></h4><ul>
+          <li>New lead form</li><li>Duplicate check</li><li>Eligibility check</li>
+        </ul></div>
+        <div class="entity"><h4>Reports <span>builder</span></h4><ul>
+          <li>Templates</li><li>Custom builder</li><li>Scheduled export</li>
+        </ul></div>
+        <div class="entity"><h4>Admin <span>settings</span></h4><ul>
+          <li>Users &amp; roles</li><li>Referral taxonomy</li><li>Audit log</li>
+        </ul></div>
+      </div>
+    </section>
+
+    <section id="wireframes">
+      <p class="eyebrow">Blueprint · 02</p>
+      <h2>Wireframes</h2>
+      <p class="lede">Low‑fidelity by design — structure and hierarchy first, visual polish later.</p>
+
+      <h3>Dashboard</h3>
+      <div class="wf-wrap">
+        <div class="wf">
+          <div class="wf-title"><span>DASHBOARD — HOME</span><span>WEEK: JUL 5–11 ▾ &nbsp; [ SEARCH LEADS… ]</span></div>
+          <div class="wf-kpis">
+            <div class="wf-kpi">TOTAL LEADS<b>19</b></div>
+            <div class="wf-kpi">NEW THIS WK<b>19</b></div>
+            <div class="wf-kpi">SCHEDULED<b>7</b></div>
+            <div class="wf-kpi">ATTENDED<b>—</b></div>
+            <div class="wf-kpi">NO‑SHOWS<b>—</b></div>
+            <div class="wf-kpi">LOST<b>5</b></div>
+            <div class="wf-kpi">SCHED. RATE<b>53%</b></div>
+            <div class="wf-kpi">AVG TIME‑TO‑SCHED<b>2.1d</b></div>
+          </div>
+          <div class="wf-cols two">
+            <div class="wf-block">
+              <div class="wf-title" style="margin-bottom:.5rem;">PIPELINE FUNNEL</div>
+              <div class="wf-funnel">
+                <div class="wf-funnel-row">New 19 <div class="wf-funnel-bar" style="width:100%"></div></div>
+                <div class="wf-funnel-row">Contacted 15 <div class="wf-funnel-bar" style="width:79%"></div></div>
+                <div class="wf-funnel-row">Scheduled 10 <div class="wf-funnel-bar" style="width:53%"></div></div>
+                <div class="wf-funnel-row">Attended 7 <div class="wf-funnel-bar" style="width:37%"></div></div>
+                <div class="wf-funnel-row">Converted 6 <div class="wf-funnel-bar" style="width:32%"></div></div>
+                <div class="wf-funnel-row">Lost 5 <div class="wf-funnel-bar" style="width:26%;background:var(--danger);opacity:.5"></div></div>
+              </div>
+            </div>
+            <div class="wf-block">
+              <div class="wf-title" style="margin-bottom:.5rem;">SOURCE MIX</div>
+              <div class="wf-line mid"></div><div class="wf-line short"></div><div class="wf-line mid"></div><div class="wf-line short"></div>
+              <div class="wf-pill">Internal 42%</div><div class="wf-pill">Google 31%</div><div class="wf-pill">Referral 16%</div><div class="wf-pill">PT 11%</div>
+            </div>
+          </div>
+          <div class="wf-block" style="margin-top:.6rem;">
+            <div class="wf-title" style="margin-bottom:.5rem;">12‑WEEK TREND — LEADS &amp; SCHEDULING RATE</div>
+            <div class="wf-line" style="width:100%;opacity:.25;"></div>
+            <div class="wf-line" style="width:92%;opacity:.2;"></div>
+            <div class="wf-line" style="width:85%;opacity:.15;"></div>
+          </div>
+          <div class="wf-cols two" style="margin-top:.6rem;">
+            <div class="wf-block"><div class="wf-title" style="margin-bottom:.4rem;">⚠ OVERDUE FOLLOW‑UPS (4)</div><div class="wf-line short"></div><div class="wf-line mid"></div></div>
+            <div class="wf-block"><div class="wf-title" style="margin-bottom:.4rem;">⚠ POSSIBLE DUPLICATES (2)</div><div class="wf-line short"></div></div>
+          </div>
+        </div>
+        <p class="wf-caption">KPI row surfaces the metrics currently invisible without hand‑aggregating tabs. Funnel widths encode stage‑over‑stage drop‑off at a glance.</p>
+      </div>
+
+      <h3>Pipeline board</h3>
+      <div class="wf-wrap">
+        <div class="wf">
+          <div class="wf-topbar">FILTERS: Location ▾ &nbsp; Provider ▾ &nbsp; Insurance ▾ &nbsp; Service ▾ &nbsp; Source ▾ &nbsp; Date range ▾</div>
+          <div class="wf-board">
+            <div><div class="wf-col-h">NEW (5)</div>
+              <div class="wf-card"><span class="dot dot-g"></span>#7784 · Psychotherapy · Google</div>
+              <div class="wf-card"><span class="dot dot-g"></span>#7788 · Unknown · Internal</div>
+            </div>
+            <div><div class="wf-col-h">CONTACTED (4)</div>
+              <div class="wf-card"><span class="dot dot-a"></span>#7786 · MedMgmt · Other, 2d</div>
+              <div class="wf-card"><span class="dot dot-r"></span>#7783 · Psychotherapy · Other, 6d</div>
+            </div>
+            <div><div class="wf-col-h">SCHEDULED (3)</div>
+              <div class="wf-card"><span class="dot dot-g"></span>#6301 · Psychotherapy · Internal</div>
+            </div>
+            <div><div class="wf-col-h">ATTENDED (2)</div>
+              <div class="wf-card"><span class="dot dot-g"></span>#7291 · Psychotherapy · Internal</div>
+            </div>
+            <div><div class="wf-col-h">CONVERTED (3)</div>
+              <div class="wf-card"><span class="dot dot-g"></span>#7716 · Psychotherapy · Internal</div>
+            </div>
+            <div><div class="wf-col-h">LOST (2)</div>
+              <div class="wf-card"><span class="dot dot-r"></span>#7777 · Insurance: Medicaid</div>
+              <div class="wf-card"><span class="dot dot-r"></span>#7775 · Insurance: Medicaid</div>
+            </div>
+          </div>
+        </div>
+        <p class="wf-caption">Card dot = days‑in‑stage health (green &lt;2d, amber 2–5d, red &gt;5d). Replaces scanning a 19‑column sheet to find what's stalled.</p>
+      </div>
+
+      <h3>Lead profile</h3>
+      <div class="wf-wrap">
+        <div class="wf">
+          <div class="wf-topbar">#7786 · Female · 48313 · <span class="wf-chip">MEDICATION MGMT</span> <span class="wf-chip">STAGE: CONTACTED</span> <span class="wf-chip">⚑ PRIORITY</span></div>
+          <div class="wf-cols two">
+            <div class="wf-block">
+              <div class="wf-title" style="margin-bottom:.5rem;">DETAILS</div>
+              <div class="wf-line short"></div><div class="wf-line mid"></div><div class="wf-line short"></div>
+              <div class="wf-title" style="margin:.7rem 0 .3rem;">INSURANCE &amp; ELIGIBILITY</div>
+              <div class="wf-chip" style="border-color:var(--success)">✓ Priority Health — accepted</div>
+              <div class="wf-title" style="margin:.7rem 0 .3rem;">REFERRAL</div>
+              <div class="wf-line short"></div>
+            </div>
+            <div class="wf-block">
+              <div class="wf-title" style="margin-bottom:.5rem;">ACTIVITY TIMELINE</div>
+              <div class="wf-timeline">
+                <div class="ev">Inquiry completed — 7/7</div>
+                <div class="ev">Eligibility check passed — 7/7</div>
+                <div class="ev">Call attempt 1: no answer — 7/9</div>
+                <div class="ev">LVM + email sent — 7/10</div>
+                <div class="ev">Next follow‑up due — 7/13</div>
+              </div>
+              <div class="wf-title" style="margin:.8rem 0 .3rem;">NOTES</div>
+              <div class="wf-line mid"></div>
+              <div class="wf-chip" style="margin-top:.5rem;">+ Add task/reminder</div>
+            </div>
+          </div>
+        </div>
+        <p class="wf-caption">Every "LVM and emailed…" cell from the old sheet becomes one timestamped, attributable timeline entry.</p>
+      </div>
+
+      <h3>Intake form</h3>
+      <div class="wf-wrap">
+        <div class="wf">
+          <div class="wf-title"><span>NEW LEAD — INTAKE</span><span>AUTO CLIENT ID: 7801</span></div>
+          <div class="wf-cols two">
+            <div class="wf-block">
+              DOB [date picker] &nbsp;→ auto‑flags minor, shows guardian fields<br><br>
+              Referral Source [dropdown ▾] → Internal / Referral (named) / Google Ads / Psychology Today / Directory / Other<br><br>
+              Insurance Carrier [dropdown ▾] → <span class="wf-chip" style="border-color:var(--danger)">⚠ Medicaid — not accepted, flag before booking</span>
+            </div>
+            <div class="wf-block">
+              Services requested [checkboxes] Psychotherapy ▢ Med Mgmt ▢ Testing ▢<br><br>
+              Appointment type ( ) Virtual ( ) In‑person ( ) Either<br><br>
+              <span class="wf-chip" style="border-color:var(--warning)">⚠ Possible duplicate: phone matches Client #6301</span>
+            </div>
+          </div>
+        </div>
+        <p class="wf-caption">Structured fields replace free text at the point of entry — eligibility and duplicate checks fire before staff invest follow‑up time.</p>
+      </div>
+
+      <h3>Reports</h3>
+      <div class="wf-wrap">
+        <div class="wf">
+          <div class="wf-cols two">
+            <div class="wf-block">
+              <div class="wf-title" style="margin-bottom:.5rem;">REPORT BUILDER</div>
+              Date range ▾ &nbsp; Group by: Source / Provider / Location / Service ▾<br>
+              Metrics: Leads ▢ Sched. Rate ▢ CPL ▢ Time‑to‑Schedule ▢<br>
+              <div class="wf-line mid" style="margin-top:.6rem;"></div>
+              <span class="wf-chip">Export PDF</span> <span class="wf-chip">Export CSV</span> <span class="wf-chip">Schedule weekly email</span>
+            </div>
+            <div class="wf-block">
+              <div class="wf-title" style="margin-bottom:.5rem;">SAVED TEMPLATES</div>
+              <div class="wf-line short"></div> Weekly Client Report<br>
+              <div class="wf-line short"></div> Monthly QBR Pack<br>
+              <div class="wf-line short"></div> Staff Scorecard
+            </div>
+          </div>
+        </div>
+        <p class="wf-caption">Replaces the hand‑built QBR decks and benchmark documents with a query, not a rebuild.</p>
+      </div>
+
+      <h3>Staff performance</h3>
+      <div class="wf-wrap">
+        <div class="wf">
+          <div class="wf-title"><span>STAFF SCORECARD — JUL 2026</span></div>
+          <div class="wf-cols two">
+            <div class="wf-block">
+              STAFF · OWNED · CONTACT&lt;24H · SCHED. RATE · AVG RESPONSE<br>
+              <div class="wf-line mid"></div>
+              <div class="wf-line mid"></div>
+              <div class="wf-line short"></div>
+            </div>
+            <div class="wf-block">
+              <div class="wf-title" style="margin-bottom:.4rem;">WORKLOAD (OPEN LEADS)</div>
+              <div class="wf-funnel-row">Staff A <div class="wf-funnel-bar" style="width:80%"></div></div>
+              <div class="wf-funnel-row">Staff B <div class="wf-funnel-bar" style="width:45%"></div></div>
+            </div>
+          </div>
+        </div>
+        <p class="wf-caption">Only possible once a lead‑owner field exists — currently untracked entirely.</p>
+      </div>
+    </section>
+
+    <section id="data-model">
+      <p class="eyebrow">Blueprint · 03</p>
+      <h2>Data model</h2>
+      <p class="lede">Deliberately minimal on the PHI side — <code>Lead</code> holds only what's needed to run the pipeline, and joins out to the clinical system of record by <code>client_ref</code> rather than duplicating it.</p>
+
+      <div class="entity-grid">
+        <div class="entity"><h4>Lead<span>core</span></h4><ul>
+          <li>id <small>pk</small></li><li>client_ref <small>fk → EHR</small></li><li>stage</li><li>priority_flag</li>
+          <li>created_at</li><li>zip</li><li>age_band</li><li>is_minor</li><li>owner_id <small>fk</small></li>
+        </ul></div>
+        <div class="entity"><h4>ReferralSource<span>taxonomy</span></h4><ul>
+          <li>id <small>pk</small></li><li>lead_id <small>fk</small></li><li>channel</li><li>sub_type</li><li>referrer_name</li><li>utm_campaign</li>
+        </ul></div>
+        <div class="entity"><h4>ServiceRequest<span>1‑to‑many</span></h4><ul>
+          <li>id <small>pk</small></li><li>lead_id <small>fk</small></li><li>service_type</li><li>appointment_type</li>
+        </ul></div>
+        <div class="entity"><h4>InsuranceRecord<span>eligibility</span></h4><ul>
+          <li>id <small>pk</small></li><li>lead_id <small>fk</small></li><li>carrier</li><li>accepted <small>bool</small></li><li>checked_at</li>
+        </ul></div>
+        <div class="entity"><h4>Activity<span>timeline</span></h4><ul>
+          <li>id <small>pk</small></li><li>lead_id <small>fk</small></li><li>type</li><li>note</li><li>staff_id <small>fk</small></li><li>occurred_at</li>
+        </ul></div>
+        <div class="entity"><h4>Task<span>reminders</span></h4><ul>
+          <li>id <small>pk</small></li><li>lead_id <small>fk</small></li><li>due_at</li><li>assigned_to <small>fk</small></li><li>status</li>
+        </ul></div>
+        <div class="entity"><h4>Provider<span>capacity</span></h4><ul>
+          <li>id <small>pk</small></li><li>name</li><li>specialty</li><li>location_id <small>fk</small></li>
+        </ul></div>
+        <div class="entity"><h4>Location<span>site</span></h4><ul>
+          <li>id <small>pk</small></li><li>name</li><li>service_area_zips</li>
+        </ul></div>
+        <div class="entity"><h4>User<span>staff</span></h4><ul>
+          <li>id <small>pk</small></li><li>name</li><li>role</li><li>active</li>
+        </ul></div>
+        <div class="entity"><h4>DuplicateMatch<span>linkage</span></h4><ul>
+          <li>id <small>pk</small></li><li>lead_id_a</li><li>lead_id_b</li><li>match_basis</li><li>resolved</li>
+        </ul></div>
+        <div class="entity"><h4>AuditLogEntry<span>compliance</span></h4><ul>
+          <li>id <small>pk</small></li><li>entity</li><li>entity_id</li><li>field</li><li>old_val</li><li>new_val</li><li>user_id</li><li>at</li>
+        </ul></div>
+      </div>
+
+      <div class="table-wrap breakout">
+        <table>
+          <thead><tr><th>Relationship</th><th>Cardinality</th></tr></thead>
+          <tbody>
+            <tr><td>Lead → ReferralSource</td><td>1 : 1</td></tr>
+            <tr><td>Lead → ServiceRequest</td><td>1 : many</td></tr>
+            <tr><td>Lead → InsuranceRecord</td><td>1 : many (re‑checked over time)</td></tr>
+            <tr><td>Lead → Activity</td><td>1 : many</td></tr>
+            <tr><td>Lead → Task</td><td>1 : many</td></tr>
+            <tr><td>Lead → Provider</td><td>many : 1 (assigned)</td></tr>
+            <tr><td>Provider → Location</td><td>many : 1</td></tr>
+            <tr><td>Lead → User (owner)</td><td>many : 1</td></tr>
+            <tr><td>Lead ↔ Lead via DuplicateMatch</td><td>many : many</td></tr>
+            <tr><td>Any entity change → AuditLogEntry</td><td>1 : many</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="pipeline-workflow">
+      <p class="eyebrow">Blueprint · 04</p>
+      <h2>Pipeline stages &amp; workflow</h2>
+      <p class="lede">Replaces the single "Did they schedule?" column with six explicit stages, each with a defined exit condition.</p>
+
+      <div class="stage-track">
+        <div class="stage"><h5>New</h5><p>Inquiry captured, not yet reviewed</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage"><h5>Contacted</h5><p>Eligibility checked, ≥1 outreach attempt logged</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage"><h5>Scheduled</h5><p>Consultation booked</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage"><h5>Attended</h5><p>Consultation occurred</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage"><h5>Converted</h5><p>Paperwork + intake complete → active patient</p></div>
+        <span class="stage-arrow">→</span>
+        <div class="stage exit"><h5>Lost</h5><p>Exit reason required: insurance / no‑response / cost / capacity / out‑of‑area / other</p></div>
+      </div>
+
+      <div class="prose">
+        <p><strong>Daily staff workflow:</strong> open Dashboard → clear overdue‑follow‑up alerts → work the Pipeline board left‑to‑right → log every touch as an Activity (never a sentence in a spreadsheet cell) → move cards as stage changes → the system, not the staff member, computes scheduling rate, time‑to‑schedule, and source‑level quality.</p>
+        <p><strong>Weekly manager workflow:</strong> Dashboard trend view replaces manually reading old tabs → Reports → run "Weekly Client Report" template → export → done. No spreadsheet formulas to re‑check.</p>
+      </div>
+    </section>
+
+    <section id="roles">
+      <p class="eyebrow">Plan · 01</p>
+      <h2>Roles &amp; permissions</h2>
+      <div class="table-wrap breakout">
+        <table>
+          <thead><tr><th>Capability</th><th>Staff</th><th>Manager</th><th>Admin</th></tr></thead>
+          <tbody>
+            <tr><td>View &amp; work own assigned leads</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>View all leads / all staff</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>Reassign leads between staff</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>Run &amp; export reports</td><td class="partial">Own leads only</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>Edit referral/insurance taxonomy</td><td class="no">No</td><td class="partial">Request only</td><td class="yes">Yes</td></tr>
+            <tr><td>Manage users &amp; roles</td><td class="no">No</td><td class="no">No</td><td class="yes">Yes</td></tr>
+            <tr><td>View audit log</td><td class="no">No</td><td class="partial">Own team</td><td class="yes">Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="prioritization">
+      <p class="eyebrow">Plan · 02</p>
+      <h2>Feature prioritization</h2>
+      <div class="table-wrap breakout">
+        <table>
+          <thead><tr><th>Feature</th><th>Priority</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Structured lead form (referral, insurance, services)</td><td><span class="tag tag-must">Must</span></td><td>Removes the classifier‑script dependency at the source</td></tr>
+            <tr><td>Pipeline board with defined stages</td><td><span class="tag tag-must">Must</span></td><td>Direct replacement for the "Did they schedule?" column</td></tr>
+            <tr><td>Dashboard KPIs + trend chart</td><td><span class="tag tag-must">Must</span></td><td>Ends manual cross‑tab rollups</td></tr>
+            <tr><td>Activity timeline &amp; follow‑up reminders</td><td><span class="tag tag-must">Must</span></td><td>Fixes the biggest lead‑loss category (no‑response)</td></tr>
+            <tr><td>Insurance eligibility flag at intake</td><td><span class="tag tag-must">Must</span></td><td>Resolves the recurring HAP/Medicaid blind spot</td></tr>
+            <tr><td>Search across all leads</td><td><span class="tag tag-must">Must</span></td><td>No equivalent exists across 32 tabs today</td></tr>
+            <tr><td>Duplicate detection</td><td><span class="tag tag-nice">Nice to have</span></td><td>Reduces "Returning Patient" miscategorization</td></tr>
+            <tr><td>Staff performance scorecards</td><td><span class="tag tag-nice">Nice to have</span></td><td>Needs owner field live first</td></tr>
+            <tr><td>Custom report builder</td><td><span class="tag tag-nice">Nice to have</span></td><td>Templates cover most needs initially</td></tr>
+            <tr><td>Role‑based permissions</td><td><span class="tag tag-nice">Nice to have</span></td><td>Single small team today; matters as headcount grows</td></tr>
+            <tr><td>Provider capacity view</td><td><span class="tag tag-future">Future</span></td><td>Valuable once ADHD/testing waitlist volume grows</td></tr>
+            <tr><td>Two‑way EHR sync</td><td><span class="tag tag-future">Future</span></td><td>High integration cost; manual Client ID join is workable short‑term</td></tr>
+            <tr><td>Patient‑facing self‑scheduling</td><td><span class="tag tag-future">Future</span></td><td>Separate product decision beyond internal CRM scope</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <p class="eyebrow">Plan · 03</p>
+      <h2>Implementation roadmap</h2>
+      <div class="road">
+        <div class="road-phase">
+          <p class="ph-eyebrow">Phase 1</p>
+          <h4>MVP</h4>
+          <p class="dur">~6–8 weeks</p>
+          <ul>
+            <li>Structured intake form (referral, insurance, services, DOB/minor logic)</li>
+            <li>Pipeline board with 6 stages</li>
+            <li>Lead profile + activity timeline</li>
+            <li>Dashboard KPIs replacing weekly tab math</li>
+            <li>Search across all leads</li>
+          </ul>
+          <p class="metric">Success metric: zero new weekly tabs created; every current lead field has a structured home</p>
+        </div>
+        <div class="road-phase">
+          <p class="ph-eyebrow">Phase 2</p>
+          <h4>Operational depth</h4>
+          <p class="dur">~4–6 weeks</p>
+          <ul>
+            <li>Follow‑up reminders &amp; overdue alerts</li>
+            <li>Duplicate detection</li>
+            <li>Report builder + saved templates + scheduled export</li>
+            <li>Provider &amp; location fields, owner/staff assignment</li>
+            <li>Audit log</li>
+          </ul>
+          <p class="metric">Success metric: QBR/benchmark docs generated from the system, not rebuilt by hand</p>
+        </div>
+        <div class="road-phase">
+          <p class="ph-eyebrow">Phase 3</p>
+          <h4>Scale &amp; intelligence</h4>
+          <p class="dur">Ongoing</p>
+          <ul>
+            <li>Staff performance scorecards</li>
+            <li>Provider capacity &amp; waitlist view</li>
+            <li>Role‑based permissions (Admin/Manager/Staff)</li>
+            <li>UTM‑to‑lead attribution wired to live ad platforms</li>
+            <li>Mobile‑optimized pipeline view for on‑the‑go updates</li>
+          </ul>
+          <p class="metric">Success metric: per‑provider and per‑location performance visible without a special request</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="compliance">
+      <p class="eyebrow">Plan · 04</p>
+      <h2>Compliance &amp; security</h2>
+      <div class="callout danger">
+        <p><strong>The current sheet already stores quasi‑PHI without the controls that should come with it.</strong> Full date of birth, zip code, and free‑text mental‑health detail ("Anxiety, depression, autisim", "Self harm, depression") sit in a Google Sheet reachable by anyone with the link, with no field‑level permissions and no audit trail of who viewed or edited what.</p>
+      </div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+        <div class="card"><strong>Keep this system PHI‑light on purpose.</strong> Store <code>client_ref</code> only; leave clinical notes, full names, and contact details in the existing EHR/practice‑management system of record.</div>
+        <div class="card"><strong>Host under a signed BAA.</strong> Whatever platform this is built on needs a Business Associate Agreement in place before any lead data with health‑adjacent fields moves into it.</div>
+        <div class="card"><strong>Role‑based access from day one</strong> on anything beyond MVP — staff should not default to seeing every lead in the practice.</div>
+        <div class="card"><strong>Audit log every field change</strong> — who touched insurance status, who moved a stage, who edited a note — the exact accountability the current sheet has none of.</div>
+      </div>
+    </section>
+
+    <footer>
+      Prepared by Damco Digital for Wellspring Therapeutic Partners · 13 Jul 2026 · Grounded in live consultation‑sheet data, not a generic CRM template.
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+    var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+    if (!sections.length) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          var id = '#' + entry.target.id;
+          links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px' });
+    sections.forEach(function(s){ io.observe(s); });
+  })();
+</script>
