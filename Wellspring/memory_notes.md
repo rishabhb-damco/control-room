@@ -37,6 +37,20 @@ Total CRM scheduling rate (e.g. 12/19 = 63.2%) belongs in **Section 2 — Overal
 
 ---
 
+## Google Ads data source: API only
+
+Always fetch Google Ads performance data using `GOOGLEADS_SEARCH_STREAM_GAQL` via Composio (customer ID `5093164652`). **Never use the Google Ads Performance Report Google Sheet** as a data source — it captures only a subset of campaign days, misses zero-spend days inconsistently, and has caused repeated reporting errors. The API gives real-time, complete data.
+
+If the API returns a rate-limit error (429 / RESOURCE_EXHAUSTED), tell the user the wait time and ask whether to (a) wait and retry, or (b) pull numbers manually from the Google Ads panel and paste them in. Do not silently fall back to the sheet, and don't mention the sheet as an alternative.
+
+---
+
+## Never hardcode secrets
+
+A Google Ads credential was once hardcoded in `wellspring_geo_analysis.py` (since fixed). Always use environment variables for credentials in any script that gets committed — never inline API keys, tokens, or account secrets in tracked files.
+
+---
+
 ## Already codified in `CLAUDE.md` — no need to re-derive
 
 - **Anomaly detection checklist** (missing days, uneven spend, budget over/under-delivery, campaign dominance, WoW spend drops, zero conversions) — see `CLAUDE.md` Step 4.

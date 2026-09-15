@@ -33,6 +33,7 @@
 | File | Purpose |
 |---|---|
 | `eSprinto_Claude.md` | Living brief — competitor research, campaign data, strategy |
+| `paid_ads_playbook.md` | Shared Paid Ads function module (output templates, health check, benchmarks) — local copy, previously `control room/modules/paid_ads.md` |
 | `action_tracker.md` | All open and closed actions |
 | `deliverables.md` | Deliverable log |
 | `transcripts/` | Drop zone for meeting transcripts |
@@ -49,7 +50,7 @@
 When I receive a transcript (pasted or saved in `transcripts/`):
 1. Read `eSprinto_Claude.md` for context
 2. Read `action_tracker.md` for current open items
-3. Generate all 5 outputs (from `modules/paid_ads.md`):
+3. Generate all 5 outputs (from `paid_ads_playbook.md`):
    - Client MOM email
    - Internal team briefing
    - Action tracker additions
@@ -107,6 +108,16 @@ Run Instagram + paid media health check using data in `eSprinto_Claude.md`. Flag
 
 ---
 
+## Report Password Gate (all HTML reports)
+
+Every HTML report published to GitHub Pages must include a full-screen password gate before content loads.
+- Password: `ESprinto123` (pattern: `{ClientName}123`, capital first letter)
+- Uses `sessionStorage` so it's entered once per browser session; Enter key submits (not just the button)
+- Embed gate CSS in the main `<style>` block, gate HTML + JS immediately after `<body>`
+- Reason: prevents data leaks if a report URL is shared or indexed — client data is confidential
+
+---
+
 ## Session Behaviour
 
 ### Auto-task logging
@@ -117,6 +128,9 @@ At the start of every session, append a new row to the **Session Log** section o
 | [today's date] | [user's first request, one line] | In Progress |
 
 Update status to **Completed** when the task is done. If a deliverable file was produced, also add a row to `deliverables.md`.
+
+### Git sync
+This folder is its own git repo, synced to GitHub so it's accessible across machines. Only run `git push`/`git pull` when explicitly asked — never proactively sync in the background.
 
 ### File routing — always save to a subfolder
 | File type | Save to |

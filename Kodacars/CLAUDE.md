@@ -110,6 +110,16 @@ Based on the 4 LinkedIn pillars and 3 Meta pillars in `Kodacars_Claude.md`, gene
 
 ---
 
+## Report Password Gate (all HTML reports)
+
+Every HTML report published to GitHub Pages must include a full-screen password gate before content loads.
+- Password: `Kodacars123` (pattern: `{ClientName}123`, capital first letter)
+- Uses `sessionStorage` so it's entered once per browser session; Enter key submits (not just the button)
+- Embed gate CSS in the main `<style>` block, gate HTML + JS immediately after `<body>`
+- Reason: prevents data leaks if a report URL is shared or indexed — client data is confidential
+
+---
+
 ## Session Behaviour
 
 ### Auto-task logging
@@ -120,6 +130,9 @@ At the start of every session, append a new row to the **Session Log** section o
 | [today's date] | [user's first request, one line] | In Progress |
 
 Update status to **Completed** when the task is done. If a deliverable file was produced, also add a row to `deliverables.md`.
+
+### Git sync
+This folder is its own git repo, synced to GitHub so it's accessible across machines. Only run `git push`/`git pull` when explicitly asked — never proactively sync in the background.
 
 ### File routing — always save to a subfolder
 | File type | Save to |

@@ -37,6 +37,7 @@
 | `action_tracker.md` | All open and closed actions |
 | `deliverables.md` | Deliverable log |
 | `lead_quality_skill.md` | Lead classification logic, skill reference, analysis format |
+| `paid_ads_playbook.md` | Shared Paid Ads function module (output templates, health check, benchmarks) — local copy, previously `control room/modules/paid_ads.md` |
 | `transcripts/` | Drop zone for meeting transcripts |
 | `01_Reports/` | Generated HTML/PDF reports, monthly decks |
 | `02_Copy/` | Ad copy, headlines, hooks, scripts |
@@ -67,7 +68,7 @@
 When I receive a transcript (pasted or saved in `transcripts/`):
 1. Read `Wellspring_Claude.md` for context
 2. Read `action_tracker.md` for current open items
-3. Generate all 5 outputs (from `modules/paid_ads.md`):
+3. Generate all 5 outputs (from `paid_ads_playbook.md`):
    - Client MOM email (professional, warm, no jargon)
    - Internal team briefing (honest, flagging risks)
    - Action tracker additions (formatted for `action_tracker.md`)
@@ -111,7 +112,7 @@ Ask: "What data or update would you like to add to the Wellspring brief?"
 Then update the relevant section of `Wellspring_Claude.md`.
 
 ### "weekly report"
-Using latest data from `Wellspring_Claude.md`, generate a weekly performance summary in the Paid Ads report format (from `modules/paid_ads.md`).
+Using latest data from `Wellspring_Claude.md`, generate a weekly performance summary in the Paid Ads report format (from `paid_ads_playbook.md`).
 
 ### "create weekly report" or "create last weekly report"
 Full fused report: pulls live data from both Google Sheets via Composio, classifies leads, generates a styled HTML report, publishes it to GitHub Pages.
@@ -277,7 +278,7 @@ If yes, append a new row to the weekly performance log section in `Wellspring_Cl
 5. Flag sources below 30% scheduling rate
 
 ### "campaign health check"
-Run through the Google Ads + Meta Ads health checklist from `modules/paid_ads.md` using current data in `Wellspring_Claude.md`. Flag anything in red.
+Run through the Google Ads + Meta Ads health checklist from `paid_ads_playbook.md` using current data in `Wellspring_Claude.md`. Flag anything in red.
 
 ### "paste search terms [data]"
 User pastes Google Ads Search Terms report. Claude will:
@@ -329,6 +330,9 @@ At the start of every session, append a new row to the **Session Log** section o
 | [today's date] | [user's first request, one line] | In Progress |
 
 Update status to **Completed** when the task is done. If a deliverable file was produced, also add a row to `deliverables.md`.
+
+### Git sync
+This folder is its own git repo, synced to GitHub so it's accessible across machines. Only run `git push`/`git pull` when explicitly asked — never proactively sync in the background.
 
 ### File routing — always save to a subfolder
 | File type | Save to |

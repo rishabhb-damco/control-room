@@ -59,3 +59,6 @@ NEXT TARGET: [next skill/automation to build]
 At session start, append to the Session Log in `action_tracker.md`:
 `| [today's date] | [user's first request] | In Progress |`
 Update to Completed when done.
+
+### Git sync
+This folder is its own git repo, synced to GitHub so it's accessible across machines. Only run `git push`/`git pull` when explicitly asked — never proactively sync in the background.

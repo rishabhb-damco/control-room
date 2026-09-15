@@ -107,6 +107,21 @@ Then update the relevant section of `CSXAI_Claude.md`.
 
 ---
 
+## Report Password Gate (all HTML reports)
+
+Every HTML report published to GitHub Pages must include a full-screen password gate before content loads.
+- Password: `CSXAI123` (pattern: `{ClientName}123`, capital first letter)
+- Uses `sessionStorage` so it's entered once per browser session; Enter key submits (not just the button)
+- Embed gate CSS in the main `<style>` block, gate HTML + JS immediately after `<body>`
+- Reason: prevents data leaks if a report URL is shared or indexed — client data is confidential
+
+---
+
+## Git sync
+This folder is its own git repo, synced to GitHub so it's accessible across machines. Only run `git push`/`git pull` when explicitly asked — never proactively sync in the background.
+
+---
+
 ## Critical Context (Read Before Every Session)
 
 - Product is brand new — zero existing leads database, everything being built from scratch
