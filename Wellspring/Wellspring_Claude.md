@@ -263,6 +263,15 @@ Negative keywords added to both active campaigns: `medicaid`, `UHC medicaid`, `p
 
 ---
 
+## Monthly Totals Log
+
+| Month | Spend | Total Leads | Google Leads | Google Booked | Google Rate | Total Booked | Overall Rate | CPL | Key Insight |
+|---|---|---|---|---|---|---|---|---|---|
+| July 2026 | $2,402 | 60 | 14 | 9 | 64% | 38 | 63% | $172 | Medicaid negatives not yet live; $2,402 spend confirmed from Google Ads account. Source of truth: consultation sheet. |
+| August 2026 | ~$2,014 | 58 | 21 | 10 | 48% | 27 | 47% | $96 | Broad Match wound down mid-Aug; CPL dropped 44%; booking rate fell 16pp; insurance mismatches (Medicaid/Cigna/Medicare) = 55% of Google non-bookings; Medicaid negatives worked post-Aug 19. Spend = Aug 2–29 confirmed $1,891 + Aug 30–31 est. $123. |
+
+---
+
 ## Weekly Performance Log — Jul–Aug 2026
 
 | Week | Spend | Total Leads | Google Leads | Google Booked | Google Rate | Total Booked | Overall Rate | Key Event |

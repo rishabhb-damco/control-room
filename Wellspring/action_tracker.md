@@ -1,6 +1,6 @@
 # Wellspring — Action Tracker
 
-> Last updated: 2026-09-08
+> Last updated: 2026-09-22
 > Open: 29 | In Progress: 0 | Completed: 1
 
 ---
@@ -21,6 +21,8 @@
 | 12 Aug 2026 | Remarketing budget pitch — analysis + client-facing one-pager for ~400-user Display remarketing test ($300/mo, 6 weeks) | Completed |
 | 19 Aug 2026 | Weekly report Aug 9–15 2026 — full HTML report built from manual Google Ads CSV + consultation sheet. Campaign strategy update + Medicaid negatives confirmed resolved. | Completed |
 | 24 Aug 2026 | Weekly report Aug 16–22 2026 — full HTML report built from Google Ads export + consultation sheet. Anomaly alert sent (platform/CRM gap, DSA 0 conversions). Published to GitHub Pages. | Completed |
+| 22 Sep 2026 | Weekly report Sep 13–19 2026 — built from Google Ads API (spend only) + consultation sheet (all lead metrics). 1 confirmed Google Ads lead (Lead 11, Sep 17, booked), $441 CPL, 12 total leads, 5 booked (63% of confirmed). Sep 14 cluster: 3 disqualified phone calls (Medicare, Addiction, Cigna). Published to GitHub Pages. | Completed |
+| 18 Sep 2026 | August 2026 monthly performance report — 8-slide QBR-style deck, Jul vs Aug comparison, full lead classification of all 60 July + 58 August consultation rows, decline analysis, September priorities. Published to GitHub Pages. | Completed |
 | 14 Sep 2026 | Weekly report Sep 6–12 2026 — built from full Google Ads export + consultation sheet. 4 Google Ads leads (2 confirmed booked, 2 pending Sam's review), $506 spend, $127 CPL. Published to GitHub Pages. | Completed |
 | 08 Sep 2026 | Weekly report Aug 30–Sep 5 2026 — built from full Google Ads export + consultation sheet. 4 Google Ads leads, 2 booked (50%), $431 spend, $108 CPL. 2 new open actions added (Medicare + addiction negatives). Published to GitHub Pages. | Completed |
 | 02 Sep 2026 | Weekly report Aug 23–29 2026 — built from consultation sheet (complete) + partial Google Ads export (Aug 23–26 only). Anomaly alert sent. Published to GitHub Pages. | Completed |
